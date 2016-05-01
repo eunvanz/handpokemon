@@ -51,7 +51,7 @@ app.use('/api', posts);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
-  const cssPath = process.env.NODE_ENV === 'production' ? '/css/flat-ui-pro.css' : '/css/flat-ui-pro.css';
+  // const cssPath = process.env.NODE_ENV === 'production' ? '/css/flat-ui-pro.css' : '/css/flat-ui-pro.css';
   return `
     <!doctype html>
     <html>
@@ -62,15 +62,71 @@ const renderFullPage = (html, initialState) => {
         <title>MERN Starter - Blog App</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
         <link href="/css/vendor/bootstrap.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href=${cssPath} />
-        <link rel="stylesheet" href="/css/custom.css"/>
+        <link href="/css/font-awesome.css" rel="stylesheet"/>
+        <link href="/css/ace-fonts.css" rel="stylesheet"/>
+        <link href="/css/ace.css" rel="stylesheet" class="ace-main-stylesheet" id="main-ace-style"/>
+        <link rel="stylesheet" href="/css/demo.css" />
+        <link rel="stylesheet" href="/css/pokemon.css" />
+
+        <!-- focus point -->
+        <link rel="stylesheet" href="/css/focuspoint.css" />
+
+        <link rel="stylesheet" href="/css/jquery-ui.custom.css" />
+
+        <!-- captcha -->
+        <link rel="stylesheet" type="text/css" href="/css/jquery.realperson.css"/>
         <link rel="shortcut icon" href="http://res.cloudinary.com/hashnode/image/upload/v1455629445/static_imgs/mern/mern-favicon-circle-fill.png" type="image/png" />
       </head>
-      <body>
+      <body class="no-skin">
         <div id="root">${html}</div>
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
+        <script src="/js/ace-extra.js"></script>
+        <!--[if !IE]> -->
+        <script type="text/javascript">
+          window.jQuery
+              || document.write("<script src='/js/jquery.js'>"
+                  + "<"+"/script>");
+        </script>
+        <script type="text/javascript">
+          if ('ontouchstart' in document.documentElement)
+            document.write("<script src='/js/jquery.mobile.custom.js'>"
+                + "<"+"/script>");
+        </script>
+        <script src="/js/bootstrap.js"></script>
+        <script src="/js/jquery-ui.custom.js"></script>
+        <script src="/js/jquery.ui.touch-punch.js"></script>
+        <script src="/js/jquery.easypiechart.js"></script>
+        <script src="/js/jquery.sparkline.js"></script>
+        <script src="/js/flot/jquery.flot.js"></script>
+        <script src="/js/flot/jquery.flot.pie.js"></script>
+        <script src="/js/flot/jquery.flot.resize.js"></script>
+
+        <!-- ace scripts -->
+        <script src="/js/ace/elements.scroller.js"></script>
+        <script src="/js/ace/elements.fileinput.js"></script>
+        <script src="/js/ace/elements.typeahead.js"></script>
+        <script src="/js/ace/elements.spinner.js"></script>
+        <script src="/js/ace/elements.wizard.js"></script>
+        <script src="/js/ace/elements.aside.js"></script>
+        <script src="/js/ace/ace.js"></script>
+        <script src="/js/ace/ace.ajax-content.js"></script>
+        <script src="/js/ace/ace.touch-drag.js"></script>
+        <script src="/js/ace/ace.sidebar.js"></script>
+        <script src="/js/ace/ace.sidebar-scroll-1.js"></script>
+        <script src="/js/ace/ace.submenu-hover.js"></script>
+        <script src="/js/ace/ace.widget-box.js"></script>
+        <script src="/js/ace/ace.widget-on-reload.js"></script>
+        <script src="/js/spin.js"></script>
+
+        <!-- focus-point -->
+        <script src="/js/jquery.focuspoint.js"></script>
+        <script src="/js/thumbnail.js"></script>
+
+        <!-- 공통 -->
+        <script src="/js/view-collection.js"></script>
+        <script src="/js/loading.js"></script>
         <script src="/dist/bundle.js"></script>
       </body>
     </html>

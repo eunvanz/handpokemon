@@ -1,0 +1,44 @@
+div.roulette {
+	margin-top: 0px;
+}
+div.roulette-inner {
+	left : 0px;
+}
+
+
+div.roulette { 
+}
+
+div.roulette_container {
+	background-image:url('../../assets/images/scratchbg.png');
+	background-color:rgb(253, 252, 253);
+	width:200px;
+	height:200px;
+	border:1px solid rgba(253, 252, 253, 0.31);
+	box-shadow:0px 0px 3px lightpink;margin:auto;
+}
+@media (min-width: 767px) {
+	div.battle_roulette_container {
+		background-image:url('../../assets/images/scratchbg.png');
+		background-color:rgb(253, 252, 253);
+		width:80px;
+		height:80px;
+		border:1px solid rgba(253, 252, 253, 0.31);
+		box-shadow:0px 0px 3px lightpink;margin:auto;
+	}
+}
+@media (man-width: 767px) {
+	div.battle_roulette_container {
+		background-image:url('../../assets/images/scratchbg.png');
+		background-color:rgb(253, 252, 253);
+		width:50px;
+		height:50px;
+		border:1px solid rgba(253, 252, 253, 0.31);
+		box-shadow:0px 0px 3px lightpink;margin:auto;
+	}
+}
+
+.btn_container {
+	margin:20px;
+	text-align:center;
+}

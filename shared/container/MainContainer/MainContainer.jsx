@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'react-bootstrap';
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -6,7 +7,11 @@ class MainContainer extends React.Component {
     this.displayName = 'MainContainer';
   }
   render() {
-    return <div>MainContainer</div>;
+    return (
+      <div>
+        <Button bsStyle="primary">Primary</Button>
+      </div>
+    );
   }
 }
 
