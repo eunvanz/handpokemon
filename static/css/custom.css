@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'Nanum Gothic';
+  src: url(../fonts/NANUMGOTHIC.TTF);
+}
+body {
+  font-family: 'Nanum Gothic';
+}
+.navbar-brand {
+  padding: 10px 21px;
+}
+.header > .container {
+  padding: 0;
+}
+.main-container {
+  padding: 0;
+}
+.navbar-brand > img {
+  height: 34px;
+}
+.navbar {
+  margin-bottom: 0;
+  border-radius: 0;
+}
+.nav-list-vivid {
+  border-radius: 0;
+}
+.side-bar-container {
+  width: 200px;
+  position: fixed;
+  float: none;
+}
+.main-content {
+  margin-left: 200px;
+}
+@media (max-width: 767px) {
+  .side-bar-container {
+    display: none;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+}
+@media (min-width: 767px) {
+  .side-bar-container {
+    display: block;
+  }
+  .main-content {
+    margin-left: 200px;
+  }
+}
+@media (min-width: 992px) {
+  .navbar-toggle {
+    display: none;
+  }
+}

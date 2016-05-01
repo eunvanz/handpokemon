@@ -1,12 +1,26 @@
 import React from 'react';
 
-function Footer() {
-  return (
-   <div className="footer">
-     <p>&copy; 2016 &middot; Hashnode &middot; LinearBytes Inc.</p>
-     <p>We are on Twitter : <a href="https://twitter.com/@mern_io" target="_Blank">@mern_io</a></p>
-   </div>
- );
+class Footer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.displayName = 'Footer';
+  }
+  render() {
+    return (
+      <div className="container">
+        <div className="bottom-menu">
+          <div className="container">
+            <h5 className="title">Title</h5>
+            <ul className="bottom-menu-list">
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      );
+  }
 }
 
 export default Footer;
