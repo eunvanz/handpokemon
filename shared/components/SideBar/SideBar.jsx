@@ -7,41 +7,40 @@ class SideBar extends React.Component {
   }
   render() {
     return (
-      <div>
-        <ul className="nav nav-list nav-list-vivid">
-          <li className="nav-header">이웅희 님, 안녕?</li>
+      <div id="sidebar" className="sidebar responsive sidebar-fixed">
+        <ul className="nav nav-list">
           <li>
-            <a href="#">내 정보 수정</a>
+            <i className="menu-icon fa fa-home"></i>
+            <span className="menu-text"> 홈 </span>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">설정</a>
+            <i className="menu-icon fa fa-book"></i>
+            <span className="menu-text"> 게임 가이드 </span>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">로그인</a>
+            <i className="menu-icon fa fa-github-alt"></i>
+            <span className="menu-text"> 내 콜렉션 </span>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">회원가입</a>
+            <i className="menu-icon fa fa-certificate"></i>
+            <span className="menu-text"> 업적과 칭호 </span>
+            <b className="fa fa-angle-down"></b>
           </li>
-          <li>
-            <a href="#">내 콜렉션</a>
-          </li>
-          <li>
-            <a href="#">
-              채집하기
-              <span className="badge pull-right">10</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              포켓몬시합
-              <span className="badge pull-right">10</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              커뮤니티
-            </a>
-          </li>
+          <ul className="submenu">
+            <li>
+              <i className="menu-icon fa fa-caret-right"></i>
+              <span className="menu-text"> 업적달성 현황 </span>
+              <b className="fa fa-angle-down"></b>
+            </li>
+            <li>
+              <i className="menu-icon fa fa-caret-right"></i>
+              <span className="menu-text"> 칭호 설정 </span>
+              <b className="fa fa-angle-down"></b>
+            </li>
+          </ul>
         </ul>
       </div>
     );

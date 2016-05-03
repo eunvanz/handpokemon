@@ -6,7 +6,9 @@ class RegisterMemberView extends React.Component {
     this.displayName = 'RegisterMemberView';
   }
   render() {
-    return <div>RegisterMemberView</div>;
+    return (
+      <div>RegisterMemberView</div>
+    );
   }
 }
 

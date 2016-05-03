@@ -12,8 +12,7 @@ class App extends Component {
     return (
       <div>
         <Header/>
-        <MainContaner/>
-          { this.props.children }
+        <MainContaner content={this.props.children}/>
       </div>
     );
   }

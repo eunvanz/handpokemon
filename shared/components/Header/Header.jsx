@@ -1,6 +1,5 @@
 import React from 'react';
 import LoginModal from '../LoginModal/LoginModal';
-import { Modal } from 'react-bootstrap';
 
 const style = {
   navbarBrand: {
@@ -48,8 +47,8 @@ class Header extends React.Component {
               </li>
             </ul>
           </div>
-        </div>
         <LoginModal show={this.state.showLoginModal}/>
+        </div>
       </div>
     );
   }

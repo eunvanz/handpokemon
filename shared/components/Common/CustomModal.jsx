@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Modal } from 'react-bootstrap';
 import $ from 'jquery';
 
@@ -42,5 +42,12 @@ class CustomModal extends React.Component {
     );
   }
 }
+
+CustomModal.propTypes = {
+  title: PropTypes.string.isRequired,
+  bodyComponent: PropTypes.element.isRequired,
+  footerComponent: PropTypes.element,
+  width: PropTypes.string,
+};
 
 export default CustomModal;
