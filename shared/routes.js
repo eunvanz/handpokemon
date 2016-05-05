@@ -7,7 +7,7 @@ import RegisterMemberView from './container/RegisterMemberView/RegisterMemberVie
 const routes = (
   <Route path="/" component={App} >
     <IndexRoute component={MainView}/>
-    <Route path="/get/:slug" component={RegisterMemberView}/>
+    <Route path="/sign-up" component={RegisterMemberView}/>
   </Route>
 );
 

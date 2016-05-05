@@ -54,6 +54,7 @@ class LoginModal extends React.Component {
           bodyComponent={bodyComponent()}
           footerComponent={footerComponent()}
           width="300px"
+          close={this.props.close}
         />
       </div>
     );

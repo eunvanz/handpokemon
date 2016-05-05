@@ -12,7 +12,7 @@ class MainContainer extends React.Component {
         <SideBar />
         <div className="main-content">
           <div className="main-content-inner">
-            동적으로 변하는 뷰
+            {this.props.children}
           </div>
         </div>
       </div>

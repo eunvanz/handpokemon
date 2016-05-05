@@ -9,7 +9,6 @@ class CustomModal extends React.Component {
     this.state = {
       showModal: false,
     };
-    this._close = this._close.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     this.setState({ showModal: nextProps.show });
@@ -18,16 +17,10 @@ class CustomModal extends React.Component {
     $('.modal-backdrop').css('z-index', '1030').css('height', '100%');
     $('.modal-dialog').css('width', this.props.width);
   }
-  _close() {
-    this.setState({ showModal: false });
-  }
-  _open() {
-    this.setState({ showModal: true });
-  }
   render() {
     return (
       <div>
-        <Modal show={this.state.showModal} onHide={this._close}>
+        <Modal show={this.state.showModal} onHide={this.props.close}>
           <Modal.Header closeButton>
             <Modal.Title>{this.props.title}</Modal.Title>
           </Modal.Header>

@@ -1,5 +1,6 @@
 import React from 'react';
 import LoginModal from '../LoginModal/LoginModal';
+import { Link } from 'react-router';
 
 const style = {
   navbarBrand: {
@@ -18,9 +19,14 @@ class Header extends React.Component {
       showLoginModal: false,
     };
     this._showLoginModal = this._showLoginModal.bind(this);
+    this._hideLoginModal = this._hideLoginModal.bind(this);
   }
-  _showLoginModal() {
+  _showLoginModal(e) {
+    e.preventDefault();
     this.setState({ showLoginModal: true });
+  }
+  _hideLoginModal() {
+    this.setState({ showLoginModal: false });
   }
   render() {
     return (
@@ -31,23 +37,25 @@ class Header extends React.Component {
             <span className="icon-bar"></span> <span className="icon-bar"></span>
           </button>
           <div className="navbar-header pull-left">
-            <a href="main.do" className="navbar-brand" style={style.navbarBrand}>
+            <Link to="/" className="navbar-brand" style={style.navbarBrand}>
               <img src="/img/logo.png" style={style.logo}/>
-            </a>
+            </Link>
           </div>
           <div className="navbar-buttons navbar-header pull-right" role="navigation">
             <ul className="nav ace-nav">
-              <li className="blue" ><a href="#fakeLink" onClick={this._showLoginModal}>
-                <i className="ace-icon fa fa-key hidden-xs"></i> 로그인</a>
+              <li className="blue" >
+                <a href="" onClick={this._showLoginModal}>
+                  <i className="ace-icon fa fa-key hidden-xs"></i> 로그인
+                </a>
               </li>
               <li className="grey">
-                <a href="main.do?action=registerForm">
+                <Link to="/sign-up">
                   <i className="ace-icon fa fa-pencil-square-o hidden-xs"></i> 회원가입
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
-        <LoginModal show={this.state.showLoginModal}/>
+        <LoginModal show={this.state.showLoginModal} close={this._hideLoginModal}/>
         </div>
       </div>
     );
