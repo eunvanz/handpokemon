@@ -1,13 +1,41 @@
 import React from 'react';
 import PageHeader from '../../components/Common/PageHeader';
 import WidgetBox from '../../components/Common/WidgetBox';
+import MonsterCard from '../../components/Common/MonsterCard';
+import $ from 'jquery';
 
 class RegisterMemberView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'RegisterMemberView';
+    this.state = {
+      pickedMonster: [],
+    };
+  }
+  _pickMonsters() {
+    $.ajax({
+      url: '/api/monsters/register-pick',
+      method: 'GET',
+      type: 'JSON',
+      success: (data) => {
+        this.setState({ pickedMonster: data });
+      },
+    });
   }
   render() {
+    const getMonsterCardComponent = () => {
+      let returnComponent = [];
+      const pickedMonster = this.state.pickedMonster;
+      for (let i = 0; i < 3; i++) {
+        returnComponent.push(
+            <MonsterCard
+              key={i}
+              monster={pickedMonster[i]}
+            />
+          );
+      }
+      return returnComponent;
+    };
     const body = () => {
       return (
         <div id="fuelux-wizard-container">
@@ -111,9 +139,7 @@ class RegisterMemberView extends React.Component {
                     </div>
                   </div>
                 </div>
-                
               </div>
-
               <div className="step-pane" data-step="3">
                 <div className="row" id="pre-pick">
                   <div className="col-sm-12 center">
@@ -121,7 +147,11 @@ class RegisterMemberView extends React.Component {
                     <div className="space"></div>
                     <button type="button" className="btn btn-info btn-lg" id="pick-btn"><i className="fa fa-github-alt"></i> 포켓몬 뽑기</button>
                   </div>
-                  여기에 포켓몬 픽 들어감                
+                  <div className="row" id="post-pick">
+                    <div className="col-sm-12 center">
+                      {getMonsterCardComponent()}
+                    </div>
+                  </div>
                   <div className="col-sm-12 align-center" style={{ marginTop: '40px' }}>
                     <button className="btn btn-info btn-sm" id="repick">
                       <i className="fa fa-refresh"></i> 다시뽑기

@@ -34,6 +34,7 @@ import serverConfig from './config';
 
 // Import routers
 import UserRouter from './api/user.router';
+import MonsterRouter from './api/monster.router';
 
 // MongoDB Connection
 mongoose.connect(serverConfig.mongoURL, (error) => {
@@ -54,6 +55,7 @@ app.use('/api', posts);
 
 // APIs
 app.use(UserRouter);
+app.use(MonsterRouter);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
