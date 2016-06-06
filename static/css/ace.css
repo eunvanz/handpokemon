@@ -1,6 +1,6 @@
 @font-face {
-	font-family: 'Nanum Gothic';
-	src: url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+	font-family: 'Nanum Barun Gothic';
+	src: url(/fonts/NANUMBARUNGOTHICLIGHT.TTF);
 }
 html {
   min-height: 100%;
@@ -10,7 +10,7 @@ body {
   background-color: #e4e6e9;
   min-height: 100%;
   padding-bottom: 0;
-  font-family: 'Nanum Gothic';
+  font-family: 'Nanum Barun Gothic';
   font-size: 13px;
   color: #393939;
   line-height: 1.5;
@@ -2302,7 +2302,7 @@ body.mob-safari .sidebar.sidebar-fixed {
 
 	.sidebar.sidebar-fixed {
 		z-index: @zindex-sidebar-fixed;//???!
-		
+
 		&::before {
 			height: 5000px;
 			top: auto;
@@ -4955,7 +4955,7 @@ body.mob-safari .sidebar.sidebar-fixed {
 	right: auto !important;
 	top: auto !important;
 	width: auto !important;
-	
+
 	+ .page-content {
 		padding-top: @page-content-padding-top;
 	}
@@ -11882,13 +11882,13 @@ td .lbl:only-child {
 .progress:before {
   display: inline-block;
   content: "";
-  
+
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
- 
+
   background: radial-gradient(9px 9px 0deg, circle cover, aqua 0%, rgba(0, 0, 255, 0) 100%, blue 95%);
 }
 */
@@ -14639,32 +14639,32 @@ div.ColVis_collectionBackground {
 	.fc {
 		position:relative;
 		top:-40px;
-		
+
 		> .fc-header {
 			position:relative;
 			z-index:10;
 		}
-		
+
 		.fc-header-space {
 			padding-left:2px;
 		}
 	}
-	
+
 	.fc-header-title > h2 {
 		font-size: floor(@base-font-size * 1.4);
 		line-height: 36px;
 	}
-	
+
 	.fc-content {
 		top:-14px;
 		z-index:11;
 	}
-	
+
 	.fc-button-content {
 		height:37px;
 		line-height:36px;
 	}
-	
+
 }
 */
 @media only screen and (max-width: 480px) {
@@ -19889,7 +19889,7 @@ input.typeahead.scrollable ~ .tt-dropdown-menu {
     /**
 	background: transparent none !important;
 	border-bottom: 1px solid #DDD;
-	
+
 	.navbar-brand {
 		color: @text-color !important;
 	}

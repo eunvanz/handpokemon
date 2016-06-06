@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 class SideBar extends React.Component {
   constructor(props) {
@@ -7,40 +8,58 @@ class SideBar extends React.Component {
   }
   render() {
     return (
-      <div>
-        <ul className="nav nav-list nav-list-vivid">
-          <li className="nav-header">이웅희 님, 안녕?</li>
+      <div id="sidebar" className="sidebar responsive sidebar-fixed">
+        <ul className="nav nav-list">
           <li>
-            <a href="#">내 정보 수정</a>
+            <Link to="/">
+              <i className="menu-icon fa fa-home"></i>
+              <span className="menu-text"> 홈 </span>
+            </Link>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">설정</a>
+            <Link to="/">
+              <i className="menu-icon fa fa-book"></i>
+              <span className="menu-text"> 게임 가이드 </span>
+            </Link>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">로그인</a>
+            <Link to="/">
+              <i className="menu-icon fa fa-github-alt"></i>
+              <span className="menu-text"> 내 콜렉션 </span>
+            </Link>
+            <b className="arrow"></b>
           </li>
           <li>
-            <a href="#">회원가입</a>
+            <Link to="" className="dropdown-toggle">
+              <i className="menu-icon fa fa-certificate"></i>
+              <span className="menu-text"> 업적과 칭호 </span>
+              <b className="arrow fa fa-angle-down"></b>
+            </Link>
+            <ul className="submenu">
+              <li>
+                <Link to="/">
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 업적달성 현황 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li>
+                <Link to="/">
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 칭호 설정 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+            </ul>
           </li>
           <li>
-            <a href="#">내 콜렉션</a>
-          </li>
-          <li>
-            <a href="#">
-              채집하기
-              <span className="badge pull-right">10</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              포켓몬시합
-              <span className="badge pull-right">10</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              커뮤니티
-            </a>
+            <Link to="/mon-list">
+              <i className="menu-icon fa fa-github-alt"></i>
+              <span className="menu-text"> 포켓몬 리스트 </span>
+            </Link>
+            <b className="arrow"></b>
           </li>
         </ul>
       </div>

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Header from '../components/Header/Header';
-import MainContaner from './MainContainer/MainContainer';
+import SideBar from '../components/SideBar/SideBar';
 
 class App extends Component {
   constructor(props, context) {
@@ -12,8 +12,14 @@ class App extends Component {
     return (
       <div>
         <Header/>
-        <MainContaner/>
-          { this.props.children }
+        <div className="main-container container" id="main-container">
+          <SideBar />
+          <div className="main-content">
+            <div className="main-content-inner">
+              {this.props.children}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

@@ -4,93 +4,90 @@ import fetch from 'isomorphic-fetch';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
-export function addPost(post) {
+export function getBaseMons(baseMons) {
   return {
-    type: ActionTypes.ADD_POST,
-    name: post.name,
-    title: post.title,
-    content: post.content,
-    slug: post.slug,
-    cuid: post.cuid,
-    _id: post._id,
+    type: ActionTypes.GET_BASE_MONS,
+    baseMons,
   };
 }
 
-export function changeSelectedPost(slug) {
+export function getAllMons(allMons) {
   return {
-    type: ActionTypes.CHANGE_SELECTED_POST,
-    slug,
+    type: ActionTypes.GET_ALL_MONS,
+    allMons,
   };
 }
 
-export function addPostRequest(post) {
+export function getOneMon(mon) {
+  return {
+    type: ActionTypes.GET_ONE_MON,
+    mon,
+  };
+}
+
+export function resetMon() {
+  return {
+    type: ActionTypes.RESET_MON,
+    mon: null,
+  };
+}
+
+export function getBasicPickMons(pickedMons) {
+  return {
+    type: ActionTypes.GET_BASIC_PICK_MONS,
+    pickedMons,
+  };
+}
+
+export function fetchAllMons() {
   return (dispatch) => {
-    fetch(`${baseURL}/api/addPost`, {
-      method: 'post',
-      body: JSON.stringify({
-        post: {
-          name: post.name,
-          title: post.title,
-          content: post.content,
-        },
-      }),
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-    }).then((res) => res.json()).then(res => dispatch(addPost(res.post)));
+    return fetch(`${baseURL}/api/monsters/all`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getAllMons(response.allMons)));
   };
 }
 
-export function addSelectedPost(post) {
-  return {
-    type: ActionTypes.ADD_SELECTED_POST,
-    post,
-  };
-}
-
-export function getPostRequest(post) {
+export function fetchBaseMons() {
   return (dispatch) => {
-    return fetch(`${baseURL}/api/getPost?slug=${post}`, {
-      method: 'get',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-    }).then((response) => response.json()).then(res => dispatch(addSelectedPost(res.post)));
+    return fetch(`${baseURL}/api/monsters/base-type`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getBaseMons(response.baseMons)));
   };
 }
 
-export function deletePost(post) {
-  return {
-    type: ActionTypes.DELETE_POST,
-    post,
-  };
-}
-
-export function addPosts(posts) {
-  return {
-    type: ActionTypes.ADD_POSTS,
-    posts,
-  };
-}
-
-export function fetchPosts() {
+export function fetchOneMon(monNo) {
   return (dispatch) => {
-    return fetch(`${baseURL}/api/getPosts`).
-      then((response) => response.json()).
-      then((response) => dispatch(addPosts(response.posts)));
+    return fetch(`${baseURL}/api/monsters/${monNo}`)
+    .then((response) => response.json())
+    .then((response) => {
+      // console.log('action.fetchOneMon : ' + response.mon);
+      dispatch(getOneMon(response.mon));
+    });
   };
 }
 
-export function deletePostRequest(post) {
+export function fetchBasicPickMons() {
   return (dispatch) => {
-    fetch(`${baseURL}/api/deletePost`, {
-      method: 'post',
-      body: JSON.stringify({
-        postId: post._id,
-      }),
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-    }).then(() => dispatch(deletePost(post)));
+    return fetch(`${baseURL}/api/monsters/register-pick`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getBasicPickMons(response.pickedMons)));
+  };
+}
+
+export function getLoginModalStatus() {
+  return {
+    type: ActionTypes.GET_LOGIN_MODAL_STATUS,
+  };
+}
+
+export function showLoginModal() {
+  return {
+    type: ActionTypes.SHOW_LOGIN_MODAL,
+  };
+}
+
+export function hideLoginModal() {
+  return {
+    type: ActionTypes.HIDE_LOGIN_MODAL,
   };
 }

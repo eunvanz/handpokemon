@@ -49,6 +49,16 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../static')));
 app.use('/api', posts);
 
+// Import API routers
+import UserRouter from './api/user.router';
+import MonsterRouter from './api/monster.router';
+import CollectionRouter from './api/collection.router';
+
+// APIs
+app.use(UserRouter);
+app.use(MonsterRouter);
+app.use(CollectionRouter);
+
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
   // const cssPath = process.env.NODE_ENV === 'production' ? '/css/flat-ui-pro.css' : '/css/flat-ui-pro.css';
@@ -60,11 +70,20 @@ const renderFullPage = (html, initialState) => {
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>MERN Starter - Blog App</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-        <link href="/css/vendor/bootstrap.min.css" rel="stylesheet"/>
-        <link href="/css/font-awesome.css" rel="stylesheet"/>
-        <link href="/css/ace-fonts.css" rel="stylesheet"/>
-        <link href="/css/ace.css" rel="stylesheet" class="ace-main-stylesheet" id="main-ace-style"/>
+        <!-- bootstrap & fontawesome -->
+        <link rel="stylesheet" href="/css/bootstrap.css" />
+        <link rel="stylesheet" href="/css/font-awesome.css" />
+
+        <!-- page specific plugin styles -->
+        <link rel="stylesheet" href="/css/select2.css" />
+
+        <!-- text fonts -->
+        <link rel="stylesheet" href="/css/ace-fonts.css" />
+
+        <!-- ace styles -->
+        <link rel="stylesheet" href="/css/ace.css"
+          class="ace-main-stylesheet" id="main-ace-style" />
+
         <link rel="stylesheet" href="/css/demo.css" />
         <link rel="stylesheet" href="/css/pokemon.css" />
 
@@ -74,11 +93,9 @@ const renderFullPage = (html, initialState) => {
         <link rel="stylesheet" href="/css/jquery-ui.custom.css" />
 
         <!-- captcha -->
-        <link rel="stylesheet" type="text/css" href="/css/jquery.realperson.css"/>
+        <link rel="stylesheet" type="text/css" href="/css/jquery.realperson.css">
         <link rel="shortcut icon" href="http://res.cloudinary.com/hashnode/image/upload/v1455629445/static_imgs/mern/mern-favicon-circle-fill.png" type="image/png" />
-      </head>
-      <body class="no-skin">
-        <div id="root">${html}</div>
+
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
@@ -127,8 +144,13 @@ const renderFullPage = (html, initialState) => {
         <!-- 공통 -->
         <script src="/js/view-collection.js"></script>
         <script src="/js/loading.js"></script>
-        <script src="/dist/bundle.js"></script>
+
+      </head>
+      <body class="no-skin">
+        <div id="root">${html}</div>
       </body>
+
+      <script src="/dist/bundle.js"></script>
     </html>
   `;
 };
@@ -155,7 +177,7 @@ app.use((req, res, next) => {
       return next();
     }
 
-    const initialState = { posts: [], post: {} };
+    const initialState = {};
 
     const store = configureStore(initialState);
 

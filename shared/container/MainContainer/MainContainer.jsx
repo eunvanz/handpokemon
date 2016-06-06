@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import SideBar from '../../components/SideBar/SideBar';
 
 class MainContainer extends React.Component {
   constructor(props) {
@@ -8,8 +8,13 @@ class MainContainer extends React.Component {
   }
   render() {
     return (
-      <div>
-        <Button bsStyle="primary">Primary</Button>
+      <div className="main-container container" id="main-container">
+        <SideBar />
+        <div className="main-content">
+          <div className="main-content-inner">
+            {this.props.children}
+          </div>
+        </div>
       </div>
     );
   }

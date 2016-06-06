@@ -37,7 +37,9 @@
     "history": "^1.17.0",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^2.2.3",
+    "lodash": "^4.11.2",
     "mongoose": "^4.3.7",
+    "multer": "^1.1.0",
     "react": "^15.0.1",
     "react-bootstrap": "^0.29.3",
     "react-dom": "^15.0.1",
@@ -46,7 +48,8 @@
     "redux": "^3.5.2",
     "redux-thunk": "^1.0.3",
     "sanitize-html": "^1.11.3",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "superagent": "^2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^5.0.0-beta6",

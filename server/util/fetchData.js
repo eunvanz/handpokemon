@@ -7,6 +7,6 @@ export function fetchComponentData(store, components, params) {
       .concat((current.WrappedComponent && (current.WrappedComponent.need !== current.need) ? current.WrappedComponent.need : []) || [])
       .concat(prev);
   }, []);
-
+  // console.log("store.dispatch(need(params, store.getState())) : " + store.dispatch(needs.shift()(params, store.getState())));
   return sequence(needs, need => store.dispatch(need(params, store.getState())));
 }
