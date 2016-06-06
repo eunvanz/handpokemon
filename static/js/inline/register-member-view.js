@@ -5,116 +5,11 @@ jQuery(function($) {
       $('#post-pick').toggle();
       $('#pre-pick').toggle();
     });
-  
-  $('#register-member-view #repick').click(function() {
-    $.ajax({
-      url : "main.do?action=repick",
-      contentType : "application/json;charset=utf-8",
-      dataType : "json",
-      type : "post",
-      success : refreshMonsters
-    });
-  });
 
   $("#register-member-view .flip-btn").click(function() {
     $(".front").toggle();
     $(".back").toggle();
   });
-
-  function refreshMonsters(data) {
-    var cnt = 1;
-    for ( var i in data) {
-      var imgName = "#pick" + cnt;
-      var idName = "#pickId" + cnt;
-      var costName = "#pickCost" + cnt;
-      var labelName = "#pickLabel" + cnt;
-      var modalName = "#monster-modal" + cnt;
-      $(imgName).attr("src", "assets/images/monsters/" + data[i].img);
-      $(idName).val(data[i].id);
-      var costHtml;
-      if (data[i].cost == 1) {
-        costHtml = '<i class="fa fa-star fa-2"></i>';
-      } else if (data[i].cost == 2) {
-        costHtml = '<i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i>';
-      } else if (data[i].cost == 3) {
-        costHtml = '<i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i>';
-      } else if (data[i].cost == 4) {
-        costHtml = '<i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i>';
-      } else if (data[i].cost == 5) {
-        costHtml = '<i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i><i class="fa fa-star fa-2"></i>';
-      }
-      var gradeHtml = '<span class="label label-sm label-yellow arrowed-right" >BASIC</span>';
-      var attrHtml;
-      if (data[i].attr == "노말") {
-        attrHtml = '<span class="label label-sm label-grey arrowed-in" style="margin-left: 1px;">노말</span>'
-      } else if (data[i].attr == "불꽃") {
-        attrHtml = '<span class="label label-sm label-danger arrowed-in" style="margin-left: 1px;">불꽃</span>';
-      } else if (data[i].attr == "물") {
-        attrHtml = '<span class="label label-sm label-primary arrowed-in" style="margin-left: 1px;">물</span>';
-      } else if (data[i].attr == "전기") {
-        attrHtml = '<span class="label label-sm label-warning arrowed-in" style="margin-left: 1px;">전기</span>';
-      } else if (data[i].attr == "풀") {
-        attrHtml = '<span class="label label-sm label-success arrowed-in" style="margin-left: 1px;">풀</span>';
-      } else if (data[i].attr == "얼음") {
-        attrHtml = '<span class="label label-sm label-info arrowed-in" style="margin-left: 1px;">얼음</span>';
-      } else if (data[i].attr == "비행") {
-        attrHtml = '<span class="label label-sm label-light arrowed-in" style="margin-left: 1px;">비행</span>';
-      } else if (data[i].attr == "요정") {
-        attrHtml = '<span class="label label-sm label-pink arrowed-in" style="margin-left: 1px;">요정</span>';
-      } else if (data[i].attr == "땅") {
-        attrHtml = '<span class="label label-sm label-inverse arrowed-in" style="margin-left: 1px;">땅</span>';
-      } else if (data[i].attr == "독") {
-        attrHtml = '<span class="label label-sm label-purple arrowed-in" style="margin-left: 1px;">독</span>';
-      } else if (data[i].attr == '격투') {
-        resultHtml += '<span class="label label-sm label-fighter arrowed-in" style="margin-left: 1px;">격투</span>'
-      } else if (data[i].attr == '염력') {
-        resultHtml += '<span class="label label-sm label-esper arrowed-in" style="margin-left: 1px;">염력</span>'
-      } else if (data[i].attr == '벌레') {
-        resultHtml += '<span class="label label-sm label-bug arrowed-in" style="margin-left: 1px;">벌레</span>'
-      } else if (data[i].attr == '바위') {
-        resultHtml += '<span class="label label-sm label-rock arrowed-in" style="margin-left: 1px;">바위</span>'
-      } else if (data[i].attr == '유령') {
-        resultHtml += '<span class="label label-sm label-ghost arrowed-in" style="margin-left: 1px;">유령</span>'
-      } else if (data[i].attr == '용') {
-        resultHtml += '<span class="label label-sm label-dragon arrowed-in" style="margin-left: 1px;">용</span>'
-      } else if (data[i].attr == '악') {
-        resultHtml += '<span class="label label-sm label-evil arrowed-in" style="margin-left: 1px;">악</span>'
-      } else if (data[i].attr == '강철') {
-        resultHtml += '<span class="label label-sm label-iron arrowed-in" style="margin-left: 1px;">강철</span>'
-      }
-      var labelHtml = gradeHtml + attrHtml;
-      $(costName).html(costHtml);
-      $(labelName).html(labelHtml);
-
-      var nameHtml = "<big>" + data[i].name + "</big>";
-      $(modalName + " .monster-name").html(nameHtml);
-      $(modalName + " .monster-grade").html(gradeHtml);
-      $(modalName + " .monster-attribute").html(attrHtml);
-      $(modalName + " .monster-cost").html(costHtml);
-      $(modalName + " .monster-description")
-          .html(data[i].description);
-      $(modalName + " .monster-image").attr("src",
-          "assets/images/monsters/" + data[i].img);
-      $(modalName + " .monster-hp-bar").attr("style",
-          "width:" + (data[i].hp / 200 * 100) + "%;");
-      $(modalName + " .monster-power-bar").attr("style",
-          "width:" + (data[i].power / 200 * 100) + "%;");
-      $(modalName + " .monster-armor-bar").attr("style",
-          "width:" + (data[i].armor / 200 * 100) + "%;");
-      $(modalName + " .monster-dex-bar").attr("style",
-          "width:" + (data[i].dex / 200 * 100) + "%;");
-      $(modalName + " .monster-skill1-bar").attr("style",
-          "width:" + (data[i].skill1Power / 200 * 100) + "%;");
-      $(modalName + " .monster-hp").html(data[i].hp);
-      $(modalName + " .monster-power").html(data[i].power);
-      $(modalName + " .monster-armor").html(data[i].armor);
-      $(modalName + " .monster-dex").html(data[i].dex);
-      $(modalName + " .monster-skill1-power").html(
-          data[i].skill1Power);
-      $(modalName + " .monster-skills").html(data[i].skill1Name);
-      cnt++;
-    }
-  }
 
   $('#register-member-view #id-input-file-3').ace_file_input({
     no_file:'프로필 이미지가 없습니다.',
@@ -212,13 +107,13 @@ jQuery(function($) {
         //we can only reset file field to become empty again
         //on any case you still should check files with your server side script
         //because any arbitrary file can be uploaded by user and it's not safe to rely on browser-side measures
-      }); 
+      });
 
   var $validation = true;
   var submitMode = false;
-  $('#register-member-view #submit-btn').click(function() {
-    $('#register-member-view #validation-form').submit();
-  });
+  // $('#register-member-view #submit-btn').click(function() {
+  //   $('#register-member-view #validation-form').submit();
+  // });
 
   $('#register-member-view #fuelux-wizard-container').wizard({
   //step: 2 //optional argument. wizard will jump to step "2" at first
@@ -284,7 +179,7 @@ jQuery(function($) {
                 email : true,
                 remote : {
                   // email duplication check code
-                  url : 'user-email-check',
+                  url : 'api/user-email-check',
                   method : 'GET',
                   data : {
                     email : function() {
@@ -294,7 +189,6 @@ jQuery(function($) {
                   },
                   dataType : "json",
                   dataFilter : function(user) {
-                    console.log('user: ' + user);
                     if (user == 'null') {
                       return true;
                     } else {
@@ -319,7 +213,7 @@ jQuery(function($) {
                 required : true,
                 maxlength : 8,
                 remote : {
-                  url : "user-nickname-check",
+                  url : "api/user-nickname-check",
                   method : "GET",
                   data : {
                     nickname : function() {

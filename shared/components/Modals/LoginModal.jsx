@@ -6,7 +6,7 @@ class LoginModal extends React.Component {
     super(props);
     this.displayName = 'LoginModal';
     this.state = {
-      showModal: false,
+      showModal: this.props.show,
     };
   }
   componentWillReceiveProps(nextProps) {

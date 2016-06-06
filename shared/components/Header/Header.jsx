@@ -1,6 +1,8 @@
-import React from 'react';
-import LoginModal from '../LoginModal/LoginModal';
+import React, { PropTypes } from 'react';
+import LoginModal from '../Modals/LoginModal';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
+import * as Actions from '../../redux/actions/actions';
 
 const style = {
   navbarBrand: {
@@ -15,18 +17,15 @@ class Header extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'Header';
-    this.state = {
-      showLoginModal: false,
-    };
     this._showLoginModal = this._showLoginModal.bind(this);
     this._hideLoginModal = this._hideLoginModal.bind(this);
   }
   _showLoginModal(e) {
     e.preventDefault();
-    this.setState({ showLoginModal: true });
+    this.props.dispatch(Actions.showLoginModal());
   }
   _hideLoginModal() {
-    this.setState({ showLoginModal: false });
+    this.props.dispatch(Actions.hideLoginModal());
   }
   render() {
     return (
@@ -55,11 +54,31 @@ class Header extends React.Component {
               </li>
             </ul>
           </div>
-        <LoginModal show={this.state.showLoginModal} close={this._hideLoginModal}/>
+        <LoginModal show={this.props.showLoginModal} close={this._hideLoginModal}/>
         </div>
       </div>
     );
   }
 }
 
-export default Header;
+Header.need = [
+  () => { return Actions.getLoginModalStatus(); },
+  () => { return Actions.showLoginModal(); },
+  () => { return Actions.hideLoginModal(); },
+];
+Header.contextTypes = {
+  router: React.PropTypes.object,
+};
+
+function mapStateToProps(store) {
+  return {
+    showLoginModal: store.showLoginModal,
+  };
+}
+
+Header.propTypes = {
+  showLoginModal: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps)(Header);

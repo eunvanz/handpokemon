@@ -21,6 +21,7 @@ const monsterSchema = new Schema({
   regDate: { type: Date, default: Date.now, required: true },
   designer: { type: [String], required: true },
   requiredPiece: { type: Number },
+  point: { type: Number },
 });
 
 export default mongoose.model('Monster', monsterSchema);

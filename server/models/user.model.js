@@ -15,7 +15,7 @@ const userSchema = new Schema({
   lastGameTime: { type: Number, default: 0, required: true },
   getInterval: { type: Number, default: (10 * 60 * 1000), required: true },
   battleInterval: { type: Number, default: (10 * 60 * 1000), required: true },
-  lastLogin: { type: Number, required: true },
+  lastLogin: { type: Number, default: Date.now, required: true },
   regDate: { type: Date, default: Date.now },
   totalBattle: { type: Number, default: 0, required: true },
   winBattle: { type: Number, default: 0, required: true },

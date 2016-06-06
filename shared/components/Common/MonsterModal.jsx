@@ -20,7 +20,7 @@ class MonsterModal extends React.Component {
     $('.modal .back').toggle();
   }
   render() {
-    const getSelectImgComponent = () => {
+    const renderSelectImgComponent = () => {
       const imgArr = this.props.monster.img;
       let returnComponent = [];
       let idx = 0;
@@ -31,10 +31,10 @@ class MonsterModal extends React.Component {
         );
       }
     };
-    const getLevelComponent = () => {
+    const renderLevelComponent = () => {
       const level = this.props.monster.level;
       const piece = this.props.monster.piece;
-      const requiredPiece = this.props.monster.requiredLevel;
+      const requiredPiece = this.props.monster.requiredPiece;
       let returnComponent = [];
       if (piece !== null) {
         returnComponent.push(<p><span className="badge badge-success">{piece} 개의 조각 보유</span></p>);
@@ -42,12 +42,12 @@ class MonsterModal extends React.Component {
       if (level !== null) {
         returnComponent.push(<p><span className="label label-info arrowed-in-right">{level}</span></p>);
       }
-      if (requiredLevel !== null) {
-        returnComponent.push(<p><span className="label label-default arrowed-in-right">{requiredLevel}</span> 에 진화</p>);
+      if (requiredPiece !== null) {
+        returnComponent.push(<p><span className="label label-default arrowed-in-right">{requiredPiece}</span> 에 진화</p>);
       }
       return returnComponent;
     };
-    const getGradeComponent = () => {
+    const renderGradeComponent = () => {
       const grade = this.props.monster.grade;
       let gradeLabel = null;
       if (grade === 'b') {
@@ -65,48 +65,50 @@ class MonsterModal extends React.Component {
       }
       return gradeLabel;
     };
-    const getAttrComponent = () => {
+    const renderAttrComponent = () => {
       const mainAttr = this.props.monster.mainAttr;
       const subAttr = this.props.monster.subAttr;
       let mainAttrLabel = null;
       let subAttrLabel = null;
       let resultComponent = [];
+      const endLabel = 'arrowed-in';
+      const continueLabel = 'arrowed-in arrowed-right';
       if (mainAttr === '노말') {
-        mainAttrLabel = <span className="label label-sm label-grey arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-grey " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '불꽃') {
-        mainAttrLabel = <span className="label label-sm label-danger arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-danger " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '물') {
-        mainAttrLabel = <span className="label label-sm label-primary arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-primary " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '전기') {
-        mainAttrLabel = <span className="label label-sm label-warning arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-warning " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '풀') {
-        mainAttrLabel = <span className="label label-sm label-success arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-success " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '얼음') {
-        mainAttrLabel = <span className="label label-sm label-info arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-info " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '비행') {
-        mainAttrLabel = <span className="label label-sm label-light arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-light " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '요정') {
-        mainAttrLabel = <span className="label label-sm label-pink arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-pink " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '땅') {
-        mainAttrLabel = <span className="label label-sm label-inverse arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-inverse " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '독') {
-        mainAttrLabel = <span className="label label-sm label-purple arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-purple " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '격투') {
-        mainAttrLabel = <span className="label label-sm label-fighter arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-fighter " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '염력') {
-        mainAttrLabel = <span className="label label-sm label-esper arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-esper " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '벌레') {
-        mainAttrLabel = <span className="label label-sm label-bug arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-bug " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '바위') {
-        mainAttrLabel = <span className="label label-sm label-rock arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-rock " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '유령') {
-        mainAttrLabel = <span className="label label-sm label-ghost arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-ghost " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '용') {
-        mainAttrLabel = <span className="label label-sm label-dragon arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-dragon " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '악') {
-        mainAttrLabel = <span className="label label-sm label-evil arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-evil " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       } else if (mainAttr === '강철') {
-        mainAttrLabel = <span className="label label-sm label-iron arrowed-in arrowed-right" style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="2" className={"label label-sm label-iron " + (subAttr !== '없음' ? continueLabel : endLabel)} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
       }
       if (subAttr === '노말') {
         subAttrLabel = <span className="label label-sm label-grey arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
@@ -145,22 +147,23 @@ class MonsterModal extends React.Component {
       } else if (subAttr === '강철') {
         subAttrLabel = <span className="label label-sm label-iron arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
       }
-      resultComponent.push(mainAttr, subAttr);
+      resultComponent.push(mainAttrLabel, subAttrLabel);
       return resultComponent;
     };
-    const getCostComponent = () => {
+    const renderCostComponent = () => {
       let resultComponent = [];
       const cost = this.props.monster.cost;
       let fullStar = null;
       let emptyStar = null;
-      if (cost <= 5) {
-        fullStar = <i className="fa fa-star fa-2"></i>;
-        emptyStar = <i className="fa fa-star-o fa-2"></i>;
-      } else {
-        fullStar = <i className="fa fa-star fa-2 text-gold"></i>;
-        emptyStar = <i className="fa fa-star fa-2"></i>;
-      }
+      let key = 0;
       for (let i = 0; i < 5; i++) {
+        if (cost <= 5) {
+          fullStar = <i key={key++} className="fa fa-star fa-2"></i>;
+          emptyStar = <i key={key++} className="fa fa-star-o fa-2"></i>;
+        } else {
+          fullStar = <i key={key++} className="fa fa-star fa-2 text-gold"></i>;
+          emptyStar = <i key={key++} className="fa fa-star fa-2"></i>;
+        }
         if (i < cost % 5) {
           resultComponent.push(fullStar);
         } else {
@@ -169,7 +172,7 @@ class MonsterModal extends React.Component {
       }
       return resultComponent;
     };
-    const getImgComponent = () => {
+    const renderImgComponent = () => {
       let returnComponent = [];
       returnComponent.push(
           <p>
@@ -180,11 +183,11 @@ class MonsterModal extends React.Component {
             />
           </p>
         );
-      returnComponent.concat(<p>{getSelectImgComponent()}</p>);
-      returnComponent.concat(getLevelComponent());
+      returnComponent.concat(<p>{renderSelectImgComponent()}</p>);
+      returnComponent.concat(renderLevelComponent());
       return returnComponent;
     };
-    const getStatBarComponent = (honorStat, initStat, stat) => {
+    const renderStatBarComponent = (honorStat, initStat, stat) => {
       let returnComponent = [];
       let honorStatPct = 0;
       let statPct = 0;
@@ -260,7 +263,7 @@ class MonsterModal extends React.Component {
       }
       return returnComponent;
     };
-    const getStatBadgeComponent = (honorStat, initStat, stat) => {
+    const renderStatBadgeComponent = (honorStat, initStat, stat) => {
       let returnComponent = [];
       if (honorStat > 0) {
         returnComponent.push(<span className="badge badge-success">+{honorStat}</span>);
@@ -272,32 +275,41 @@ class MonsterModal extends React.Component {
       }
       return returnComponent;
     };
-    const getStatComponent = () => {
+    const renderGetDateComponent = () => {
+      if (this.props.monster.getDate) {
+        return (
+          <small>
+          (<span className="text-info">{this.props.monster.getDate }</span> 발견)
+          </small>
+        );
+      }
+    };
+    const renderStatComponent = () => {
       let returnComponent = [];
 
-      const honorHp = this.props.monster.honorHp;
-      const initHp = this.props.monster.initHp;
-      const hp = this.props.monster.hp;
+      const honorHp = Number(this.props.monster.honorHp);
+      const initHp = Number(this.props.monster.initHp);
+      const hp = Number(this.props.monster.hp);
 
-      const honorPower = this.props.monster.honorPower;
-      const initPower = this.props.monster.initPower;
-      const power = this.props.monster.power;
+      const honorPower = Number(this.props.monster.honorPower);
+      const initPower = Number(this.props.monster.initPower);
+      const power = Number(this.props.monster.power);
 
-      const honorArmor = this.props.monster.honorArmor;
-      const initArmor = this.props.monster.initArmor;
-      const armor = this.props.monster.armor;
+      const honorArmor = Number(this.props.monster.honorArmor);
+      const initArmor = Number(this.props.monster.initArmor);
+      const armor = Number(this.props.monster.armor);
 
-      const honorSpecialPower = this.props.monster.honorSpecialPower;
-      const initSpecialPower = this.props.monster.initSpecialPower;
-      const specialPower = this.props.monster.specialPower;
+      const honorSpecialPower = Number(this.props.monster.honorSpecialPower);
+      const initSpecialPower = Number(this.props.monster.initSpecialPower);
+      const specialPower = Number(this.props.monster.specialPower);
 
-      const honorSpecialArmor = this.props.monster.honorSpecialArmor;
-      const initSpecialArmor = this.props.monster.initSpecialArmor;
-      const specialArmor = this.props.monster.specialArmor;
+      const honorSpecialArmor = Number(this.props.monster.honorSpecialArmor);
+      const initSpecialArmor = Number(this.props.monster.initSpecialArmor);
+      const specialArmor = Number(this.props.monster.specialArmor);
 
-      const honorDex = this.props.monster.honorDex;
-      const initDex = this.props.monster.initDex;
-      const dex = this.props.monster.dex;
+      const honorDex = Number(this.props.monster.honorDex);
+      const initDex = Number(this.props.monster.initDex);
+      const dex = Number(this.props.monster.dex);
 
       returnComponent.push(
           <div>
@@ -309,12 +321,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorHp, initHp, hp)}
+                  {renderStatBarComponent(honorHp, initHp, hp)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {hp + honorHp}
-                {getStatBadgeComponent(honorHp, initHp, hp)}
+                {isNaN(honorHp) ? hp : hp + honorHp}
+                {renderStatBadgeComponent(honorHp, initHp, hp)}
               </div>
             </div>
             <div className="row">
@@ -325,12 +337,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorPower, initPower, power)}
+                  {renderStatBarComponent(honorPower, initPower, power)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {power + honorPower}
-                {getStatBadgeComponent(honorPower, initPower, power)}
+                {isNaN(honorPower) ? power : power + honorPower}
+                {renderStatBadgeComponent(honorPower, initPower, power)}
               </div>
             </div>
             <div className="row">
@@ -341,12 +353,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorArmor, initArmor, armor)}
+                  {renderStatBarComponent(honorArmor, initArmor, armor)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {armor + honorArmor}
-                {getStatBadgeComponent(honorArmor, initArmor, armor)}
+                {isNaN(honorArmor) ? armor : armor + honorArmor}
+                {renderStatBadgeComponent(honorArmor, initArmor, armor)}
               </div>
             </div>
             <div className="row">
@@ -357,12 +369,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorSpecialPower, initSpecialPower, specialPower)}
+                  {renderStatBarComponent(honorSpecialPower, initSpecialPower, specialPower)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {specialPower + honorSpecialPower}
-                {getStatBadgeComponent(honorSpecialPower, initSpecialPower, specialPower)}
+                {isNaN(honorSpecialPower) ? specialPower : specialPower + honorSpecialPower}
+                {renderStatBadgeComponent(honorSpecialPower, initSpecialPower, specialPower)}
               </div>
             </div>
             <div className="row">
@@ -373,12 +385,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
+                  {renderStatBarComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {specialArmor + honorSpecialArmor}
-                {getStatBadgeComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
+                {isNaN(honorSpecialArmor) ? specialArmor : specialArmor + honorSpecialArmor}
+                {renderStatBadgeComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
               </div>
             </div>
             <div className="row">
@@ -389,12 +401,12 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-5 thin-padding">
                 <div className="progress progress-striped active">
-                  {getStatBarComponent(honorDex, initDex, dex)}
+                  {renderStatBarComponent(honorDex, initDex, dex)}
                 </div>
               </div>
               <div className="col-xs-5 monster-hp thin-padding">
-                {dex + honorDex}
-                {getStatBadgeComponent(honorDex, initDex, dex)}
+                {isNaN(honorDex) ? dex : dex + honorDex}
+                {renderStatBadgeComponent(honorDex, initDex, dex)}
               </div>
             </div>
             <div className="row">
@@ -415,7 +427,13 @@ class MonsterModal extends React.Component {
               </div>
               <div className="col-xs-9 monster-skills thin-padding">
                 <span className="badge badge-inverse">
-                  {hp + power + armor + dex + specialPower + specialArmor + honorHp + honorPower + honorArmor + honorDex + honorSpecialPower + honorSpecialArmor}
+                  {hp + power + armor + dex + specialPower + specialArmor +
+                    (isNaN(honorHp) ? 0 : honorHp) +
+                    (isNaN(honorPower) ? 0 : honorPower) +
+                    (isNaN(honorArmor) ? 0 : honorArmor) +
+                    (isNaN(honorDex) ? 0 : honorDex) +
+                    (isNaN(honorSpecialPower) ? 0 : honorSpecialPower) +
+                    (isNaN(honorSpecialArmor) ? 0 : honorSpecialArmor)}
                 </span>
               </div>
             </div>
@@ -423,13 +441,13 @@ class MonsterModal extends React.Component {
         );
       return returnComponent;
     };
-    const getBodyComponent = () => {
+    const renderBodyComponent = () => {
       return (
         <div>
           <div className="modal-body front">
             <div className="row">
               <div className="col-sm-4 col-xs-12 align-center">
-                {getImgComponent()}
+                {renderImgComponent()}
               </div>
               <div className="col-sm-8 col-xs-12 align-left">
                 <div className="row">
@@ -441,9 +459,7 @@ class MonsterModal extends React.Component {
                   <div className="col-xs-9">
                     <p className="monster-name">
                       <big>{this.props.monster.name}</big>
-                      <small>
-                        (<span className="text-info">{this.props.monster.getDate }</span> 발견)
-                      </small>
+                      {renderGetDateComponent()}
                     </p>
                   </div>
                 </div>
@@ -455,8 +471,8 @@ class MonsterModal extends React.Component {
                   </div>
                   <div className="col-xs-9">
                     <p className="monster-grade">
-                      {getGradeComponent()}
-                      (<span className="badge badge-warning">+{this.props.monster.colPoint}</span> 콜렉션 점수)
+                      {renderGradeComponent()}
+                      (<span className="badge badge-warning">+{this.props.monster.point}</span> 콜렉션 점수)
                     </p>
                   </div>
                 </div>
@@ -468,7 +484,7 @@ class MonsterModal extends React.Component {
                   </div>
                   <div className="col-xs-9">
                     <p className="monster-attribute">
-                      {getAttrComponent()}
+                      {renderAttrComponent()}
                     </p>
                   </div>
                 </div>
@@ -480,7 +496,7 @@ class MonsterModal extends React.Component {
                   </div>
                   <div className="col-xs-9">
                     <p className="monster-cost">
-                      {getCostComponent()}
+                      {renderCostComponent()}
                     </p>
                   </div>
                 </div>
@@ -497,30 +513,36 @@ class MonsterModal extends React.Component {
           <div className="modal-body back">
             <div className="row">
               <div className="col-sm-4 col-xs-12 align-center">
-                {getImgComponent()}
+                {renderImgComponent()}
               </div>
               <div className="col-sm-8 col-xs-12 align-left">
-                {getStatComponent()}
+                {renderStatComponent()}
               </div>
             </div>
           </div>
         </div>
       );
     };
-    const getFooterComponent = () => {
+    const renderFooterComponent = () => {
       return (
-        <button className="btn btn-primary flip-btn" onClick={this._flip}>
-          <i className="fa fa-refresh"></i> 뒤집기
-        </button>
+        <div>
+          <button className="btn btn-default flip-btn" onClick={this.props.close}>
+            닫기
+          </button>
+          <button className="btn btn-primary flip-btn" onClick={this._flip}>
+            <i className="fa fa-refresh"></i> 뒤집기
+          </button>
+        </div>
       );
     };
     return (
       <div>
         <CustomModal show={this.state.showModal}
           title="포켓몬 정보"
-          bodyComponent={getBodyComponent()}
-          footerComponent={getFooterComponent()}
+          bodyComponent={renderBodyComponent()}
+          footerComponent={renderFooterComponent()}
           close={this.props.close}
+          width="500"
         />
       </div>
     );

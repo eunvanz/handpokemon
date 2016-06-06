@@ -32,10 +32,6 @@ import posts from './routes/post.routes';
 import dummyData from './dummyData';
 import serverConfig from './config';
 
-// Import routers
-import UserRouter from './api/user.router';
-import MonsterRouter from './api/monster.router';
-
 // MongoDB Connection
 mongoose.connect(serverConfig.mongoURL, (error) => {
   if (error) {
@@ -53,9 +49,15 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
 app.use(Express.static(path.resolve(__dirname, '../static')));
 app.use('/api', posts);
 
+// Import API routers
+import UserRouter from './api/user.router';
+import MonsterRouter from './api/monster.router';
+import CollectionRouter from './api/collection.router';
+
 // APIs
 app.use(UserRouter);
 app.use(MonsterRouter);
+app.use(CollectionRouter);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
@@ -143,15 +145,6 @@ const renderFullPage = (html, initialState) => {
         <script src="/js/view-collection.js"></script>
         <script src="/js/loading.js"></script>
 
-        <!-- 회원가입 -->
-        <script src="/js/jquery.inputlimiter.1.3.1.js"></script>
-        <script src="/js/fuelux/fuelux.wizard.js"></script>
-        <script src="/js/jquery.validate.js"></script>
-        <script src="/js/additional-methods.js"></script>
-        <script src="/js/bootbox.js"></script>
-        <script src="/js/jquery.maskedinput.js"></script>
-        <script src="/js/inline/register-member-view.js"></script>
-
       </head>
       <body class="no-skin">
         <div id="root">${html}</div>
@@ -184,7 +177,7 @@ app.use((req, res, next) => {
       return next();
     }
 
-    const initialState = { posts: [], post: {} };
+    const initialState = {};
 
     const store = configureStore(initialState);
 
