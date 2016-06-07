@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
 
 class LoginModal extends React.Component {
@@ -7,10 +7,18 @@ class LoginModal extends React.Component {
     this.displayName = 'LoginModal';
     this.state = {
       showModal: this.props.show,
+      email: '',
+      password: '',
     };
+    this._handleInputChange = this._handleInputChange.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     this.setState({ showModal: nextProps.show });
+  }
+  _handleInputChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
   }
   render() {
     const bodyComponent = () => {
@@ -19,7 +27,7 @@ class LoginModal extends React.Component {
           <label className="block clearfix">
             <span className="block input-icon input-icon-right">
             <input type="text" className="form-control" placeholder="이메일"
-              ref={(email) => this._email = email}
+              name="email" value={this.state.email} onChange={this._handleInputChange}
             />
             <i className="ace-icon fa fa-user"></i>
           </span>
@@ -27,7 +35,7 @@ class LoginModal extends React.Component {
           <label className="block clearfix">
             <span className="block input-icon input-icon-right">
             <input type="password" className="form-control" placeholder="패스워드"
-              ref={(password) => this._password = password}
+              name="password" value={this.state.password} onChange={this._handleInputChange}
             />
             <i className="ace-icon fa fa-lock"></i>
           </span>
@@ -55,10 +63,16 @@ class LoginModal extends React.Component {
           footerComponent={footerComponent()}
           width="300px"
           close={this.props.close}
+          backdrop
         />
       </div>
     );
   }
 }
+
+LoginModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  close: PropTypes.func.isRequired,
+};
 
 export default LoginModal;

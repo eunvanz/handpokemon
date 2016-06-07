@@ -1,78 +1,45 @@
 import { Router } from 'express';
 import Collection from '../models/collection.model';
-import Monster from '../models/monster.model';
 
 const router = new Router();
 
-const _getEvolutePiece = (monNo) => {
-  return new Promise((resolve, reject) => {
-    Monster.findOne({ beforeNo: monNo }, 'requiredPiece').exec((err, mon) => {
-      if (err) reject(new Error(err));
-      return mon.requiredPiece;
-    }).then((requiredPiece) => {
-      resolve(requiredPiece);
-    });
-  });
-};
+// const _getEvolutePiece = (monNo) => {
+//   return new Promise((resolve, reject) => {
+//     let requiredPiece = null;
+//     Monster.findOne({ beforeNo: monNo }, 'requiredPiece').exec((err, mon) => {
+//       if (err) reject(new Error(err));
+//       requiredPiece = mon.requiredPiece;
+//     }).then(() => {
+//       resolve(requiredPiece);
+//     });
+//   });
+// };
 
 router.post('/api/collections/basic-pick/:userId', (req, res) => {
   const pickedMons = req.body.pickedMons;
-  const getCollections = (mons) => {
-    return new Promise((resolve) => {
-      mons.map((mon) => {
-        _getEvolutePiece(mon.monNo)
-        .then((requiredPiece) => {
-          const collection = new Collection({
-            monId: mon._id,
-            userId: req.params.userId,
-            monNo: mon.monNo,
-            email: req.body.email,
-            name: mon.name,
-            hp: mon.hp,
-            power: mon.power,
-            armor: mon.armor,
-            specialPower: mon.specialPower,
-            specialArmor: mon.specialArmor,
-            dex: mon.dex,
-            initHp: mon.hp,
-            initPower: mon.power,
-            initArmor: mon.armor,
-            intiSpecialPower: mon.specialPower,
-            initSpecialArmor: mon.specialArmor,
-            initDex: mon.dex,
-            honorHp: 0,
-            honorPower: 0,
-            honorArmor: 0,
-            honorSpecialPower: 0,
-            honorSpecialArmor: 0,
-            honorDex: 0,
-            skillName: mon.skillName,
-            grade: mon.grade,
-            cost: mon.cost,
-            img: mon.img[0],
-            desc: mon.desc,
-            requiredPiece: mon.requiredPiece,
-            designer: mon.designer[0],
-            evolutePiece: requiredPiece,
-            piece: 1,
-          });
-          return collection;
-        });
-      });
-      resolve(mons);
+  // console.log('pickedMons: ' + pickedMons);
+  // console.log('userId: ' + req.params.userId);
+  const collections = [];
+  const condition = Math.floor((Math.random() * 5) + 1);
+  for (const mon of pickedMons) {
+    const collection = new Collection({
+      _monId: mon._id,
+      _userId: req.params.userId,
+      condition,
     });
-  };
-  getCollections(pickedMons).then((collections) => {
-    const proms = [];
-    for (const collection of collections) {
-      const saveQuery = () => {
-        collection.save();
-      };
-      proms.push(saveQuery);
-    }
-    Promise.all(proms).then(() => {
-      return res.json({ success: true });
-    });
+    // console.log('collection: ' + collection);
+    collections.push(collection);
+  }
+  const proms = [];
+  for (const collection of collections) {
+    const saveQuery = () => {
+      collection.save();
+    };
+    proms.push(saveQuery);
+  }
+  Promise.all(proms).then(() => {
+    // console.log('콜렉션 등록 완료');
+    return res.json({ success: true });
   });
 });
 

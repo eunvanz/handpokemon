@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 class PageHeader extends React.Component {
   constructor(props) {
@@ -15,5 +15,9 @@ class PageHeader extends React.Component {
       );
   }
 }
+
+PageHeader.propTypes = {
+  title: PropTypes.string,
+};
 
 export default PageHeader;

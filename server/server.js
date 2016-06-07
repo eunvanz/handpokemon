@@ -33,7 +33,10 @@ import dummyData from './dummyData';
 import serverConfig from './config';
 
 // MongoDB Connection
-mongoose.connect(serverConfig.mongoURL, (error) => {
+const dbOption = {
+  server: { poolSize: 20 },
+};
+mongoose.connect(serverConfig.mongoURL, dbOption, (error) => {
   if (error) {
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;

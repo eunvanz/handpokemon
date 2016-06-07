@@ -31,10 +31,11 @@ const userSchema = new Schema({
   maxWinInRow: { type: Number, default: 0, required: true },
   league: { type: Number, default: 0, required: true },
   pokemoney: { type: Number, default: 0, required: true },
-  honor1: { type: Number },
-  honor2: { type: Number },
-  recommender: { type: String },
-  recommenderFlag: { type: Boolean },
+  _honor1: { type: Schema.Types.ObjectId, ref: 'honor', default: null },
+  _honor2: { type: Schema.Types.ObjectId, ref: 'honor', default: null },
+  _recommender: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  recommenderFlag: { type: Boolean, default: null },
+  _collections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
 });
 
 export default mongoose.model('User', userSchema);

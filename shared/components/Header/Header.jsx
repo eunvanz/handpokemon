@@ -61,11 +61,6 @@ class Header extends React.Component {
   }
 }
 
-Header.need = [
-  () => { return Actions.getLoginModalStatus(); },
-  () => { return Actions.showLoginModal(); },
-  () => { return Actions.hideLoginModal(); },
-];
 Header.contextTypes = {
   router: React.PropTypes.object,
 };

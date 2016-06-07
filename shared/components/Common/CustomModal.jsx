@@ -16,7 +16,7 @@ class CustomModal extends React.Component {
   componentDidUpdate() {
     $('.modal-backdrop').css('z-index', '1030').css('height', '100%');
     if (this.props.width) {
-      $('.modal-dialog').css('width', this.props.width);
+      $('.modal-dialog').css('max-width', this.props.width);
     }
   }
   render() {
@@ -31,7 +31,7 @@ class CustomModal extends React.Component {
     };
     return (
       <div>
-        <Modal show={this.state.showModal} onHide={this.props.close}>
+        <Modal show={this.state.showModal} onHide={this.props.close} backdrop={this.props.backdrop}>
           { renderHeader() }
           <Modal.Body>
             {this.props.bodyComponent}
@@ -50,6 +50,9 @@ CustomModal.propTypes = {
   bodyComponent: PropTypes.element.isRequired,
   footerComponent: PropTypes.element.isRequired,
   width: PropTypes.string,
+  show: PropTypes.bool.isRequired,
+  close: PropTypes.func.isRequired,
+  backdrop: PropTypes.any,
 };
 
 export default CustomModal;

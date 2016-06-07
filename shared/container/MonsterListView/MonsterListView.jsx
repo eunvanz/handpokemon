@@ -27,7 +27,8 @@ class MonsterListView extends React.Component {
               <div className="row">
                 <div className="col-xs-12">
                   <table id="simple-table"
-                    className="table table-striped table-bordered table-hover">
+                    className="table table-striped table-bordered table-hover"
+                  >
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -90,27 +91,7 @@ function mapStateToProps(store) {
 }
 
 MonsterListView.propTypes = {
-  allMons: PropTypes.arrayOf(PropTypes.shape({
-    monNo: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    mainAttr: PropTypes.string.isRequired,
-    subAttr: PropTypes.string.isRequired,
-    img: PropTypes.arrayOf(PropTypes.string).isRequired,
-    hp: PropTypes.number.isRequired,
-    power: PropTypes.number.isRequired,
-    armor: PropTypes.number.isRequired,
-    specialPower: PropTypes.number.isRequired,
-    specialArmor: PropTypes.number.isRequired,
-    dex: PropTypes.number.isRequired,
-    skillName: PropTypes.string.isRequired,
-    grade: PropTypes.string.isRequired,
-    cost: PropTypes.number.isRequired,
-    beforeNo: PropTypes.number,
-    desc: PropTypes.string,
-    regDate: PropTypes.Strin,
-    designer: PropTypes.arrayOf(PropTypes.string).isRequired,
-    requiredPiece: PropTypes.number,
-  })).isRequired,
+  allMons: PropTypes.arrayOf(PropTypes.object).isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

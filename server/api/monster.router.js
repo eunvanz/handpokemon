@@ -5,76 +5,94 @@ const multer = require('multer');
 const router = new Router();
 const upload = multer({ dest: './static/img/monsters/' });
 
+const _updateEvolutePiece = (_beforeId, requiredPiece) => {
+  return new Promise((resolve, reject) => {
+    if (_beforeId) {
+      Monster.findOneAndUpdate({ _id: _beforeId }, { evolutePiece: requiredPiece }).exec((err) => {
+        if (err) reject(new Error(err));
+      }).then(() => {
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
+};
+
 router.post('/api/monsters', upload.single('img'), (req, res) => {
   const fileName = req.file.filename;
-  const monster = new Monster({
-    monNo: req.body.monNo,
-    name: req.body.name,
-    mainAttr: req.body.mainAttr,
-    subAttr: req.body.subAttr,
-    img: fileName,
-    hp: req.body.hp,
-    power: req.body.power,
-    armor: req.body.armor,
-    specialPower: req.body.specialPower,
-    specialArmor: req.body.specialArmor,
-    dex: req.body.dex,
-    skillName: req.body.skillName,
-    grade: req.body.grade,
-    cost: req.body.cost,
-    beforeNo: req.body.beforeNo,
-    desc: req.body.desc,
-    designer: req.body.designer,
-    requiredPiece: req.body.requiredPiece,
-    point: req.body.point,
-  });
-  monster.save((err, savedMonster) => {
-    if (err) return res.status(500).send(err);
-    return res.json(savedMonster);
+  _updateEvolutePiece(req.body._beforeId, req.body.requiredPiece).then(() => {
+    const monster = new Monster({
+      monNo: req.body.monNo,
+      name: req.body.name,
+      mainAttr: req.body.mainAttr,
+      subAttr: req.body.subAttr,
+      img: fileName,
+      hp: req.body.hp,
+      power: req.body.power,
+      armor: req.body.armor,
+      specialPower: req.body.specialPower,
+      specialArmor: req.body.specialArmor,
+      dex: req.body.dex,
+      skillName: req.body.skillName,
+      grade: req.body.grade,
+      cost: req.body.cost,
+      _beforeId: req.body._beforeId,
+      desc: req.body.desc,
+      designer: req.body.designer,
+      requiredPiece: req.body.requiredPiece,
+      point: req.body.point,
+    });
+    monster.save((err, savedMonster) => {
+      if (err) return res.status(500).send(err);
+      return res.json(savedMonster);
+    });
   });
 });
 
 router.put('/api/monsters', upload.single('img'), (req, res) => {
   let fileName = null;
-  if (req.file) {
-    fileName = req.file.filename;
-  }
-  const monster = new Monster({
-    _id: req.body._id,
-    monNo: req.body.monNo,
-    name: req.body.name,
-    mainAttr: req.body.mainAttr,
-    subAttr: req.body.subAttr,
-    img: fileName,
-    hp: req.body.hp,
-    power: req.body.power,
-    armor: req.body.armor,
-    specialPower: req.body.specialPower,
-    specialArmor: req.body.specialArmor,
-    dex: req.body.dex,
-    skillName: req.body.skillName,
-    grade: req.body.grade,
-    cost: req.body.cost,
-    beforeNo: req.body.beforeNo,
-    desc: req.body.desc,
-    designer: req.body.designer,
-    requiredPiece: req.body.requiredPiece,
-    point: req.body.point,
-  });
-  const execUpdate = (updatedMon) => {
-    Monster.findByIdAndUpdate(updatedMon._id, updatedMon, (err) => {
-      if (err) return res.status(500).send(err);
-      return res.json(updatedMon);
+  _updateEvolutePiece(req.body._beforeId, req.body.requiredPiece).then(() => {
+    if (req.file) {
+      fileName = req.file.filename;
+    }
+    const monster = new Monster({
+      _id: req.body._id,
+      monNo: req.body.monNo,
+      name: req.body.name,
+      mainAttr: req.body.mainAttr,
+      subAttr: req.body.subAttr,
+      img: fileName,
+      hp: req.body.hp,
+      power: req.body.power,
+      armor: req.body.armor,
+      specialPower: req.body.specialPower,
+      specialArmor: req.body.specialArmor,
+      dex: req.body.dex,
+      skillName: req.body.skillName,
+      grade: req.body.grade,
+      cost: req.body.cost,
+      _beforeId: req.body._beforeId,
+      desc: req.body.desc,
+      designer: req.body.designer,
+      requiredPiece: req.body.requiredPiece,
+      point: req.body.point,
     });
-  };
-  if (!monster.img) {
-    Monster.findOne({ _id: monster._id }, 'img').exec((err, originMon) => {
-      monster.img = originMon.img;
+    const execUpdate = (updatedMon) => {
+      Monster.findByIdAndUpdate(updatedMon._id, updatedMon, (err) => {
+        if (err) return res.status(500).send(err);
+        return res.json(updatedMon);
+      });
+    };
+    if (!monster.img) {
+      Monster.findOne({ _id: monster._id }, 'img').exec((err, originMon) => {
+        monster.img = originMon.img;
+        execUpdate(monster);
+      });
+    } else {
       execUpdate(monster);
-    });
-  } else {
-    execUpdate(monster);
-  }
+    }
+  });
 });
 
 router.get('/api/monsters/base-type', (req, res) => {

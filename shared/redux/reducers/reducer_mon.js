@@ -21,7 +21,6 @@ export const allMons = (state = [], action) => {
 export const mon = (state = null, action) => {
   switch (action.type) {
     case ActionTypes.GET_ONE_MON :
-      // console.log('reducer_mon.GET_ONE_MON : ' + action.mon);
       return action.mon;
     case ActionTypes.RESET_MON :
       return action.mon;

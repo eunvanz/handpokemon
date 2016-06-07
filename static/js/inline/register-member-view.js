@@ -1,11 +1,5 @@
 jQuery(function($) {
 
-  $('#register-member-view #pick-btn')
-    .click(function() {
-      $('#post-pick').toggle();
-      $('#pre-pick').toggle();
-    });
-
   $("#register-member-view .flip-btn").click(function() {
     $(".front").toggle();
     $(".back").toggle();
@@ -19,9 +13,6 @@ jQuery(function($) {
     onchange:null,
     thumbnail:true, //| true | large
     whitelist:'gif|png|jpg|jpeg'
-    //blacklist:'exe|php'
-    //onchange:''
-    //
   });
 
   $('#register-member-view #tmp').ace_file_input({
@@ -31,15 +22,6 @@ jQuery(function($) {
     no_icon : 'ace-icon fa fa-cloud-upload',
     droppable : true,
     thumbnail : 'small'//large | fit
-    //,icon_remove:null//set null, to hide remove/reset button
-    /**,before_change:function(files, dropped) {
-      //Check an example below
-      //or examples/file-upload.html
-      return true;
-    }*/
-    /**,before_remove : function() {
-      return true;
-    }*/
     ,
     preview_error : function(filename, error_code) {
       //name of the file that failed
@@ -54,12 +36,6 @@ jQuery(function($) {
     //console.log($(this).data('ace_input_files'));
     //console.log($(this).data('ace_input_method'));
   });
-
-  //$('#id-input-file-3')
-  //.ace_file_input('show_file_list', [
-  //{type: 'image', name: 'name of image', path: 'http://path/to/image/for/preview'},
-  //{type: 'file', name: 'hello.txt'}
-  //]);
 
   //dynamically change allowed formats by changing allowExt && allowMime function
   var whitelist_ext, whitelist_mime;
@@ -111,21 +87,19 @@ jQuery(function($) {
 
   var $validation = true;
   var submitMode = false;
-  // $('#register-member-view #submit-btn').click(function() {
-  //   $('#register-member-view #validation-form').submit();
-  // });
 
   $('#register-member-view #fuelux-wizard-container').wizard({
   //step: 2 //optional argument. wizard will jump to step "2" at first
   //buttons: '.wizard-actions:eq(0)'
   }).on('actionclicked.fu.wizard', function(e, info) {
-    if (info.step == 1 && $validation) {
-      if (!$('#validation-form').valid())
-        e.preventDefault();
+    if (info.step === 1 && $validation) {
+      if (!$('#validation-form').valid()) e.preventDefault();
+    } else if (info.step === 2) {
+      $('.btn-next').attr('disabled', 'disabled');
     }
   }).on('finished.fu.wizard', function(e) {
-    submitMode = true;
-    $('#submit-btn').click();
+    // submitMode = true;
+    // $('#submit-btn').click();
     /* bootbox
         .dialog({
           message : "포켓몬 트레이너 라이센스 등록 신청서를 제출하시겠습니까?",
@@ -143,17 +117,7 @@ jQuery(function($) {
   }).on('stepclick.fu.wizard', function(e) {
     //e.preventDefault();//this will prevent clicking and selecting steps
   });
-  //jump to a step
-  /**
-  var wizard = $('#fuelux-wizard-container').data('fu.wizard')
-  wizard.currentStep = 3;
-  wizard.setState();
-   */
 
-  // determine selected step
-  // wizard.selectedItem().step
-  // hide or show the other form which requires validation
-  // this is for demo only, you usullay want just one form in your application
   $('#register-member-view #skip-validation').removeAttr('checked').on('click', function() {
     $validation = this.checked;
     if (this.checked) {
@@ -299,6 +263,7 @@ jQuery(function($) {
             invalidHandler : function(form) {
             }
           });
+
   $('#register-member-view textarea.limited').inputlimiter({
     remText : '%n 자 남았습니다.',
     limitText : '최대 %n자 까지 입력 가능합니다.'

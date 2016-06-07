@@ -63,13 +63,15 @@ const _getBattleRank = (battlePoint) => {
 
 // 회원가입
 router.post('/api/users', upload.single('img'), (req, res) => {
-  // 입력받은 회원 정보로 user객체 생성
+  // console.log('유저등록중..');
   const fileName = req.file ? req.file.filename : 'default.png';
-
+  // 입력받은 회원 정보로 user객체 생성
   const colRank = _getColRank(4);
   const battleRank = _getBattleRank(1000);
   // const league = _getLeague(battleRank);
+  // console.log(JSON.stringify(req.body));
   Promise.all([colRank, battleRank]).then((ranks) => {
+    // console.log('promise.all 완료');
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
@@ -81,11 +83,39 @@ router.post('/api/users', upload.single('img'), (req, res) => {
       colRank: ranks[0],
       battleRank: ranks[1],
     });
+    // console.log('user 객체 생성 완료');
     user.save((err, savedUser) => {
+      // console.log('유저등록 완료 : ' + savedUser);
       if (err) return res.status(500).send(err);
-      return res.json(savedUser);
+      return res.json({ savedUser });
     });
   });
 });
+
+// router.post('/api/users', upload.single('img'), (req, res) => {
+//   // 입력받은 회원 정보로 user객체 생성
+//   const fileName = req.file ? req.file.filename : 'default.png';
+//
+//   // const colRank = _getColRank(4);
+//   // const battleRank = _getBattleRank(1000);
+//   // const league = _getLeague(battleRank);
+//   // Promise.all([colRank, battleRank]).then((ranks) => {
+//   const user = new User({
+//     email: req.body.email,
+//     nickname: req.body.nickname,
+//     password: hmac.update(req.body.password).digest('hex'),
+//     img: fileName,
+//     introduce: req.body.introduce,
+//     recommender: req.body.recommender,
+//     colPoint: 4,
+//     colRank: 1,
+//     battleRank: 1,
+//   });
+//   user.save((err, savedUser) => {
+//     if (err) return res.status(500).send(err);
+//     return res.json(savedUser);
+//   });
+//   // });
+// });
 
 export default router;

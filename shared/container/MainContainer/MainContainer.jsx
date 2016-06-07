@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import SideBar from '../../components/SideBar/SideBar';
 
 class MainContainer extends React.Component {
@@ -19,5 +19,9 @@ class MainContainer extends React.Component {
     );
   }
 }
+
+MainContainer.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 export default MainContainer;

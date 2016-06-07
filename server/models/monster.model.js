@@ -16,12 +16,13 @@ const monsterSchema = new Schema({
   skillName: { type: String, required: true },
   grade: { type: String, required: true },
   cost: { type: Number, required: true },
-  beforeNo: { type: Number },
+  _beforeId: { type: Schema.Types.ObjectId, ref: 'Monster', default: null },
   desc: { type: String },
   regDate: { type: Date, default: Date.now, required: true },
   designer: { type: [String], required: true },
   requiredPiece: { type: Number },
   point: { type: Number },
+  evolutePiece: { type: Number, default: null },
 });
 
 export default mongoose.model('Monster', monsterSchema);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 class WidgetBox extends React.Component {
   constructor(props) {
@@ -22,5 +22,10 @@ class WidgetBox extends React.Component {
     );
   }
 }
+
+WidgetBox.propTypes = {
+  title: PropTypes.string.isRequired,
+  body: PropTypes.element.isRequired,
+};
 
 export default WidgetBox;

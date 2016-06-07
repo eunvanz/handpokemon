@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
 
 class MessageModal extends React.Component {
@@ -6,7 +6,7 @@ class MessageModal extends React.Component {
     super(props);
     this.displayName = 'MessageModal';
     this.state = {
-      showModal: this.props.show,
+      showModal: false,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -21,24 +21,24 @@ class MessageModal extends React.Component {
     const renderCancelBtn = () => {
       if (this.props.cancelBtnTxt) {
         return (
-          <button type="button" className="btn btn-default">
+          <button type="button" className="btn btn-default" onClick={this.props.close}>
             {this.props.cancelBtnTxt}
           </button>
         );
       }
     };
     const renderConfirmBtn = () => {
-      if (this.props.confirmBtnText) {
+      if (this.props.confirmBtnTxt) {
         return (
           <button type="button" className="btn btn-primary" onClick={this.props.onConfirmClick}>
-            {this.props.confirmBtnText}
+            {this.props.confirmBtnTxt}
           </button>
         );
       }
     };
     const footerComponent = () => {
       return (
-        <div className="clearfix" style={{ textAlign: 'left' }}>
+        <div className="clearfix" style={{ textAlign: 'right' }}>
           { renderCancelBtn() }
           { renderConfirmBtn() }
         </div>
@@ -50,10 +50,20 @@ class MessageModal extends React.Component {
           bodyComponent={bodyComponent()}
           footerComponent={footerComponent()}
           close={this.props.close}
+          backdrop="static"
+          width="350px"
         />
       </div>
     );
   }
 }
+
+MessageModal.propTypes = {
+  message: PropTypes.string.isRequired,
+  cancelBtnTxt: PropTypes.string,
+  confirmBtnTxt: PropTypes.string.isRequired,
+  onConfirmClick: PropTypes.func.isRequired,
+  close: PropTypes.func.isRequired,
+};
 
 export default MessageModal;

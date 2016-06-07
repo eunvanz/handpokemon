@@ -27,7 +27,7 @@ class RegisterMonsterView extends React.Component {
       skillName: '',
       grade: 'b',
       cost: '1',
-      beforeNo: '0',
+      _beforeId: null,
       desc: '',
       requiredPiece: '',
       designer: '',
@@ -102,7 +102,7 @@ class RegisterMonsterView extends React.Component {
     formData.append('skillName', $('#skillName').val());
     formData.append('grade', $('#grade').val());
     formData.append('cost', $('#cost').val());
-    formData.append('beforeNo', $('#beforeNo').val());
+    formData.append('_beforeId', $('#_beforeId').val() === 0 ? null : $('#_beforeId').val());
     formData.append('desc', $('#desc').val());
     formData.append('requiredPiece', $('#requiredPiece').val());
     formData.append('designer', $('#designer').val());
@@ -137,11 +137,11 @@ class RegisterMonsterView extends React.Component {
       }
       return resultComponents;
     };
-    const renderBeforeNoOptions = () => {
+    const renderBeforeIdOptions = () => {
       const resultComponents = [];
       resultComponents.push(<option key="0" value="0">없음</option>);
       if (this.props.baseMons) {
-        resultComponents.push(this.props.baseMons.map(mon => <option key={mon.monNo} value={mon.monNo}>{mon.name}</option>));
+        resultComponents.push(this.props.baseMons.map(mon => <option key={mon.monNo} value={mon._id}>{mon.name}</option>));
       }
       return resultComponents;
     };
@@ -389,15 +389,15 @@ class RegisterMonsterView extends React.Component {
 
                 <div className="form-group">
                   <label className="col-sm-3 control-label no-padding-right"
-                    htmlFor="beforeNo"
+                    htmlFor="_beforeId"
                   > 전 단계 포켓몬 </label>
 
                   <div className="col-sm-9">
-                    <select className="form-control" id="beforeNo" name="beforeNo"
-                      value={this.state ? this.state.beforeNo : '0'}
+                    <select className="form-control" id="_beforeId" name="_beforeId"
+                      value={this.state ? this.state._beforeId : null}
                       onChange={this._handleInputChange}
                     >
-                      { renderBeforeNoOptions() }
+                      { renderBeforeIdOptions() }
                     </select>
                   </div>
                 </div>
@@ -487,52 +487,8 @@ function mapStateToProps(store) {
 }
 
 RegisterMonsterView.propTypes = {
-  baseMons: PropTypes.arrayOf(PropTypes.shape({
-    _id: PropTypes.string,
-    monNo: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    mainAttr: PropTypes.string.isRequired,
-    subAttr: PropTypes.string.isRequired,
-    img: PropTypes.arrayOf(PropTypes.string).isRequired,
-    hp: PropTypes.number.isRequired,
-    power: PropTypes.number.isRequired,
-    armor: PropTypes.number.isRequired,
-    specialPower: PropTypes.number.isRequired,
-    specialArmor: PropTypes.number.isRequired,
-    dex: PropTypes.number.isRequired,
-    skillName: PropTypes.string.isRequired,
-    grade: PropTypes.string.isRequired,
-    cost: PropTypes.number.isRequired,
-    beforeNo: PropTypes.number,
-    desc: PropTypes.string,
-    regDate: PropTypes.Strin,
-    designer: PropTypes.arrayOf(PropTypes.string).isRequired,
-    requiredPiece: PropTypes.number,
-    point: PropTypes.number,
-  })).isRequired,
-  mon: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    monNo: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    mainAttr: PropTypes.string.isRequired,
-    subAttr: PropTypes.string.isRequired,
-    img: PropTypes.arrayOf(PropTypes.string).isRequired,
-    hp: PropTypes.number.isRequired,
-    power: PropTypes.number.isRequired,
-    armor: PropTypes.number.isRequired,
-    specialPower: PropTypes.number.isRequired,
-    specialArmor: PropTypes.number.isRequired,
-    dex: PropTypes.number.isRequired,
-    skillName: PropTypes.string.isRequired,
-    grade: PropTypes.string.isRequired,
-    cost: PropTypes.number.isRequired,
-    beforeNo: PropTypes.number,
-    desc: PropTypes.string,
-    regDate: PropTypes.Strin,
-    designer: PropTypes.arrayOf(PropTypes.string).isRequired,
-    requiredPiece: PropTypes.number,
-    point: PropTypes.number,
-  }),
+  baseMons: PropTypes.arrayOf(PropTypes.object).isRequired,
+  mon: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
 };
 

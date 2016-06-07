@@ -4,6 +4,7 @@ import * as Actions from '../../redux/actions/actions';
 import PageHeader from '../../components/Common/PageHeader';
 import WidgetBox from '../../components/Common/WidgetBox';
 import MonsterCard from '../../components/Common/MonsterCard';
+import MessageModal from '../../components/Modals/MessageModal';
 import request from 'superagent';
 import $ from 'jquery';
 
@@ -18,14 +19,15 @@ class RegisterMemberView extends React.Component {
       nickname: '',
       introduce: '',
       recommender: '',
-      pickedMons: [],
+      completable: false,
+      showConfirmModal: false,
     };
     this._pickMonsters = this._pickMonsters.bind(this);
     this._handleInputChange = this._handleInputChange.bind(this);
     this._handleSubmit = this._handleSubmit.bind(this);
-  }
-  componentWillMount() {
-    this._pickMonsters();
+    this._handleConfirmClick = this._handleConfirmClick.bind(this);
+    this._handleCloseConfirmModal = this._handleCloseConfirmModal.bind(this);
+    this._showConfirmModal = this._showConfirmModal.bind(this);
   }
   componentDidMount() {
     const scriptSrcs = ['/js/jquery.inputlimiter.1.3.1.js', '/js/fuelux/fuelux.wizard.js',
@@ -44,39 +46,62 @@ class RegisterMemberView extends React.Component {
     }
   }
   _pickMonsters() {
+    $('#repick').attr('disabled', 'disabled');
+    if (!this.state.completable) {
+      $('#post-pick').show();
+      $('#pre-pick').hide();
+      $('.btn-next').removeAttr('disabled');
+      this.setState({ completable: true });
+    }
     this.props.dispatch(Actions.fetchBasicPickMons())
     .then(() => {
+      $('#repick').removeAttr('disabled');
+      // console.log('pickedMons setted: ' + this.props.pickedMons);
+    })
+    .catch(() => {
+      // console.log('catch: ' + err);
+      $('#repick').removeAttr('disabled');
+    });
+  }
+  _showConfirmModal(e) {
+    e.preventDefault();
+    if (this.state.completable) {
       this.setState({
-        pickedMons: this.props.pickedMons,
+        showConfirmModal: true,
+      });
+    }
+  }
+  _handleSubmit() {
+    // console.log('this.state.pickedMons: ' + this.props.pickedMons);
+    // console.log('typeof: ' + (typeof this.props.pickedMons));
+    const formData = new FormData();
+    formData.append('email', this.state.email);
+    formData.append('password', this.state.password);
+    formData.append('nickname', this.state.nickname);
+    formData.append('introduce', this.state.introduce);
+    formData.append('recommender', this.state.recommender);
+    formData.append('img', document.getElementById('img').files[0]);
+    request.post('/api/users')
+    .send(formData)
+    .end((err, res) => {
+      // console.log('저기');
+      // console.log('res.body.pickedMons: ' + this.props.pickedMons);
+      request.post(`/api/collections/basic-pick/${res.body.savedUser._id}`)
+      .send({ pickedMons: this.props.pickedMons, email: this.state.email })
+      .end(() => {
+        $(location).attr('href', '/');
       });
     });
   }
-  _handleSubmit() {
-    if ($('.btn-next').html() === '작성완료') {
-      console.log('pickedMons: ' + this.state.pickedMons);
-      const formData = new FormData();
-      formData.append('email', this.state.email);
-      formData.append('password', this.state.password);
-      formData.append('nickname', this.state.nickname);
-      formData.append('introduce', this.state.introduce);
-      formData.append('recommender', this.state.recommender);
-      formData.append('pickedMons', this.state.pickedMons);
-      formData.append('img', document.getElementById('img').files[0]);
-      request.post('/api/users')
-      .send(formData)
-      .end((err, res) => {
-        console.log('저기');
-        request.post(`/api/collections/basic-pick/${res._id}`)
-        .send(formData)
-        .end(() => {
-          location.href = '/';
-        });
-      });
-      console.log('여기');
-    }
-  }
   _handleInputChange(e) {
+    e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
+  }
+  _handleConfirmClick() {
+    this._handleSubmit();
+  }
+  _handleCloseConfirmModal() {
+    this.setState({ showConfirmModal: false });
   }
   render() {
     const renderMonsterCardComponent = () => {
@@ -234,7 +259,7 @@ class RegisterMemberView extends React.Component {
                   <div className="col-sm-12 center">
                     <h3>아래의 버튼을 눌러 기본 포켓몬들을 뽑아봐!</h3>
                     <div className="space"></div>
-                    <button type="button" className="btn btn-info btn-lg" id="pick-btn"><i className="fa fa-github-alt"></i> 포켓몬 뽑기</button>
+                    <button type="button" className="btn btn-info btn-lg" onClick={this._pickMonsters}><i className="fa fa-github-alt"></i> 포켓몬 뽑기</button>
                   </div>
                 </div>
                 <div className="row" id="post-pick">
@@ -260,9 +285,18 @@ class RegisterMemberView extends React.Component {
               <i className="ace-icon fa fa-arrow-left"></i> 이전단계
             </button>
 
-            <button className="btn btn-success btn-next" data-last="작성완료" onClick={this._handleSubmit}>
+            <button className="btn btn-success btn-next" data-last="작성완료" onClick={this._showConfirmModal}>
               다음단계 <i className="ace-icon fa fa-arrow-right icon-on-right"></i>
             </button>
+
+            <MessageModal
+              message="신청서를 제출하시겠습니까?"
+              show={this.state.showConfirmModal}
+              cancelBtnTxt="취소"
+              confirmBtnTxt="제출"
+              onConfirmClick={this._handleConfirmClick}
+              close={this._handleCloseConfirmModal}
+            />
 
           </div>
         </div>
@@ -283,9 +317,9 @@ class RegisterMemberView extends React.Component {
   }
 }
 
-RegisterMemberView.need = [
-  () => { return Actions.fetchBasicPickMons(); },
-];
+// RegisterMemberView.need = [
+//   () => { return Actions.fetchBasicPickMons(); },
+// ];
 
 RegisterMemberView.contextTypes = {
   router: React.PropTypes.object,
@@ -298,29 +332,7 @@ function mapStateToProps(store) {
 }
 
 RegisterMemberView.propTypes = {
-  pickedMons: PropTypes.arrayOf(PropTypes.shape({
-    _id: PropTypes.string,
-    monNo: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    mainAttr: PropTypes.string.isRequired,
-    subAttr: PropTypes.string.isRequired,
-    img: PropTypes.arrayOf(PropTypes.string).isRequired,
-    hp: PropTypes.number.isRequired,
-    power: PropTypes.number.isRequired,
-    armor: PropTypes.number.isRequired,
-    specialPower: PropTypes.number.isRequired,
-    specialArmor: PropTypes.number.isRequired,
-    dex: PropTypes.number.isRequired,
-    skillName: PropTypes.string.isRequired,
-    grade: PropTypes.string.isRequired,
-    cost: PropTypes.number.isRequired,
-    beforeNo: PropTypes.number,
-    desc: PropTypes.string,
-    regDate: PropTypes.Strin,
-    designer: PropTypes.arrayOf(PropTypes.string).isRequired,
-    requiredPiece: PropTypes.number,
-    point: PropTypes.number,
-  })).isRequired,
+  pickedMons: PropTypes.arrayOf(PropTypes.object),
   dispatch: PropTypes.func.isRequired,
 };
 
