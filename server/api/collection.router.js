@@ -20,8 +20,9 @@ router.post('/api/collections/basic-pick/:userId', (req, res) => {
   // console.log('pickedMons: ' + pickedMons);
   // console.log('userId: ' + req.params.userId);
   const collections = [];
-  const condition = Math.floor((Math.random() * 5) + 1);
+  let condition = 1;
   for (const mon of pickedMons) {
+    condition = Math.floor((Math.random() * 5) + 1);
     const collection = new Collection({
       _monId: mon._id,
       _userId: req.params.userId,

@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import LoginModal from '../Modals/LoginModal';
+import MessageModal from '../../components/Modals/MessageModal';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
@@ -19,6 +20,7 @@ class Header extends React.Component {
     this.displayName = 'Header';
     this._showLoginModal = this._showLoginModal.bind(this);
     this._hideLoginModal = this._hideLoginModal.bind(this);
+    this._hideMessageModal = this._hideMessageModal.bind(this);
   }
   _showLoginModal(e) {
     e.preventDefault();
@@ -26,6 +28,9 @@ class Header extends React.Component {
   }
   _hideLoginModal() {
     this.props.dispatch(Actions.hideLoginModal());
+  }
+  _hideMessageModal() {
+    this.props.dispatch(Actions.hideMessageModal());
   }
   render() {
     return (
@@ -55,6 +60,13 @@ class Header extends React.Component {
             </ul>
           </div>
         <LoginModal show={this.props.showLoginModal} close={this._hideLoginModal}/>
+        <MessageModal
+          show={this.props.showMessageModal.status}
+          message={this.props.showMessageModal.message}
+          confirmBtnTxt="확인"
+          onConfirmClick={this._hideMessageModal}
+          close={this._hideMessageModal}
+        />
         </div>
       </div>
     );
@@ -68,11 +80,13 @@ Header.contextTypes = {
 function mapStateToProps(store) {
   return {
     showLoginModal: store.showLoginModal,
+    showMessageModal: store.showMessageModal,
   };
 }
 
 Header.propTypes = {
   showLoginModal: PropTypes.bool.isRequired,
+  showMessageModal: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 

@@ -1,5 +1,10 @@
 import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
+import request from 'superagent';
+import { browserHistory } from 'react-router';
+// import crypto from 'crypto';
+
+// const hmac = crypto.createHmac('sha256', 'hash password');
 
 class LoginModal extends React.Component {
   constructor(props) {
@@ -11,6 +16,7 @@ class LoginModal extends React.Component {
       password: '',
     };
     this._handleInputChange = this._handleInputChange.bind(this);
+    this._handleOnLoginClick = this._handleOnLoginClick.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     this.setState({ showModal: nextProps.show });
@@ -18,6 +24,20 @@ class LoginModal extends React.Component {
   _handleInputChange(e) {
     this.setState({
       [e.target.name]: e.target.value,
+    });
+  }
+  _handleOnLoginClick() {
+    const formData = new FormData();
+    formData.append('email', this.state.email);
+    formData.append('password', this.state.password);
+    request.post('/api/login')
+    .send(formData)
+    .end((err, res) => {
+      if (err || !res.user) {
+        browserHistory.push('/');
+      } else {
+        browserHistory.push('/');
+      }
     });
   }
   render() {
@@ -49,7 +69,7 @@ class LoginModal extends React.Component {
           <label className="inline" style={{ marginTop: '6px' }}> <input type="checkbox" className="ace" name="remember" value="yes"/>
             <span className="lbl"> 아이디 기억하기</span>
           </label>
-          <button type="submit" className="width-35 pull-right btn btn-sm btn-primary">
+          <button type="button" className="width-35 pull-right btn btn-sm btn-primary" onClick={this._handleOnLoginClick}>
             <i className="ace-icon fa fa-key"></i> <span className="bigger-110">로그인</span>
           </button>
         </div>

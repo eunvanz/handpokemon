@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import passportLocalMongoose from 'passport-local-mongoose';
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -36,6 +38,12 @@ const userSchema = new Schema({
   _recommender: { type: Schema.Types.ObjectId, ref: 'User', default: null },
   recommenderFlag: { type: Boolean, default: null },
   _collections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
+});
+
+userSchema.plugin(passportLocalMongoose, {
+  usernameField: 'email',
+  lastLoginField: 'lastLogin',
+  hashField: 'password',
 });
 
 export default mongoose.model('User', userSchema);

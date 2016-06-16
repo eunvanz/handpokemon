@@ -7,6 +7,7 @@ import MonsterCard from '../../components/Common/MonsterCard';
 import MessageModal from '../../components/Modals/MessageModal';
 import request from 'superagent';
 import $ from 'jquery';
+import { browserHistory } from 'react-router';
 
 class RegisterMemberView extends React.Component {
   constructor(props) {
@@ -63,8 +64,7 @@ class RegisterMemberView extends React.Component {
       $('#repick').removeAttr('disabled');
     });
   }
-  _showConfirmModal(e) {
-    e.preventDefault();
+  _showConfirmModal() {
     if (this.state.completable) {
       this.setState({
         showConfirmModal: true,
@@ -89,7 +89,8 @@ class RegisterMemberView extends React.Component {
       request.post(`/api/collections/basic-pick/${res.body.savedUser._id}`)
       .send({ pickedMons: this.props.pickedMons, email: this.state.email })
       .end(() => {
-        $(location).attr('href', '/');
+        this.props.dispatch(Actions.prepareMessageModal('회원가입이 완료되었습니다.'));
+        browserHistory.push('/');
       });
     });
   }

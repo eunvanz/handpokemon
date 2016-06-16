@@ -74,6 +74,7 @@ export function fetchBasicPickMons() {
   };
 }
 
+// LoginModal
 export function getLoginModalStatus() {
   return {
     type: ActionTypes.GET_LOGIN_MODAL_STATUS,
@@ -89,5 +90,44 @@ export function showLoginModal() {
 export function hideLoginModal() {
   return {
     type: ActionTypes.HIDE_LOGIN_MODAL,
+  };
+}
+
+// MessageModal
+export function getMessageModalStatus() {
+  return {
+    type: ActionTypes.GET_MESSAGE_MODAL_STATUS,
+  };
+}
+
+export function showMessageModal() {
+  return {
+    type: ActionTypes.SHOW_MESSAGE_MODAL,
+  };
+}
+
+export function hideMessageModal() {
+  return {
+    type: ActionTypes.HIDE_MESSAGE_MODAL,
+  };
+}
+
+export function prepareMessageModal(message) {
+  return {
+    type: ActionTypes.PREPARE_MESSAGE_MODAL,
+    message,
+  };
+}
+
+// appMounted
+export function checkAppMounted() {
+  return {
+    type: ActionTypes.CHECK_APP_MOUNTED,
+  };
+}
+
+export function getAppMounted() {
+  return {
+    type: ActionTypes.GET_APP_MOUNTED,
   };
 }

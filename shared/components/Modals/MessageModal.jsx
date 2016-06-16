@@ -51,7 +51,7 @@ class MessageModal extends React.Component {
           footerComponent={footerComponent()}
           close={this.props.close}
           backdrop="static"
-          width="350px"
+          width="300px"
         />
       </div>
     );
@@ -59,6 +59,7 @@ class MessageModal extends React.Component {
 }
 
 MessageModal.propTypes = {
+  show: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   cancelBtnTxt: PropTypes.string,
   confirmBtnTxt: PropTypes.string.isRequired,

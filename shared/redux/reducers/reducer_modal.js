@@ -12,3 +12,18 @@ export const showLoginModal = (state = false, action) => {
       return state;
   }
 };
+
+export const showMessageModal = (state = { status: false, message: '' }, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_MESSAGE_MODAL_STATUS :
+      return state;
+    case ActionTypes.SHOW_MESSAGE_MODAL :
+      return { status: true, message: state.message };
+    case ActionTypes.HIDE_MESSAGE_MODAL :
+      return { status: false, message: '' };
+    case ActionTypes.PREPARE_MESSAGE_MODAL :
+      return { status: false, message: action.message };
+    default :
+      return state;
+  }
+};

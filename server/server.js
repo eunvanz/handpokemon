@@ -2,6 +2,12 @@ import Express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import path from 'path';
+import logger from 'morgan';
+
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
+import User from './models/user.model';
 
 // Webpack Requirements
 import webpack from 'webpack';
@@ -28,8 +34,6 @@ import { match, RouterContext } from 'react-router';
 // Import required modules
 import routes from '../shared/routes';
 import { fetchComponentData } from './util/fetchData';
-import posts from './routes/post.routes';
-import dummyData from './dummyData';
 import serverConfig from './config';
 
 // MongoDB Connection
@@ -41,23 +45,34 @@ mongoose.connect(serverConfig.mongoURL, dbOption, (error) => {
     console.error('Please make sure Mongodb is installed and running!'); // eslint-disable-line no-console
     throw error;
   }
-
-  // feed some dummy data in DB.
-  dummyData();
 });
 
 // Apply body Parser and server public assets and routes
 app.use(bodyParser.json({ limit: '20mb' }));
-app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
+app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 app.use(Express.static(path.resolve(__dirname, '../static')));
-app.use('/api', posts);
+app.use(logger('dev'));
+
+// app.use(methodOverride);
+app.use(cookieParser());
+app.use(session({
+  secret: 'my secret',
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Import API routers
 import UserRouter from './api/user.router';
 import MonsterRouter from './api/monster.router';
 import CollectionRouter from './api/collection.router';
 
-// APIs
 app.use(UserRouter);
 app.use(MonsterRouter);
 app.use(CollectionRouter);
@@ -187,9 +202,11 @@ app.use((req, res, next) => {
     return fetchComponentData(store, renderProps.components, renderProps.params)
       .then(() => {
         const initialView = renderToString(
-          <Provider store={store}>
-            <RouterContext {...renderProps} />
-          </Provider>
+          <div>
+            <Provider store={store}>
+              <RouterContext {...renderProps} />
+            </Provider>
+          </div>
         );
         const finalState = store.getState();
 

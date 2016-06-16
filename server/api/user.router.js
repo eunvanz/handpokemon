@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import User from '../models/user.model';
+import passport from 'passport';
+
 const multer = require('multer');
-const crypto = require('crypto');
+// const crypto = require('crypto');
 
 const router = new Router();
+
 const upload = multer({ dest: './static/img/user/' });
 
-const hmac = crypto.createHmac('sha256', 'hash password');
+// const hmac = crypto.createHmac('sha256', 'hash password');
 
 // 이메일 중복 체크
 router.get('/api/user-email-check', (req, res) => {
@@ -75,7 +78,7 @@ router.post('/api/users', upload.single('img'), (req, res) => {
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
-      password: hmac.update(req.body.password).digest('hex'),
+      password: req.body.password,
       img: fileName,
       introduce: req.body.introduce,
       recommender: req.body.recommender,
@@ -84,12 +87,30 @@ router.post('/api/users', upload.single('img'), (req, res) => {
       battleRank: ranks[1],
     });
     // console.log('user 객체 생성 완료');
-    user.save((err, savedUser) => {
-      // console.log('유저등록 완료 : ' + savedUser);
+    User.register(user, user.password, (err, savedUser) => {
       if (err) return res.status(500).send(err);
-      return res.json({ savedUser });
+      passport.authenticate('local')(req, res, () => {
+        // console.log('유저등록 완료 : ' + savedUser);
+        res.json({ savedUser });
+      });
     });
   });
+});
+
+router.get('/login', (req, res) => {
+  res.json(req.user);
+});
+
+router.post('/api/login',
+  passport.authenticate('local'),
+  (req, res) => {
+    return res.json({ user: req.user });
+  }
+);
+
+router.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
 });
 
 // router.post('/api/users', upload.single('img'), (req, res) => {

@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { baseMons, allMons, mon, pickedMons } from './reducer_mon';
-import { showLoginModal } from './reducer_modal';
+import { showLoginModal, showMessageModal } from './reducer_modal';
+import { appMounted } from './reducer_common';
 
 export default combineReducers({
   baseMons,
@@ -8,4 +9,6 @@ export default combineReducers({
   mon,
   showLoginModal,
   pickedMons,
+  showMessageModal,
+  appMounted,
 });
