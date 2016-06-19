@@ -97,46 +97,16 @@ router.post('/api/users', upload.single('img'), (req, res) => {
   });
 });
 
-router.get('/login', (req, res) => {
-  res.json(req.user);
+router.post('/api/login', passport.authenticate('local'), (req, res) => {
+  res.json({ user: req.user });
 });
 
-router.post('/api/login',
-  passport.authenticate('local'),
-  (req, res) => {
-    return res.json({ user: req.user });
+router.get('/api/session', (req, res) => {
+  if (req.session) {
+    res.json({ session: req.session });
+  } else {
+    res.json({ session: null });
   }
-);
-
-router.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
 });
-
-// router.post('/api/users', upload.single('img'), (req, res) => {
-//   // 입력받은 회원 정보로 user객체 생성
-//   const fileName = req.file ? req.file.filename : 'default.png';
-//
-//   // const colRank = _getColRank(4);
-//   // const battleRank = _getBattleRank(1000);
-//   // const league = _getLeague(battleRank);
-//   // Promise.all([colRank, battleRank]).then((ranks) => {
-//   const user = new User({
-//     email: req.body.email,
-//     nickname: req.body.nickname,
-//     password: hmac.update(req.body.password).digest('hex'),
-//     img: fileName,
-//     introduce: req.body.introduce,
-//     recommender: req.body.recommender,
-//     colPoint: 4,
-//     colRank: 1,
-//     battleRank: 1,
-//   });
-//   user.save((err, savedUser) => {
-//     if (err) return res.status(500).send(err);
-//     return res.json(savedUser);
-//   });
-//   // });
-// });
 
 export default router;

@@ -131,3 +131,19 @@ export function getAppMounted() {
     type: ActionTypes.GET_APP_MOUNTED,
   };
 }
+
+// user session
+export function getUserSession(session) {
+  return {
+    type: ActionTypes.GET_USER_SESSION,
+    session,
+  };
+}
+
+export function fetchUserSession() {
+  return (dispatch) => {
+    return fetch(`${baseURL}/api/session`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getUserSession(response.session)));
+  };
+}

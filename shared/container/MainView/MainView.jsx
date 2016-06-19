@@ -11,11 +11,18 @@ class MainView extends React.Component {
     if (this.props.showMessageModal.message !== '') {
       this.props.dispatch(Actions.showMessageModal());
     }
+    this.props.dispatch(Actions.getUserSession());
   }
   render() {
+    const renderTemp = () => {
+      if (this.props.user) {
+        return <div>{ JSON.stringify(this.props.user) }</div>;
+      }
+    };
     return (
       <div>
         MainView
+        { renderTemp() }
       </div>
     );
   }
@@ -28,12 +35,14 @@ MainView.contextTypes = {
 function mapStateToProps(store) {
   return {
     showMessageModal: store.showMessageModal,
+    user: store.user,
   };
 }
 
 MainView.propTypes = {
   showMessageModal: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  user: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(MainView);

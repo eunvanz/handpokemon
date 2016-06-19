@@ -7,6 +7,9 @@ class SideBar extends React.Component {
     this.displayName = 'SideBar';
   }
   render() {
+    // const renderMyCollection = () => {
+    //   if (req)
+    // };
     return (
       <div id="sidebar" className="sidebar responsive sidebar-fixed">
         <ul className="nav nav-list">
