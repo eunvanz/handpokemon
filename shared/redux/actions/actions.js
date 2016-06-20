@@ -1,6 +1,7 @@
 import * as ActionTypes from '../constants/constants';
 import Config from '../../../server/config';
 import fetch from 'isomorphic-fetch';
+import $ from 'jquery';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
@@ -133,17 +134,20 @@ export function getAppMounted() {
 }
 
 // user session
-export function getUserSession(session) {
+export function getUserSession(user) {
   return {
     type: ActionTypes.GET_USER_SESSION,
-    session,
+    user,
   };
 }
 
 export function fetchUserSession() {
   return (dispatch) => {
-    return fetch(`${baseURL}/api/session`)
-    .then((response) => response.json())
-    .then((response) => dispatch(getUserSession(response.session)));
+    return $.ajax({
+      url: `${baseURL}/api/session-user`,
+      success: (response) => {
+        dispatch(getUserSession(response));
+      },
+    });
   };
 }

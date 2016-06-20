@@ -8,6 +8,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import User from './models/user.model';
+import connectMongo from 'connect-mongo';
 
 // Webpack Requirements
 import webpack from 'webpack';
@@ -50,16 +51,20 @@ mongoose.connect(serverConfig.mongoURL, dbOption, (error) => {
 // Apply body Parser and server public assets and routes
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
-app.use(Express.static(path.resolve(__dirname, '../static')));
-app.use(logger('dev'));
-
-// app.use(methodOverride);
+const MongoStore = connectMongo(session);
 app.use(cookieParser());
 app.use(session({
+  cookie: { maxAge: 1000 * 60 * 30 },
   secret: 'my secret',
   resave: false,
   saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection,
+    collection: 'session',
+  }),
 }));
+app.use(Express.static(path.resolve(__dirname, '../static')));
+app.use(logger('dev'));
 
 app.use(passport.initialize());
 app.use(passport.session());

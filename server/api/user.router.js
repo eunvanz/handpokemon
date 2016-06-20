@@ -101,12 +101,13 @@ router.post('/api/login', passport.authenticate('local'), (req, res) => {
   res.json({ user: req.user });
 });
 
-router.get('/api/session', (req, res) => {
-  if (req.session) {
-    res.json({ session: req.session });
-  } else {
-    res.json({ session: null });
-  }
+router.get('/api/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+});
+
+router.get('/api/session-user', (req, res) => {
+  res.json(req.user);
 });
 
 export default router;

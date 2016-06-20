@@ -11,7 +11,7 @@ class MainView extends React.Component {
     if (this.props.showMessageModal.message !== '') {
       this.props.dispatch(Actions.showMessageModal());
     }
-    this.props.dispatch(Actions.getUserSession());
+    this.props.dispatch(Actions.fetchUserSession());
   }
   render() {
     const renderTemp = () => {
