@@ -9,14 +9,14 @@ class App extends Component {
     super(props, context);
   }
   componentDidMount() {
-    this.props.dispatch(Actions.checkAppMounted());
+    this.props.dispatch(Actions.fetchUserSession());
   }
   render() {
     return (
       <div>
-        <Header />
+        <Header user={this.props.user}/>
         <div className="main-container container" id="main-container">
-          <SideBar />
+          <SideBar user={this.props.user}/>
           <div className="main-content">
             <div className="main-content-inner">
               {this.props.children}
@@ -28,20 +28,24 @@ class App extends Component {
   }
 }
 
+// App.need = [
+//   () => { return Actions.fetchUserSession(); },
+// ];
+
 App.contextTypes = {
   router: React.PropTypes.object,
 };
 
 function mapStateToProps(store) {
   return {
-    appMounted: store.appMounted,
+    user: store.user,
   };
 }
 
 App.propTypes = {
   children: PropTypes.object.isRequired,
-  appMounted: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  user: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(App);

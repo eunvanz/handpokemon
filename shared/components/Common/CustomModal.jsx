@@ -14,7 +14,6 @@ class CustomModal extends React.Component {
     this.setState({ showModal: nextProps.show });
   }
   componentDidUpdate() {
-    console.log('width: ' + this.props.width);
     $('.modal-backdrop').css('z-index', '1030').css('height', '100%');
     if (this.props.width) {
       $('.modal-dialog').css('max-width', this.props.width);

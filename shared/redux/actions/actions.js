@@ -149,5 +149,8 @@ export function fetchUserSession() {
         dispatch(getUserSession(response));
       },
     });
+    // return fetch(`${baseURL}/api/monsters/register-pick`, { credentials: 'same-origin' })
+    // .then((response) => response.json())
+    // .then((response) => dispatch(getBasicPickMons(response.pickedMons)));
   };
 }

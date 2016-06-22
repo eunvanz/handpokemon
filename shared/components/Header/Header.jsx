@@ -4,6 +4,8 @@ import MessageModal from '../../components/Modals/MessageModal';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
+import $ from 'jquery';
+import { browserHistory } from 'react-router';
 
 const style = {
   navbarBrand: {
@@ -22,9 +24,6 @@ class Header extends React.Component {
     this._hideLoginModal = this._hideLoginModal.bind(this);
     this._hideMessageModal = this._hideMessageModal.bind(this);
   }
-  componentWillMount() {
-    // this.props.dispatch(Actions.getUserSession());
-  }
   _showLoginModal(e) {
     e.preventDefault();
     this.props.dispatch(Actions.showLoginModal());
@@ -35,33 +34,71 @@ class Header extends React.Component {
   _hideMessageModal() {
     this.props.dispatch(Actions.hideMessageModal());
   }
+  _handleLogoutClick() {
+    $.ajax({
+      url: '/api/logout',
+      success: () => {
+        browserHistory.push('/');
+      },
+    });
+  }
   render() {
-    // const renderLoginComponent = () => {
-    //   const returnComponent = [];
-    //   const session = this.props.session;
-    //   if (session.user) {
-    //     console.log('session.user: ' + session.user);
-    //     returnComponent.push(<div> {session.user} </div>);
-    //   } else {
-    //     returnComponent.push(
-    //       <div className="navbar-buttons navbar-header pull-right" role="navigation">
-    //         <ul className="nav ace-nav">
-    //           <li className="blue" >
-    //             <a href="" onClick={this._showLoginModal}>
-    //               <i className="ace-icon fa fa-key hidden-xs"></i> 로그인
-    //             </a>
-    //           </li>
-    //           <li className="grey">
-    //             <Link to="/sign-up">
-    //               <i className="ace-icon fa fa-pencil-square-o hidden-xs"></i> 회원가입
-    //             </Link>
-    //           </li>
-    //         </ul>
-    //       </div>
-    //     );
-    //   }
-    //   return returnComponent;
-    // };
+    const renderLoginComponent = () => {
+      let returnComponent = null;
+      const user = this.props.user;
+      if (user) {
+        returnComponent = (
+          <ul key="logon" className="nav ace-nav">
+            <li className="grey">
+              <a data-toggle="dropdown" href="#"
+                className="dropdown-toggle"
+              >
+                <div className="nav-user-photo-container">
+                  <div className="focuspoint nav-user-photo" data-focus-x="0" data-focus-y="0">
+                    <img className="user-photo"
+                      src={`/img/user/${this.props.user.img}_thumb`}
+                    />
+                  </div>
+                </div>
+                <span className="user-info">
+                  {this.props.user.nickname}님,<br/>안녕?
+                </span>
+                <i className="ace-icon fa fa-caret-down"></i>
+              </a>
+              <ul className="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                <li>
+                  <a href="">
+                    <i className="ace-icon fa fa-cog"></i> 정보수정 및 설정
+                  </a>
+                </li>
+                <li className="divider"></li>
+                <li>
+                  <a href="" onClick={this._handleLogoutClick}>
+                    <i className="ace-icon fa fa-power-off"></i> 로그아웃
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        );
+      } else {
+        returnComponent = (
+          <ul key="logoff" className="nav ace-nav">
+            <li className="blue" >
+              <a href="" onClick={this._showLoginModal}>
+                <i className="ace-icon fa fa-key hidden-xs"></i> 로그인
+              </a>
+            </li>
+            <li className="grey">
+              <Link to="/sign-up">
+                <i className="ace-icon fa fa-pencil-square-o hidden-xs"></i> 회원가입
+              </Link>
+            </li>
+          </ul>
+        );
+      }
+      return returnComponent;
+    };
     return (
       <div id="navbar" className="navbar navbar-default navbar-fixed-top">
         <div className="navbar-container container" id="navbar-container">
@@ -75,18 +112,7 @@ class Header extends React.Component {
             </Link>
           </div>
           <div className="navbar-buttons navbar-header pull-right" role="navigation">
-            <ul className="nav ace-nav">
-              <li className="blue" >
-                <a href="" onClick={this._showLoginModal}>
-                  <i className="ace-icon fa fa-key hidden-xs"></i> 로그인
-                </a>
-              </li>
-              <li className="grey">
-                <Link to="/sign-up">
-                  <i className="ace-icon fa fa-pencil-square-o hidden-xs"></i> 회원가입
-                </Link>
-              </li>
-            </ul>
+            {renderLoginComponent()}
           </div>
         <LoginModal show={this.props.showLoginModal} close={this._hideLoginModal}/>
         <MessageModal
@@ -110,7 +136,6 @@ function mapStateToProps(store) {
   return {
     showLoginModal: store.showLoginModal,
     showMessageModal: store.showMessageModal,
-    user: store.user,
   };
 }
 

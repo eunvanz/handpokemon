@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
 import { browserHistory } from 'react-router';
 import $ from 'jquery';
+import * as Actions from '../../redux/actions/actions';
+import { connect } from 'react-redux';
 
 class LoginModal extends React.Component {
   constructor(props) {
@@ -40,6 +42,7 @@ class LoginModal extends React.Component {
         //   });
         // }
         this.props.close();
+        this.props.dispatch(Actions.fetchUserSession());
         browserHistory.push('/');
       },
       error: (err) => {
@@ -107,9 +110,17 @@ LoginModal.contextTypes = {
   router: React.PropTypes.object,
 };
 
+function mapStateToProps(store) {
+  return {
+    user: store.user,
+  };
+}
+
 LoginModal.propTypes = {
   show: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
+  user: PropTypes.object,
+  dispatch: PropTypes.func.isRequired,
 };
 
-export default LoginModal;
+export default connect(mapStateToProps)(LoginModal);

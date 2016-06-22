@@ -17,8 +17,6 @@ const router = new Router();
 
 router.post('/api/collections/basic-pick/:userId', (req, res) => {
   const pickedMons = req.body.pickedMons;
-  // console.log('pickedMons: ' + pickedMons);
-  // console.log('userId: ' + req.params.userId);
   const collections = [];
   let condition = 1;
   for (const mon of pickedMons) {
@@ -28,18 +26,15 @@ router.post('/api/collections/basic-pick/:userId', (req, res) => {
       _userId: req.params.userId,
       condition,
     });
-    // console.log('collection: ' + collection);
+    // this log prints right objects
     collections.push(collection);
   }
   const proms = [];
   for (const collection of collections) {
-    const saveQuery = () => {
-      collection.save();
-    };
-    proms.push(saveQuery);
+    // collection.save() function returns promise, right?
+    proms.push(collection.save());
   }
   Promise.all(proms).then(() => {
-    // console.log('콜렉션 등록 완료');
     return res.json({ success: true });
   });
 });

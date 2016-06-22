@@ -1,15 +1,12 @@
 import { Router } from 'express';
 import User from '../models/user.model';
 import passport from 'passport';
-
-const multer = require('multer');
-// const crypto = require('crypto');
+import gm from 'gm';
+import multer from 'multer';
 
 const router = new Router();
 
 const upload = multer({ dest: './static/img/user/' });
-
-// const hmac = crypto.createHmac('sha256', 'hash password');
 
 // 이메일 중복 체크
 router.get('/api/user-email-check', (req, res) => {
@@ -36,6 +33,7 @@ const _getColRank = (colPoint) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
     }).then(() => {
+      console.log('콜렉션랭킹: ' + resultCnt);
       resolve(resultCnt);
     });
   });
@@ -48,8 +46,32 @@ const _getBattleRank = (battlePoint) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
     }).then(() => {
+      console.log('배틀랭킹: ' + resultCnt);
       resolve(resultCnt);
     });
+  });
+};
+
+const _saveThumbnail = (imagePath) => {
+  return new Promise((resolve, reject) => {
+    console.log('썸네일 생성중');
+    if (imagePath) {
+      gm(imagePath)
+      .resize(420)
+      .noProfile()
+      .write(`${imagePath}`, (err) => {
+        if (err) reject(new Error(err));
+        gm(imagePath)
+        .gravity('Center')
+        .thumb(36, 36, `${imagePath}_thumb`, 100, (err) => {
+          if (err) reject(new Error(err));
+          console.log('썸네일 생성완료');
+          resolve();
+        });
+      });
+    } else {
+      resolve();
+    }
   });
 };
 
@@ -66,15 +88,14 @@ const _getBattleRank = (battlePoint) => {
 
 // 회원가입
 router.post('/api/users', upload.single('img'), (req, res) => {
-  // console.log('유저등록중..');
+  console.log('유저등록중..');
   const fileName = req.file ? req.file.filename : 'default.png';
-  // 입력받은 회원 정보로 user객체 생성
+  const imagePath = req.file ? req.file.path : null;
+  console.log(JSON.stringify(req.body));
   const colRank = _getColRank(4);
   const battleRank = _getBattleRank(1000);
-  // const league = _getLeague(battleRank);
-  // console.log(JSON.stringify(req.body));
   Promise.all([colRank, battleRank]).then((ranks) => {
-    // console.log('promise.all 완료');
+    console.log('promise.all 완료');
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
@@ -86,12 +107,14 @@ router.post('/api/users', upload.single('img'), (req, res) => {
       colRank: ranks[0],
       battleRank: ranks[1],
     });
-    // console.log('user 객체 생성 완료');
-    User.register(user, user.password, (err, savedUser) => {
-      if (err) return res.status(500).send(err);
-      passport.authenticate('local')(req, res, () => {
-        // console.log('유저등록 완료 : ' + savedUser);
-        res.json({ savedUser });
+    console.log('user 객체 생성 완료');
+    _saveThumbnail(imagePath).then(() => {
+      User.register(user, user.password, (err, savedUser) => {
+        if (err) return res.status(500).send(err);
+        passport.authenticate('local')(req, res, () => {
+          console.log('유저등록 완료 : ' + savedUser);
+          res.json({ savedUser });
+        });
       });
     });
   });
@@ -103,7 +126,7 @@ router.post('/api/login', passport.authenticate('local'), (req, res) => {
 
 router.get('/api/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.json({ success: true });
 });
 
 router.get('/api/session-user', (req, res) => {
