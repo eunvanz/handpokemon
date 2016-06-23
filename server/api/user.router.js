@@ -3,6 +3,7 @@ import User from '../models/user.model';
 import passport from 'passport';
 import gm from 'gm';
 import multer from 'multer';
+import $ from 'jquery';
 
 const router = new Router();
 
@@ -124,13 +125,41 @@ router.post('/api/login', passport.authenticate('local'), (req, res) => {
   res.json({ user: req.user });
 });
 
+router.post('/api/remember-user', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  res.cookie('rememberme', JSON.stringify(req.body));
+  // $.cookie('rememberme', JSON.stringify(req.body));
+  res.json({ success: true });
+});
+
+router.get('/api/cookie-user', (req, res) => {
+  if (req.cookies.rememberme) {
+    res.json(JSON.parse(req.cookies.rememberme));
+  } else {
+    res.json({ nouser: true });
+  }
+});
+
 router.get('/api/logout', (req, res) => {
   req.logout();
+  res.clearCookie('rememberme');
   res.json({ success: true });
 });
 
 router.get('/api/session-user', (req, res) => {
   res.json(req.user);
+});
+
+router.get('/api/users/:id', (req, res) => {
+  const _id = req.params.id;
+  User.findOne({ _id })
+  .populate('_collections')
+  .exec((err, user) => {
+    if (err) return res.status(500).send(err);
+    console.log('collectionUser: ' + user);
+    res.json({ user });
+  });
 });
 
 export default router;

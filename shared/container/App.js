@@ -3,13 +3,31 @@ import { connect } from 'react-redux';
 import Header from '../components/Header/Header';
 import SideBar from '../components/SideBar/SideBar';
 import * as Actions from '../redux/actions/actions';
+import $ from 'jquery';
 
 class App extends Component {
   constructor(props, context) {
     super(props, context);
   }
   componentDidMount() {
-    this.props.dispatch(Actions.fetchUserSession());
+    $.ajax({
+      url: '/api/cookie-user',
+      method: 'get',
+      success: (res) => {
+        if (!res.nouser) {
+          $.ajax({
+            url: '/api/login',
+            method: 'post',
+            data: { email: res.email, password: res.password },
+            success: () => {
+              this.props.dispatch(Actions.fetchUserSession());
+            },
+          });
+        } else {
+          this.props.dispatch(Actions.fetchUserSession());
+        }
+      },
+    });
   }
   render() {
     return (

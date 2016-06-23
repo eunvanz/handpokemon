@@ -11,7 +11,7 @@ class SideBar extends React.Component {
       if (this.props.user) {
         return (
           <li>
-            <Link to="/">
+            <Link to={`/collection/${this.props.user._id}`}>
               <i className="menu-icon fa fa-github-alt"></i>
               <span className="menu-text"> 내 콜렉션 </span>
             </Link>

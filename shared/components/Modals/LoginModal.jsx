@@ -31,19 +31,26 @@ class LoginModal extends React.Component {
     $.ajax({
       url: '/api/login',
       type: 'post',
-      data: { email: this.state.email, password: this.state.password, remember: this.state.remember },
+      data: { email: this.state.email, password: this.state.password },
       success: () => {
-        // if ($('#remember').attr('checked')) {
-        //   // TODO: 쿠키 생성 및 아이디 비번 저장
-        //   $.ajax({
-        //     url: '/api/remember-user',
-        //     type: 'post',
-        //     data: { email:}
-        //   });
-        // }
-        this.props.close();
-        this.props.dispatch(Actions.fetchUserSession());
-        browserHistory.push('/');
+        if (this.state.remember) {
+          const data = {};
+          data.email = this.state.email;
+          data.password = this.state.password;
+          $.ajax({
+            url: '/api/remember-user',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: () => {
+              this.props.close();
+              this.props.dispatch(Actions.fetchUserSession());
+              browserHistory.push('/');
+            },
+          });
+        } else {
+          browserHistory.push('/');
+        }
       },
       error: (err) => {
         console.log(err);

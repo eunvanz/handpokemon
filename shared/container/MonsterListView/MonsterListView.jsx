@@ -79,7 +79,7 @@ class MonsterListView extends React.Component {
     );
   }
 }
-MonsterListView.need = [() => { return Actions.fetchAllMons(); }];
+// MonsterListView.need = [() => { return Actions.fetchAllMons(); }];
 MonsterListView.contextTypes = {
   router: React.PropTypes.object,
 };

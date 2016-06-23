@@ -154,3 +154,18 @@ export function fetchUserSession() {
     // .then((response) => dispatch(getBasicPickMons(response.pickedMons)));
   };
 }
+
+export function getCollectionUser(collectionUser) {
+  return {
+    type: ActionTypes.GET_COLLECTION_USER,
+    collectionUser,
+  };
+}
+
+export function fetchCollectionUser(collectionUserId) {
+  return (dispatch) => {
+    return fetch(`${baseURL}/api/users/${collectionUserId}`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getCollectionUser(response.user)));
+  };
+}
