@@ -1,50 +1,371 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
+import LoadingView from '../../components/Common/LoadingView';
 
 class CollectionView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'CollectionView';
+    this.state = {
+      collectionCountInfo: {},
+      collections: [],
+    };
   }
-  componentWillMount() {
-    this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId));
+  componentDidMount() {
+    this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId))
+    .then(this.props.dispatch(Actions.fetchMonsterCountInfo()));
+    // .then(this.props.dispatch(Actions.fetchUserSession())));
+    const scriptSrcs = ['/js/collection-view-inline.js'];
+    for (const src of scriptSrcs) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      document.body.appendChild(script);
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));
+    const collections = nextProps.collectionUser._collections;
+    const collectionCountInfo = {
+      basic: 0,
+      rare: 0,
+      special: 0,
+      sRare: 0,
+      elite: 0,
+      legend: 0,
+    };
+    for (const collection of collections) {
+      const grade = collection._mon.grade;
+      if (grade === 'b') {
+        collectionCountInfo.basic++;
+      } else if (grade === 'r') {
+        collectionCountInfo.rare++;
+      } else if (grade === 'a') {
+        collectionCountInfo.special++;
+      } else if (grade === 'ar') {
+        collectionCountInfo.sRare++;
+      } else if (grade === 'e') {
+        collectionCountInfo.elite++;
+      } else if (grade === 'l') {
+        collectionCountInfo.legend++;
+      }
+    }
+    // console.log('collectionCountInfo: ' + JSON.stringify(collectionCountInfo));
+    this.setState({ collections, collectionCountInfo });
+  }
+  componentWillUnmount() {
+    while (document.body.childElementCount !== 2) {
+      document.body.removeChild(document.body.lastChild);
+    }
   }
   render() {
-    return (
-      <div id="collection-view">
-        <div className="page-content">
-          <div className="page-header">
-            <h1>{this.props.collectionUser.nickname}님의 콜렉션</h1>
-          </div>
-          <div className="row">
-            <div className="col-xs-12 col-sm-3 center">
-              <span className="profile-picture">
-                <img
-                  className="editable img-responsive"
-                  src={`/img/user/${this.props.collectionUser.img}`}
-                />
-              </span>
-              <div className="hr hr12 dotted"></div>
-              <div className="clearfix">
-                <div className="grid2">
-                  <span className="bigger-175 blue">{this.props.collectionUser.colRank}</span>
-                  위<br/> 콜렉션랭킹
-                </div>
-                <div className="grid2">
-                  <span className="bigger-175 blue">{this.props.collectionUser.battleRank}</span>
-                  위<br/> 시합랭킹
+    const collectionUser = this.props.collectionUser;
+    const monsterCountInfo = this.props.monsterCountInfo;
+    const collectionCountInfo = this.state.collectionCountInfo;
+    const collections = this.state.collections;
+    const renderOnlineTag = () => {
+      if (collectionUser.online) {
+        return (
+          <span className="label label-primary arrowed-in-right">
+            <i className="ace-icon fa fa-circle smaller-80 align-middle"></i>online
+					</span>
+        );
+      }
+    };
+    const renderHonorTag = () => {
+      return (<span><h5>없음</h5></span>);
+    };
+    const renderWinRate = () => {
+      let returnComponent = null;
+      if (collectionUser.totalBattle !== 0) {
+        returnComponent = (<span>(승률 : {collectionUser.winBattle / collectionUser.totalBattle * 100}%)</span>);
+      }
+      return returnComponent;
+    };
+    const renderLastActivity = () => {
+      const now = Date.now();
+      const lastLogin = collectionUser.lastLogin;
+      const gap = now - lastLogin;
+      let text = '방금 전';
+      if (gap > 2000 && gap < 1000 * 60) {
+        text = `${gap / 1000}초 전`;
+      } else if (gap < 1000 * 60 * 60) {
+        text = `${Math.floor(gap / (1000 * 60))}분 전`;
+      } else if (gap < 1000 * 60 * 60 * 24) {
+        text = `${Math.floor(gap / (1000 * 60 * 60))}시간 전`;
+      } else {
+        text = `${Math.floor(gap / (1000 * 60 * 60 * 24))}일 전`;
+      }
+      return (<div>{text}</div>);
+    };
+    const renderIntroduce = () => {
+      let text = '자기소개가 없습니다.';
+      if (collectionUser.introduce !== '') {
+        text = collectionUser.introduce;
+      }
+      return (<div>{text}</div>);
+    };
+    const renderFunctionBar = () => {
+      if (collectionUser.email === this.props.user.email) {
+        return (
+          <div className="row function-section">
+            <div className="col-xs-12 widget-container-col function-bar"
+              style={{ zIndex: '999' }}
+            >
+              <div className="widget-box widget-box-function">
+                <div className="widget-body">
+                  <div className="widget-main">
+                    <div className="row">
+                      <div className="col-sm-6 hidden-xs">
+                        <h5>레어등급 이상의 포켓몬을 얻고 싶다면?</h5>
+                      </div>
+                      <div className="col-sm-6 visible-xs-inline-block">레어 이상을 원해?
+                      </div>
+                      <div
+                        className="col-sm-6 text-right visible-xs-inline-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block"
+                      >
+                        <a href="">
+                          <button className="btn btn-primary hidden-xs">
+                            <i className="ace-icon fa fa-flask"></i> 교배하기
+                          </button>
+                          <button
+                            className="btn btn-primary btn-xs visible-xs-inline-block"
+                          >
+                            교배하기
+                          </button>
+                        </a>
+                        <a href="" style={{ marginLeft: '4px' }}>
+                          <button className="btn btn-primary hidden-xs">
+                            <i className="ace-icon fa fa-flash"></i> 진화하기
+                          </button>
+                          <button
+                            className="btn btn-primary btn-xs visible-xs-inline-block"
+                          >
+                            진화하기
+                          </button>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    );
+        );
+      }
+    };
+    const renderCollectionView = () => {
+      let returnComponent = null;
+      if (this.props.collectionUser && this.props.monsterCountInfo) {
+        returnComponent = (
+          <div id="collection-view">
+            <div className="page-content">
+              <div className="page-header">
+                <h1>{collectionUser.nickname}님의 콜렉션</h1>
+              </div>
+              <div className="row">
+                <div className="col-xs-12 col-sm-3 center">
+                  <span className="profile-picture">
+                    <img
+                      className="editable img-responsive"
+                      src={`/img/user/${collectionUser.img}`}
+                    />
+                  </span>
+                  <div className="hr hr12 dotted"></div>
+                  <div className="clearfix">
+                    <div className="grid2">
+                      <span className="bigger-175 blue">{collectionUser.colRank}</span>
+                      위<br/> 콜렉션랭킹
+                    </div>
+                    <div className="grid2">
+                      <span className="bigger-175 blue">{collectionUser.battleRank}</span>
+                      위<br/> 시합랭킹
+                    </div>
+                  </div>
+                  <div className="hr hr12 dotted"></div>
+                </div>
+                <div className="col-xs-12 col-sm-9">
+                  <h4 className="blue">
+                    <span className="middle">{collectionUser.nickname} </span>
+                    {renderOnlineTag()}
+                  </h4>
+                  <div className="profile-user-info profile-user-info-striped">
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>칭호</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        {renderHonorTag()}
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>콜렉션 점수</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span><h5>{collectionUser.colPoint}점</h5></span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>시합 점수</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span><h5>{collectionUser.battlePoint}점</h5></span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>시합 전적</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span><h5>{collectionUser.totalBattle }전 {collectionUser.winBattle }승 {collectionUser.loseBattle }패 {renderWinRate()}
+                        </h5></span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>최대연승</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span>
+                          <h5>{collectionUser.maxWinInRow }연승(현재 {collectionUser.winInRow }연승 중)</h5>
+                        </span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>마지막 활동</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span><h5>
+                          {renderLastActivity()}
+                        </h5></span>
+                      </div>
+                    </div>
+                    <div className="profile-info-row">
+                      <div className="profile-info-name">
+                        <h5>자기소개</h5>
+                      </div>
+                      <div className="profile-info-value">
+                        <span>
+                          <h5>
+                            {renderIntroduce()}
+                          </h5>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ height: '10px' }}></div>
+              <div className="row graph-container">
+                <div className="col-xs-12 pricing-box">
+                  <div className="widget-box widget-collection" style={{ margin: '0px' }}>
+                    <div className="widget-body">
+                      <div className="widget-main">
+                        <div className="row">
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>베이직</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.basic !== 0 ? collectionCountInfo.basic * 100 / monsterCountInfo.basic : 0}
+                              data-color="#f2bb46"
+                            >
+                              <span className="percent">{collectionCountInfo.basic}/{monsterCountInfo.basic}</span>
+                            </div>
+                          </div>
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>레어</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.rare !== 0 ? collectionCountInfo.rare * 100 / monsterCountInfo.rare * 100 : 0}
+                              data-color="#8ae68a"
+                            >
+                              <span className="percent">{collectionCountInfo.rare}/{monsterCountInfo.rare}</span>
+                            </div>
+                          </div>
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>스페셜</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.special !== 0 ? collectionCountInfo.special * 100 / monsterCountInfo.special : 0}
+                              data-color="#66ccff"
+                            >
+                              <span className="percent">{collectionCountInfo.special}/{monsterCountInfo.special}</span>
+                            </div>
+                          </div>
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>스페셜레어</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.sRare !== 0 ? collectionCountInfo.sRare * 100 / monsterCountInfo.sRare : 0}
+                              data-color="#9999ff"
+                            >
+                              <span className="percent">{collectionCountInfo.sRare}/{monsterCountInfo.sRare}</span>
+                            </div>
+                          </div>
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>엘리트</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.elite !== 0 ? collectionCountInfo.elite * 100 / monsterCountInfo.elite : 0}
+                              data-color="#ff6699"
+                            >
+                              <span className="percent">{collectionCountInfo.elite}/{monsterCountInfo.elite}</span>
+                            </div>
+                          </div>
+                          <div className="col-xs-6 col-sm-2 center">
+                            <h4>레전드</h4>
+                            <div className="easy-pie-chart percentage"
+                              data-percent={monsterCountInfo.lengend !== 0 ? collectionCountInfo.lengend * 100 / monsterCountInfo.lengend : 0}
+                              data-color="#ff9966"
+                            >
+                              <span className="percent">{collectionCountInfo.legend}/{monsterCountInfo.legend}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{ height: '30px' }}></div>
+                        <div className="row">
+                          <div className="col-sm-2 col-xs-12 text-center">
+                            <h4>콜렉션 점수</h4>
+                          </div>
+                          <div className="col-sm-8 col-xs-12" style={{ paddingTop: '15px' }}>
+                            <div className="progress progress-mini">
+                              <div
+                                className="progress-bar progress-bar-primary collection-point-bar"
+                                style={{ width: `${collectionUser.colPoint * 100 / monsterCountInfo.totalPoint}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="col-sm-2 col-xs-12 text-center">
+                            <h4>{collectionUser.colPoint}/{monsterCountInfo.totalPoint}</h4>
+                          </div>
+                        </div>
+                        <div style={{ height: '20px' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space"></div>
+              {renderFunctionBar()}
+            </div>
+          </div>
+        );
+      } else {
+        returnComponent = (
+          <LoadingView/>
+        );
+      }
+      // return returnComponent;
+      return <div></div>;
+    };
+    return renderCollectionView();
   }
 }
 
-CollectionView.need = [() => { return Actions.fetchCollectionUser(); }];
+CollectionView.need = [
+  (params) => { return Actions.fetchCollectionUser.bind(null, params.collectionUserId)(); },
+  () => { return Actions.fetchMonsterCountInfo(); },
+  // () => { return Actions.fetchUserSession(); },
+];
 
 CollectionView.contextTypes = {
   router: React.PropTypes.object,
@@ -53,12 +374,16 @@ CollectionView.contextTypes = {
 const mapStateToProps = (store) => ({
   collections: store.collections,
   collectionUser: store.collectionUser,
+  monsterCountInfo: store.monsterCountInfo,
+  user: store.user,
 });
 
 CollectionView.propTypes = {
   dispatch: PropTypes.func.isRequired,
   collectionUser: PropTypes.object,
   params: PropTypes.object,
+  monsterCountInfo: PropTypes.object,
+  user: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(CollectionView);

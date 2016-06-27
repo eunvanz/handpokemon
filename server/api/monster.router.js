@@ -135,6 +135,38 @@ router.get('/api/monsters/register-pick', (req, res) => {
   });
 });
 
+router.get('/api/monsters/count-info', (req, res) => {
+  const monsterCountInfo = { totalPoint: 0 };
+  console.log('counting monsters');
+  Monster.count({ grade: 'b' }, (err, count) => {
+    monsterCountInfo.basic = count;
+  })
+  .then(Monster.count({ grade: 'r' }, (err, count) => {
+    monsterCountInfo.rare = count;
+  })
+  .then(Monster.count({ grade: 'a' }, (err, count) => {
+    monsterCountInfo.special = count;
+  })
+  .then(Monster.count({ grade: 'ar' }, (err, count) => {
+    monsterCountInfo.sRare = count;
+  })
+  .then(Monster.count({ grade: 'e' }, (err, count) => {
+    monsterCountInfo.elite = count;
+  })
+  .then(Monster.count({ grade: 'l' }, (err, count) => {
+    monsterCountInfo.legend = count;
+  })
+  .then(Monster.find({}, (err, monsters) => {
+    for (const monster of monsters) {
+      monsterCountInfo.totalPoint += monster.point;
+    }
+  })
+  .then(() => {
+    console.log('monsterCountInfo: ' + JSON.stringify(monsterCountInfo));
+    res.json({ monsterCountInfo });
+  })))))));
+});
+
 router.get('/api/monsters/:monNo', (req, res) => {
   const monNo = req.params.monNo;
   Monster.findOne({ monNo }, (err, mon) => {
@@ -150,6 +182,5 @@ router.delete('/api/monsters/:_id', (req, res) => {
     return res.redirect('/mon-list');
   });
 });
-
 
 export default router;

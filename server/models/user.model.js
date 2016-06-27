@@ -38,6 +38,7 @@ const userSchema = new Schema({
   _recommender: { type: Schema.Types.ObjectId, ref: 'User', default: null },
   recommenderFlag: { type: Boolean, default: null },
   _collections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
+  online: { type: Boolean, default: true, required: true },
 });
 
 userSchema.plugin(passportLocalMongoose, {

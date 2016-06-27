@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const collectionSchema = new Schema({
-  _monId: { type: Schema.Types.ObjectId, ref: 'Monster', required: true },
-  _userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  _mon: { type: Schema.Types.ObjectId, ref: 'Monster', required: true },
+  _user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   getDate: { type: Date, default: Date.now, required: true },
   level: { type: Number, default: 1, required: true },
   addedHp: { type: Number, default: 0, required: true },

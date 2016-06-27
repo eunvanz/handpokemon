@@ -27,7 +27,7 @@ class RegisterMonsterView extends React.Component {
       skillName: '',
       grade: 'b',
       cost: '1',
-      _beforeId: null,
+      _before: null,
       desc: '',
       requiredPiece: '',
       designer: '',
@@ -102,7 +102,7 @@ class RegisterMonsterView extends React.Component {
     formData.append('skillName', $('#skillName').val());
     formData.append('grade', $('#grade').val());
     formData.append('cost', $('#cost').val());
-    formData.append('_beforeId', $('#_beforeId').val() === 0 ? null : $('#_beforeId').val());
+    formData.append('_before', $('#_before').val() === 0 ? null : $('#_before').val());
     formData.append('desc', $('#desc').val());
     formData.append('requiredPiece', $('#requiredPiece').val());
     formData.append('designer', $('#designer').val());
@@ -389,12 +389,12 @@ class RegisterMonsterView extends React.Component {
 
                 <div className="form-group">
                   <label className="col-sm-3 control-label no-padding-right"
-                    htmlFor="_beforeId"
+                    htmlFor="_before"
                   > 전 단계 포켓몬 </label>
 
                   <div className="col-sm-9">
-                    <select className="form-control" id="_beforeId" name="_beforeId"
-                      value={this.state ? this.state._beforeId : null}
+                    <select className="form-control" id="_before" name="_before"
+                      value={this.state ? this.state._before : null}
                       onChange={this._handleInputChange}
                     >
                       { renderBeforeIdOptions() }

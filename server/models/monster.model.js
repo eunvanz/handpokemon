@@ -16,7 +16,7 @@ const monsterSchema = new Schema({
   skillName: { type: String, required: true },
   grade: { type: String, required: true },
   cost: { type: Number, required: true },
-  _beforeId: { type: Schema.Types.ObjectId, ref: 'Monster', default: null },
+  _before: { type: Schema.Types.ObjectId, ref: 'Monster', default: null },
   desc: { type: String },
   regDate: { type: Date, default: Date.now, required: true },
   designer: { type: [String], required: true },

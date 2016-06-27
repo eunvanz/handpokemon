@@ -37,3 +37,12 @@ export const pickedMons = (state = null, action) => {
       return state;
   }
 };
+
+export const monsterCountInfo = (state = {}, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_MONSTER_COUNT_INFO :
+      return action.monsterCountInfo;
+    default:
+      return state;
+  }
+};

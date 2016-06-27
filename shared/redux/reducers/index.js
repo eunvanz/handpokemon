@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
-import { baseMons, allMons, mon, pickedMons } from './reducer_mon';
+import { baseMons, allMons, mon, pickedMons, monsterCountInfo } from './reducer_mon';
 import { showLoginModal, showMessageModal } from './reducer_modal';
 import { appMounted } from './reducer_common';
 import { user, collectionUser } from './reducer_user';
+import { collectionCountInfo } from './reducer_collection';
 
 export default combineReducers({
   baseMons,
@@ -14,4 +15,6 @@ export default combineReducers({
   appMounted,
   user,
   collectionUser,
+  monsterCountInfo,
+  collectionCountInfo,
 });

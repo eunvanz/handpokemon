@@ -31,6 +31,7 @@ class RegisterMemberView extends React.Component {
     this._showConfirmModal = this._showConfirmModal.bind(this);
   }
   componentDidMount() {
+    this.props.dispatch(Actions.fetchBasicPickMons());
     const scriptSrcs = ['/js/jquery.inputlimiter.1.3.1.js', '/js/fuelux/fuelux.wizard.js',
     '/js/jquery.validate.js', '/js/additional-methods.js', '/js/bootbox.js', '/js/jquery.maskedinput.js',
     '/js/inline/register-member-view.js'];
@@ -318,9 +319,9 @@ class RegisterMemberView extends React.Component {
   }
 }
 
-// RegisterMemberView.need = [
-//   () => { return Actions.fetchBasicPickMons(); },
-// ];
+RegisterMemberView.need = [
+  () => { return Actions.fetchBasicPickMons(); },
+];
 
 RegisterMemberView.contextTypes = {
   router: React.PropTypes.object,

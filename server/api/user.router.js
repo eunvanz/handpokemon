@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import User from '../models/user.model';
+import Collection from '../models/collection.model';
 import passport from 'passport';
 import gm from 'gm';
 import multer from 'multer';
-import $ from 'jquery';
 
 const router = new Router();
 
@@ -34,7 +34,6 @@ const _getColRank = (colPoint) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
     }).then(() => {
-      console.log('콜렉션랭킹: ' + resultCnt);
       resolve(resultCnt);
     });
   });
@@ -47,7 +46,6 @@ const _getBattleRank = (battlePoint) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
     }).then(() => {
-      console.log('배틀랭킹: ' + resultCnt);
       resolve(resultCnt);
     });
   });
@@ -55,7 +53,7 @@ const _getBattleRank = (battlePoint) => {
 
 const _saveThumbnail = (imagePath) => {
   return new Promise((resolve, reject) => {
-    console.log('썸네일 생성중');
+    // console.log('썸네일 생성중');
     if (imagePath) {
       gm(imagePath)
       .resize(420)
@@ -64,9 +62,9 @@ const _saveThumbnail = (imagePath) => {
         if (err) reject(new Error(err));
         gm(imagePath)
         .gravity('Center')
-        .thumb(36, 36, `${imagePath}_thumb`, 100, (err) => {
-          if (err) reject(new Error(err));
-          console.log('썸네일 생성완료');
+        .thumb(36, 36, `${imagePath}_thumb`, 100, (err2) => {
+          if (err2) reject(new Error(err2));
+          // console.log('썸네일 생성완료');
           resolve();
         });
       });
@@ -89,14 +87,14 @@ const _saveThumbnail = (imagePath) => {
 
 // 회원가입
 router.post('/api/users', upload.single('img'), (req, res) => {
-  console.log('유저등록중..');
+  // console.log('유저등록중..');
   const fileName = req.file ? req.file.filename : 'default.png';
   const imagePath = req.file ? req.file.path : null;
-  console.log(JSON.stringify(req.body));
+  // console.log(JSON.stringify(req.body));
   const colRank = _getColRank(4);
   const battleRank = _getBattleRank(1000);
   Promise.all([colRank, battleRank]).then((ranks) => {
-    console.log('promise.all 완료');
+    // console.log('promise.all 완료');
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
@@ -108,12 +106,12 @@ router.post('/api/users', upload.single('img'), (req, res) => {
       colRank: ranks[0],
       battleRank: ranks[1],
     });
-    console.log('user 객체 생성 완료');
+    // console.log('user 객체 생성 완료');
     _saveThumbnail(imagePath).then(() => {
       User.register(user, user.password, (err, savedUser) => {
         if (err) return res.status(500).send(err);
         passport.authenticate('local')(req, res, () => {
-          console.log('유저등록 완료 : ' + savedUser);
+          // console.log('유저등록 완료 : ' + savedUser);
           res.json({ savedUser });
         });
       });
@@ -126,10 +124,7 @@ router.post('/api/login', passport.authenticate('local'), (req, res) => {
 });
 
 router.post('/api/remember-user', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
   res.cookie('rememberme', JSON.stringify(req.body));
-  // $.cookie('rememberme', JSON.stringify(req.body));
   res.json({ success: true });
 });
 
@@ -142,23 +137,40 @@ router.get('/api/cookie-user', (req, res) => {
 });
 
 router.get('/api/logout', (req, res) => {
-  req.logout();
-  res.clearCookie('rememberme');
-  res.json({ success: true });
+  const _id = req.user._id;
+  User.findByIdAndUpdate(_id, { online: false }, { upsert: true }, () => {
+    req.logout();
+    res.clearCookie('rememberme');
+    res.json({ success: true });
+  });
 });
 
 router.get('/api/session-user', (req, res) => {
-  res.json(req.user);
+  console.log('session user: ' + req.user);
+  if (req.user) {
+    res.json({ user: req.user });
+  } else {
+    res.json({ user: null });
+  }
 });
 
 router.get('/api/users/:id', (req, res) => {
   const _id = req.params.id;
-  User.findOne({ _id })
+  console.log('_id: ' + _id);
+  User
+  .findById(_id)
   .populate('_collections')
   .exec((err, user) => {
-    if (err) return res.status(500).send(err);
-    console.log('collectionUser: ' + user);
-    res.json({ user });
+    console.log('user: ' + user);
+    if (user) {
+      Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
+        user._collections = collections; // eslint-disable-line
+        if (err) return res.status(500).send(err);
+        res.json({ user });
+      });
+    } else {
+      res.json({ user });
+    }
   });
 });
 

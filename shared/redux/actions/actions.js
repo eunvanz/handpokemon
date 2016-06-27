@@ -142,16 +142,21 @@ export function getUserSession(user) {
 }
 
 export function fetchUserSession() {
+  console.log('fetching user session');
   return (dispatch) => {
     return $.ajax({
       url: `${baseURL}/api/session-user`,
+      method: 'get',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
       success: (response) => {
-        dispatch(getUserSession(response));
+        dispatch(getUserSession(response.user));
       },
     });
-    // return fetch(`${baseURL}/api/monsters/register-pick`, { credentials: 'same-origin' })
+    // return fetch(`${baseURL}/api/session-user`, { credentials: 'same-origin' })
     // .then((response) => response.json())
-    // .then((response) => dispatch(getBasicPickMons(response.pickedMons)));
+    // .then((response) => dispatch(getBasicPickMons(response.user)));
   };
 }
 
@@ -164,8 +169,44 @@ export function getCollectionUser(collectionUser) {
 
 export function fetchCollectionUser(collectionUserId) {
   return (dispatch) => {
-    return fetch(`${baseURL}/api/users/${collectionUserId}`)
+    console.log('collectionUserId: ' + collectionUserId);
+    return fetch(`${baseURL}/api/users/${collectionUserId}`, {
+      method: 'get',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    })
     .then((response) => response.json())
     .then((response) => dispatch(getCollectionUser(response.user)));
+  };
+}
+
+export function getMonsterCountInfo(monsterCountInfo) {
+  return {
+    type: ActionTypes.GET_MONSTER_COUNT_INFO,
+    monsterCountInfo,
+  };
+}
+
+export function fetchMonsterCountInfo() {
+  return (dispatch) => {
+    return fetch(`${baseURL}/api/monsters/count-info`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getMonsterCountInfo(response.monsterCountInfo)));
+  };
+}
+
+export function getCollectionCountInfo(collectionCountInfo) {
+  return {
+    type: ActionTypes.GET_MONSTER_COUNT_INFO,
+    collectionCountInfo,
+  };
+}
+
+export function fetchCollectionCountInfo(userId) {
+  return (dispatch) => {
+    return fetch(`${baseURL}/api/collections/count-info/${userId}`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getCollectionCountInfo(response.collectionCountInfo)));
   };
 }
