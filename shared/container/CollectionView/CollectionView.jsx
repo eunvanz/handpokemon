@@ -12,10 +12,12 @@ class CollectionView extends React.Component {
       collections: [],
     };
   }
-  componentDidMount() {
+  componentWillMount() {
     this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId))
     .then(this.props.dispatch(Actions.fetchMonsterCountInfo()));
     // .then(this.props.dispatch(Actions.fetchUserSession())));
+  }
+  componentDidMount() {
     const scriptSrcs = ['/js/collection-view-inline.js'];
     for (const src of scriptSrcs) {
       const script = document.createElement('script');
@@ -26,33 +28,35 @@ class CollectionView extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));
-    const collections = nextProps.collectionUser._collections;
-    const collectionCountInfo = {
-      basic: 0,
-      rare: 0,
-      special: 0,
-      sRare: 0,
-      elite: 0,
-      legend: 0,
-    };
-    for (const collection of collections) {
-      const grade = collection._mon.grade;
-      if (grade === 'b') {
-        collectionCountInfo.basic++;
-      } else if (grade === 'r') {
-        collectionCountInfo.rare++;
-      } else if (grade === 'a') {
-        collectionCountInfo.special++;
-      } else if (grade === 'ar') {
-        collectionCountInfo.sRare++;
-      } else if (grade === 'e') {
-        collectionCountInfo.elite++;
-      } else if (grade === 'l') {
-        collectionCountInfo.legend++;
+    if (nextProps.collectionUser) {
+      const collections = nextProps.collectionUser._collections;
+      const collectionCountInfo = {
+        basic: 0,
+        rare: 0,
+        special: 0,
+        sRare: 0,
+        elite: 0,
+        legend: 0,
+      };
+      for (const collection of collections) {
+        const grade = collection._mon.grade;
+        if (grade === 'b') {
+          collectionCountInfo.basic++;
+        } else if (grade === 'r') {
+          collectionCountInfo.rare++;
+        } else if (grade === 'a') {
+          collectionCountInfo.special++;
+        } else if (grade === 'ar') {
+          collectionCountInfo.sRare++;
+        } else if (grade === 'e') {
+          collectionCountInfo.elite++;
+        } else if (grade === 'l') {
+          collectionCountInfo.legend++;
+        }
       }
+      // console.log('collectionCountInfo: ' + JSON.stringify(collectionCountInfo));
+      this.setState({ collections, collectionCountInfo });
     }
-    // console.log('collectionCountInfo: ' + JSON.stringify(collectionCountInfo));
-    this.setState({ collections, collectionCountInfo });
   }
   componentWillUnmount() {
     while (document.body.childElementCount !== 2) {
@@ -354,10 +358,10 @@ class CollectionView extends React.Component {
           <LoadingView/>
         );
       }
-      // return returnComponent;
-      return <div></div>;
+      return returnComponent;
     };
     return renderCollectionView();
+    // return <div></div>;
   }
 }
 
