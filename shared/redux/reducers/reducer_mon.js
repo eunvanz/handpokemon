@@ -46,3 +46,12 @@ export const monsterCountInfo = (state = {}, action) => {
       return state;
   }
 };
+
+export const designers = (state = [], action) => {
+  switch (action.type) {
+    case ActionTypes.GET_DESIGNERS :
+      return action.designers;
+    default:
+      return state;
+  }
+};

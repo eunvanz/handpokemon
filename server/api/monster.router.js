@@ -183,4 +183,18 @@ router.delete('/api/monsters/:_id', (req, res) => {
   });
 });
 
+router.get('/api/designers', (req, res) => {
+  const designers = new Set();
+  Monster.find({})
+  .select('designer')
+  .exec((err, monsters) => {
+    for (const monster of monsters) {
+      for (const designer of monster.designer) {
+        designers.add(designer);
+      }
+    }
+    res.json({ designers });
+  });
+});
+
 export default router;

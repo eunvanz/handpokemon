@@ -151,10 +151,11 @@ export function fetchUserSession() {
         'Content-Type': 'application/json',
       }),
       success: (response) => {
+        console.log('user: ' + response.user);
         dispatch(getUserSession(response.user));
       },
     });
-    // return fetch(`${baseURL}/api/session-user`, { credentials: 'same-origin' })
+    // return fetch(`${baseURL}/api/session-user`, { credentials: 'include' })
     // .then((response) => response.json())
     // .then((response) => dispatch(getBasicPickMons(response.user)));
   };
@@ -208,5 +209,20 @@ export function fetchCollectionCountInfo(userId) {
     return fetch(`${baseURL}/api/collections/count-info/${userId}`)
     .then((response) => response.json())
     .then((response) => dispatch(getCollectionCountInfo(response.collectionCountInfo)));
+  };
+}
+
+export function getDesigners(designers) {
+  return {
+    type: ActionTypes.GET_DESIGNERS,
+    designers,
+  };
+}
+
+export function fetchDesigners() {
+  return (dispatch) => {
+    return fetch(`${baseURL}/api/designers`)
+    .then((response) => response.json())
+    .then((response) => dispatch(getDesigners(response.designers)));
   };
 }

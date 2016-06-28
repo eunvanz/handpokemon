@@ -200,7 +200,7 @@ app.use((req, res, next) => {
       return next();
     }
 
-    const initialState = { user: null };
+    const initialState = {};
 
     const store = configureStore(initialState);
 

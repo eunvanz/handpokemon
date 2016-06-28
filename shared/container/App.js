@@ -9,6 +9,9 @@ class App extends Component {
   constructor(props, context) {
     super(props, context);
   }
+  // componentWillMount() {
+  //   this.props.dispatch(Actions.fetchUserSession());
+  // }
   componentDidMount() {
     $.ajax({
       url: '/api/cookie-user',
@@ -46,13 +49,13 @@ class App extends Component {
   }
 }
 
-// App.need = [
-//   () => { return Actions.fetchUserSession(); },
-// ];
-
 App.contextTypes = {
   router: React.PropTypes.object,
 };
+
+// App.need = [
+//   () => { return Actions.fetchUserSession(); },
+// ];
 
 function mapStateToProps(store) {
   return {
