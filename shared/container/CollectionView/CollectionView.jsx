@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import LoadingView from '../../components/Common/LoadingView';
+import MonsterCard from '../../components/Common/MonsterCard';
 
 class CollectionView extends React.Component {
   constructor(props) {
@@ -10,13 +11,26 @@ class CollectionView extends React.Component {
     this.state = {
       collectionCountInfo: {},
       collections: [],
+      collectionsMonNo: null,
+      designers: null,
     };
   }
   componentDidMount() {
     this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId))
     .then(this.props.dispatch(Actions.fetchMonsterCountInfo())
-    .then(this.props.dispatch(Actions.fetchDesigners())));
-    const scriptSrcs = ['/js/collection-view-inline.js'];
+    .then(this.props.dispatch(Actions.fetchAllMons())
+    .then(() => {
+      const designers = new Set();
+      for (const mon of this.props.allMons) {
+        for (const designer of mon.designer) {
+          designers.add(designer);
+        }
+      }
+      this.setState({
+        designers,
+      });
+    })));
+    const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
     for (const src of scriptSrcs) {
       const script = document.createElement('script');
       script.src = src;
@@ -36,7 +50,9 @@ class CollectionView extends React.Component {
         elite: 0,
         legend: 0,
       };
+      const collectionsMonNo = new Set();
       for (const collection of collections) {
+        collectionsMonNo.add(collection._mon.monNo);
         const grade = collection._mon.grade;
         if (grade === 'b') {
           collectionCountInfo.basic++;
@@ -53,7 +69,7 @@ class CollectionView extends React.Component {
         }
       }
       // console.log('collectionCountInfo: ' + JSON.stringify(collectionCountInfo));
-      this.setState({ collections, collectionCountInfo });
+      this.setState({ collections, collectionCountInfo, collectionsMonNo });
     }
   }
   componentWillUnmount() {
@@ -159,13 +175,58 @@ class CollectionView extends React.Component {
     };
     const renderDesignerBadges = () => {
       const returnComponent = [];
-      let status = 0;
-      for (const designer of this.props.designers) {
-        returnComponent.push(
-          <span className="badge badge-default check-badge" id={`filter-designer-${status++}`}>
-            <i className="fa fa-check"></i> <span className="designer-name">{designer}</span>
-          </span>
-        );
+      if (this.state.designers) {
+        let status = 0;
+        for (const designer of this.state.designers) {
+          returnComponent.push(
+            <span key={status} className="badge badge-default check-badge" id={`filter-designer-${status++}`}>
+              <i className="fa fa-check"></i> <span className="designer-name">{designer}</span>
+            </span>
+          );
+        }
+      }
+      return returnComponent;
+    };
+    const renderMonsterCardComponent = () => {
+      const returnComponent = [];
+      const allMons = this.props.allMons;
+      if (this.state.collectionsMonNo) {
+        for (const mon of allMons) {
+          if (this.state.collectionsMonNo.has(mon.monNo)) {
+            for (const col of collections) {
+              if (col._mon.monNo === mon.monNo) {
+                mon.img = [mon.img[col.imgIdx]];
+                mon.level = col.level;
+                mon.initHp = mon.hp;
+                mon.initPower = mon.power;
+                mon.initArmor = mon.armor;
+                mon.initSpecialPower = mon.specialPower;
+                mon.initSpecialArmor = mon.specialArmor;
+                mon.initDex = mon.dex;
+                mon.hp = mon.hp + col.addedHp;
+                mon.power = mon.power + col.addedPower;
+                mon.armor = mon.armor + col.addedArmor;
+                mon.specialPower = mon.specialPower + col.addedSpecialPower;
+                mon.specialArmor = mon.specialArmor + col.addedSpecialPower;
+                mon.dex = mon.dex + col.addedDex;
+                mon.honorHp = col.honorHp;
+                mon.honorPower = col.honorPower;
+                mon.honorArmor = col.honorArmor;
+                mon.honorSpecialPower = col.honorSpecialPower;
+                mon.honorSpecialArmor = col.honorSpecialArmor;
+                mon.honorDex = col.honorDex;
+                const filterData = { 'data-have': '보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
+                'data-grade': mon.grade, 'data-designer': mon.designer };
+                returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
+              }
+            }
+          } else {
+            mon.img = ['nomonster.png'];
+            const filterData = { 'data-have': '미보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
+            'data-grade': mon.grade, 'data-designer': mon.designer };
+            returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
+          }
+        }
       }
       return returnComponent;
     };
@@ -398,168 +459,190 @@ class CollectionView extends React.Component {
                     </ul>
                     <div className="tab-content">
                       <div id="have" className="tab-pane fade in active">
-                        <span className="badge badge-info check-badge" id="filter-allHave"><i
-                          className="fa fa-check"></i> 전체
+                        <span className="badge badge-info check-badge" id="filter-allHave">
+                          <i className="fa fa-check"></i> 전체
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-have"
-                          data-filter-value="보유"><i className="fa fa-check"></i> 보유
+                          data-filter-value="보유"
+                        ><i className="fa fa-check"></i> 보유
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-noHave"
-                          data-filter-value="미보유"><i className="fa fa-check"></i> 미보유
+                          data-filter-value="미보유"
+                        ><i className="fa fa-check"></i> 미보유
                         </span>
                       </div>
                       <div id="cost" className="tab-pane">
                         <span className="badge badge-info check-badge" id="filter-allCost"><i
-                          className="fa fa-check"></i> 전체
+                          className="fa fa-check"
+                        ></i> 전체
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-1"
-                          data-filter-value="1"><i className="fa fa-check"></i> 코스트1
+                          data-filter-value="1"
+                        ><i className="fa fa-check"></i> 코스트1
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-2"
-                          data-filter-value="2"><i className="fa fa-check"></i> 코스트2
+                          data-filter-value="2"
+                        ><i className="fa fa-check"></i> 코스트2
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-3"
-                          data-filter-value="3"><i className="fa fa-check"></i> 코스트3
+                          data-filter-value="3"
+                        ><i className="fa fa-check"></i> 코스트3
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-4"
-                          data-filter-value="4"><i className="fa fa-check"></i> 코스트4
+                          data-filter-value="4"
+                        ><i className="fa fa-check"></i> 코스트4
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-5"
-                          data-filter-value="5"><i className="fa fa-check"></i> 코스트5
+                          data-filter-value="5"
+                        ><i className="fa fa-check"></i> 코스트5
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-6"
-                          data-filter-value="6"><i className="fa fa-check"></i> 코스트6
+                          data-filter-value="6"
+                        ><i className="fa fa-check"></i> 코스트6
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-7"
-                          data-filter-value="7"><i className="fa fa-check"></i> 코스트7
+                          data-filter-value="7"
+                        ><i className="fa fa-check"></i> 코스트7
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-cost-8"
-                          data-filter-value="8"><i className="fa fa-check"></i> 코스트8
+                          data-filter-value="8"
+                        ><i className="fa fa-check"></i> 코스트8
                         </span>
                       </div>
                       <div id="attr" className="tab-pane">
-                        <span className="badge badge-info check-badge" id="filter-allAttr"><i
-                          className="fa fa-check"></i> 전체
+                        <span className="badge badge-info check-badge" id="filter-allAttr">
+                          <i className="fa fa-check"></i> 전체
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-normal"><i
-                          className="fa fa-check"></i> 노말
+                          className="badge badge-default check-badge" id="filter-attr-normal"
+                        >
+                          <i className="fa fa-check"></i> 노말
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-fire"><i
-                          className="fa fa-check"></i> 불꽃
+                          className="badge badge-default check-badge" id="filter-attr-fire"
+                        >
+                          <i className="fa fa-check"></i> 불꽃
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-water"><i
-                          className="fa fa-check"></i> 물
-                        </span>
-                        <span
-                          className="badge badge-default check-badge"
-                          id="filter-attr-electronic"><i className="fa fa-check"></i>전기
-                        </span>
-                        <span className="badge badge-default check-badge"
-                          id="filter-attr-plant"><i className="fa fa-check"></i> 풀
-                        </span>
-                        <span
-                          className="badge badge-default check-badge" id="filter-attr-ice"><i
-                          className="fa fa-check"></i> 얼음
-                        </span>
-                        <span
-                          className="badge badge-default check-badge" id="filter-attr-fly"><i
-                          className="fa fa-check"></i> 비행
-                        </span>
-                        <span
-                          className="badge badge-default check-badge" id="filter-attr-fairy"><i
-                          className="fa fa-check"></i> 요정
-                        </span>
-                        <span
-                          className="badge badge-default check-badge" id="filter-attr-earth"><i
-                          className="fa fa-check"></i> 땅
-                        </span>
-                        <span
-                          className="badge badge-default check-badge" id="filter-attr-venom"><i
-                          className="fa fa-check"></i> 독
+                          className="badge badge-default check-badge" id="filter-attr-water"
+                        >
+                          <i className="fa fa-check"></i> 물
                         </span>
                         <span
                           className="badge badge-default check-badge"
-                          id="filter-attr-fighter"><i className="fa fa-check"></i> 격투
+                          id="filter-attr-electronic"
+                        ><i className="fa fa-check"></i>전기
                         </span>
                         <span className="badge badge-default check-badge"
-                          id="filter-attr-esper"><i className="fa fa-check"></i> 염력
+                          id="filter-attr-plant"
+                        ><i className="fa fa-check"></i> 풀
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-bug"><i
-                          className="fa fa-check"></i> 벌레
+                          className="badge badge-default check-badge" id="filter-attr-ice"
+                        ><i className="fa fa-check"></i> 얼음
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-rock"><i
-                          className="fa fa-check"></i> 바위
+                          className="badge badge-default check-badge" id="filter-attr-fly"
+                        ><i className="fa fa-check"></i> 비행
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-ghost"><i
-                          className="fa fa-check"></i> 유령
+                          className="badge badge-default check-badge" id="filter-attr-fairy"
+                        ><i className="fa fa-check"></i> 요정
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-dragon"><i
-                          className="fa fa-check"></i> 용
+                          className="badge badge-default check-badge" id="filter-attr-earth"
+                        ><i className="fa fa-check"></i> 땅
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-evil"><i
-                          className="fa fa-check"></i> 악
+                          className="badge badge-default check-badge" id="filter-attr-venom"
+                        ><i className="fa fa-check"></i> 독
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-attr-iron"><i
-                          className="fa fa-check"></i> 강철
+                          className="badge badge-default check-badge"
+                          id="filter-attr-fighter"
+                        ><i className="fa fa-check"></i> 격투
+                        </span>
+                        <span className="badge badge-default check-badge"
+                          id="filter-attr-esper"
+                        ><i className="fa fa-check"></i> 염력
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-bug"
+                        ><i className="fa fa-check"></i> 벌레
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-rock"
+                        ><i className="fa fa-check"></i> 바위
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-ghost"
+                        ><i className="fa fa-check"></i> 유령
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-dragon"
+                        ><i className="fa fa-check"></i> 용
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-evil"
+                        ><i className="fa fa-check"></i> 악
+                        </span>
+                        <span
+                          className="badge badge-default check-badge" id="filter-attr-iron"
+                        ><i className="fa fa-check"></i> 강철
                         </span>
                       </div>
                       <div id="grade" className="tab-pane">
-                        <span className="badge badge-info check-badge" id="filter-allGrade"><i
-                          className="fa fa-check"></i> 전체
+                        <span className="badge badge-info check-badge" id="filter-allGrade">
+                          <i className="fa fa-check"></i> 전체
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-b"><i
-                          className="fa fa-check"></i> 베이직
+                          className="badge badge-default check-badge" id="filter-grade-b"
+                        ><i className="fa fa-check"></i> 베이직
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-r"><i
-                          className="fa fa-check"></i> 레어
+                          className="badge badge-default check-badge" id="filter-grade-r"
+                        ><i className="fa fa-check"></i> 레어
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-a"><i
-                          className="fa fa-check"></i> 스페셜
+                          className="badge badge-default check-badge" id="filter-grade-a"
+                        ><i className="fa fa-check"></i> 스페셜
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-ar"><i
-                          className="fa fa-check"></i> 스페셜레어
+                          className="badge badge-default check-badge" id="filter-grade-ar"
+                        ><i className="fa fa-check"></i> 스페셜레어
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-e"><i
-                          className="fa fa-check"></i> 엘리트
+                          className="badge badge-default check-badge" id="filter-grade-e"
+                        ><i className="fa fa-check"></i> 엘리트
                         </span>
                         <span
-                          className="badge badge-default check-badge" id="filter-grade-l"><i
-                          className="fa fa-check"></i> 리미티드
+                          className="badge badge-default check-badge" id="filter-grade-l"
+                        ><i className="fa fa-check"></i> 리미티드
                         </span>
                       </div>
                       <div id="designer" className="tab-pane">
                         <span className="badge badge-info check-badge"
-                          id="filter-allDesigner"><i className="fa fa-check"></i> 전체
+                          id="filter-allDesigner"
+                        ><i className="fa fa-check"></i> 전체
                         </span>
                         {renderDesignerBadges()}
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="row collection-container">
+                {renderMonsterCardComponent()}
               </div>
             </div>
           </div>
@@ -579,6 +662,7 @@ class CollectionView extends React.Component {
 CollectionView.need = [
   (params) => { return Actions.fetchCollectionUser.bind(null, params.collectionUserId)(); },
   () => { return Actions.fetchMonsterCountInfo(); },
+  () => { return Actions.fetchAllMons(); },
   // () => { return Actions.fetchUserSession(); },
 ];
 
@@ -591,7 +675,7 @@ const mapStateToProps = (store) => ({
   collectionUser: store.collectionUser,
   monsterCountInfo: store.monsterCountInfo,
   user: store.user,
-  designers: store.designers,
+  allMons: store.allMons,
 });
 
 CollectionView.propTypes = {
@@ -600,7 +684,7 @@ CollectionView.propTypes = {
   params: PropTypes.object,
   monsterCountInfo: PropTypes.object,
   user: PropTypes.object,
-  designers: PropTypes.arrayof(PropTypes.string),
+  allMons: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(CollectionView);

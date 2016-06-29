@@ -49,7 +49,9 @@ class MonsterCard extends React.Component {
           fullStar = <i key={key++} className="fa fa-star fa-2 text-gold"></i>;
           emptyStar = <i key={key++} className="fa fa-star fa-2"></i>;
         }
-        if (i < cost % 5) {
+        if (cost === 5) {
+          itemDom.push(fullStar);
+        } else if (i < cost % 5) {
           itemDom.push(fullStar);
         } else {
           itemDom.push(emptyStar);
@@ -183,7 +185,7 @@ class MonsterCard extends React.Component {
     };
     return (
       <div>
-        <div className="col-xs-6 col-sm-3 collection-item text-center">
+        <div className="col-xs-6 col-sm-3 collection-item text-center" {...this.props.filterData}>
           <div className="profile-picture" style={{ margin: '10px', width: '80%' }}>
             <div className="pick-image-container">
               <p>
@@ -217,6 +219,7 @@ class MonsterCard extends React.Component {
 MonsterCard.propTypes = {
   monster: PropTypes.object.isRequired,
   recentMon: PropTypes.bool,
+  filterData: PropTypes.object,
 };
 
 export default MonsterCard;

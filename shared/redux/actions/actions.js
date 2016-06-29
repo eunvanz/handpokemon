@@ -155,6 +155,18 @@ export function fetchUserSession() {
         dispatch(getUserSession(response.user));
       },
     });
+    // const promise = $.ajax({
+    //   url: `${baseURL}/api/session-user`,
+    //   method: 'get',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json',
+    //   }),
+    //   success: (response) => {
+    //     console.log('user: ' + response.user);
+    //     dispatch(getUserSession(response.user));
+    //   },
+    // });
+    // return promise;
     // return fetch(`${baseURL}/api/session-user`, { credentials: 'include' })
     // .then((response) => response.json())
     // .then((response) => dispatch(getBasicPickMons(response.user)));

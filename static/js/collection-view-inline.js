@@ -11,4 +11,17 @@ jQuery(function($) {
 			size : 75
 		}).css('color', $(this).data('color'));
 	});
+  if ($('.function-section').position()) {
+		var fsPosition = $('.function-section').position().top;
+		$(window).scroll(function() {
+			var scrollHeight = $(window).scrollTop();
+			if (scrollHeight >= fsPosition) {
+				$('.function-bar').css('top', function() {
+					return $(window).scrollTop() - fsPosition;
+				});
+			} else {
+				$('.function-bar').css('top', '0px');
+			}
+		});
+	}
 });
