@@ -7323,11 +7323,12 @@ fieldset[disabled] .btn-white.btn-grey.active {
 .badge {
   text-shadow: none;
   font-size: 12px;
-  padding-top: 1px;
+  padding-top: 3px;
   padding-bottom: 3px;
   font-weight: normal;
-  line-height: 15px;
+  /*line-height: 15px;*/
   background-color: #abbac3;
+	margin: 1px 1px;
 }
 .badge.no-radius {
   border-radius: 0;
@@ -7673,7 +7674,7 @@ fieldset[disabled] .btn-white.btn-grey.active {
 }
 .label {
   font-size: 12px;
-  line-height: 1.15;
+  line-height: 1.4;
   height: 20px;
 }
 .label.arrowed {
@@ -7775,7 +7776,7 @@ fieldset[disabled] .btn-white.btn-grey.active {
 .label-sm {
   padding: 0.2em 0.4em 0.3em;
   font-size: 11px;
-  line-height: 1;
+  line-height: 1.3;
   height: 18px;
 }
 .label-sm.arrowed {

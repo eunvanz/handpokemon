@@ -58,11 +58,11 @@ class MonsterModal extends React.Component {
       if (grade === 'b') {
         gradeLabel = <span key="gradeLabel" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BASIC</span>;
       } else if (grade === 'a') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>ADVANCED</span>;
+        gradeLabel = <span key="gradeLabel" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SPECIAL</span>;
       } else if (grade === 'r') {
         gradeLabel = <span key="gradeLabel" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RARE</span>;
       } else if (grade === 'ar') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>A.RARE</span>;
+        gradeLabel = <span key="gradeLabel" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>S.RARE</span>;
       } else if (grade === 'e') {
         gradeLabel = <span key="gradeLabel" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>ELITE</span>;
       } else if (grade === 'l') {
@@ -79,41 +79,41 @@ class MonsterModal extends React.Component {
       const endLabel = 'arrowed-in';
       const continueLabel = 'arrowed-in arrowed-right';
       if (mainAttr === '노말') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-grey ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-grey ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '불꽃') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-danger ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-danger ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '물') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-primary ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-primary ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '전기') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-warning ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-warning ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '풀') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-success ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-success ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '얼음') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-info ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-info ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '비행') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-light ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-light ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '요정') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-pink ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-pink ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '땅') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-inverse ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-inverse ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '독') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-purple ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-purple ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '격투') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-fighter ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-fighter ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '염력') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-esper ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-esper ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '벌레') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-bug ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-bug ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '바위') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-rock ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-rock ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '유령') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-ghost ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-ghost ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '용') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-dragon ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-dragon ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '악') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-evil ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-evil ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       } else if (mainAttr === '강철') {
-        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-iron ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>;
+        mainAttrLabel = <span key="mainAttr" className={`label label-sm label-iron ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
       }
       if (subAttr === '노말') {
         subAttrLabel = <span key="subAttr" className="label label-sm label-grey arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;

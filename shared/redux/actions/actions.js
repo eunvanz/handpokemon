@@ -142,7 +142,7 @@ export function getUserSession(user) {
 }
 
 export function fetchUserSession() {
-  console.log('fetching user session');
+  // console.log('fetching user session');
   return (dispatch) => {
     return $.ajax({
       url: `${baseURL}/api/session-user`,
@@ -151,7 +151,7 @@ export function fetchUserSession() {
         'Content-Type': 'application/json',
       }),
       success: (response) => {
-        console.log('user: ' + response.user);
+        // console.log('user: ' + response.user);
         dispatch(getUserSession(response.user));
       },
     });
@@ -182,7 +182,7 @@ export function getCollectionUser(collectionUser) {
 
 export function fetchCollectionUser(collectionUserId) {
   return (dispatch) => {
-    console.log('collectionUserId: ' + collectionUserId);
+    // console.log('collectionUserId: ' + collectionUserId);
     return fetch(`${baseURL}/api/users/${collectionUserId}`, {
       method: 'get',
       headers: new Headers({
@@ -236,5 +236,23 @@ export function fetchDesigners() {
     return fetch(`${baseURL}/api/designers`)
     .then((response) => response.json())
     .then((response) => dispatch(getDesigners(response.designers)));
+  };
+}
+
+export function fetchOneMonWhenGet() {
+  return (dispatch) => {
+    return $.ajax({
+      url: `${baseURL}/api/collections/get-mon`,
+      method: 'get',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      success: (response) => {
+        dispatch(getOneMon(response.mon));
+      },
+    });
+    // return fetch(`${baseURL}/api/collections/get-mon`)
+    // .then((response) => response.json())
+    // .then((response) => dispatch(getOneMon(response.mon)));
   };
 }

@@ -120,6 +120,20 @@ router.post('/api/users', upload.single('img'), (req, res) => {
 });
 
 router.post('/api/login', passport.authenticate('local'), (req, res) => {
+  // User
+  // .findById(req.user._id)
+  // .populate('_collections')
+  // .exec((err, user) => {
+  //   if (user) {
+  //     Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
+  //       user._collections = collections; // eslint-disable-line
+  //       if (err) return res.status(500).send(err);
+  //       res.json({ user });
+  //     });
+  //   } else {
+  //     res.json({ user });
+  //   }
+  // });
   res.json({ user: req.user });
 });
 
@@ -146,9 +160,22 @@ router.get('/api/logout', (req, res) => {
 });
 
 router.get('/api/session-user', (req, res) => {
-  console.log('session user: ' + req.user);
   if (req.user) {
-    res.json({ user: req.user });
+    User
+    .findById(req.user._id)
+    .populate('_collections')
+    .exec((err, user) => {
+      console.log('session-user: ' + user);
+      if (user) {
+        Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
+          user._collections = collections; // eslint-disable-line
+          if (err) return res.status(500).send(err);
+          res.json({ user });
+        });
+      } else {
+        res.json({ user });
+      }
+    });
   } else {
     res.json({ user: null });
   }

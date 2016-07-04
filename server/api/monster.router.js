@@ -137,7 +137,7 @@ router.get('/api/monsters/register-pick', (req, res) => {
 
 router.get('/api/monsters/count-info', (req, res) => {
   const monsterCountInfo = { totalPoint: 0 };
-  console.log('counting monsters');
+  // console.log('counting monsters');
   Monster.count({ grade: 'b' }, (err, count) => {
     monsterCountInfo.basic = count;
   })
@@ -162,9 +162,22 @@ router.get('/api/monsters/count-info', (req, res) => {
     }
   })
   .then(() => {
-    console.log('monsterCountInfo: ' + JSON.stringify(monsterCountInfo));
+    // console.log('monsterCountInfo: ' + JSON.stringify(monsterCountInfo));
     res.json({ monsterCountInfo });
   })))))));
+});
+
+router.get('/api/monsters/get-mon', (req, res) => {
+  const selectMon = (basicMonSize, basicMons) => {
+    const monNo = Math.floor((Math.random() * basicMonSize));
+    res.json({ mon: basicMons[monNo] });
+  };
+  Monster.find({ grade: 'b' }).exec((err, result) => {
+    if (err) return res.status(500).send(err);
+    const basicMonSize = result.length;
+    const basicMons = result;
+    selectMon(basicMonSize, basicMons);
+  });
 });
 
 router.get('/api/monsters/:monNo', (req, res) => {
@@ -196,5 +209,6 @@ router.get('/api/designers', (req, res) => {
     res.json({ designers });
   });
 });
+
 
 export default router;

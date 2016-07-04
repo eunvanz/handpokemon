@@ -16,7 +16,8 @@ class CollectionView extends React.Component {
     };
   }
   componentDidMount() {
-    this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId))
+    const collectionUserId = this.props.params.collectionUserId ? this.props.params.collectionUserId : this.props.user._id;
+    this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
     .then(this.props.dispatch(Actions.fetchMonsterCountInfo())
     .then(this.props.dispatch(Actions.fetchAllMons())
     .then(() => {
@@ -29,14 +30,14 @@ class CollectionView extends React.Component {
       this.setState({
         designers,
       });
+      const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
+      for (const src of scriptSrcs) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = false;
+        document.body.appendChild(script);
+      }
     })));
-    const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
-    for (const src of scriptSrcs) {
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = false;
-      document.body.appendChild(script);
-    }
   }
   componentWillReceiveProps(nextProps) {
     // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));

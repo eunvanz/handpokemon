@@ -5,13 +5,42 @@ class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'SideBar';
+    this.state = {
+      user: null,
+      getCredit: null,
+      restTime: null,
+    };
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.user) {
+      this.setState({
+        user: nextProps.user,
+        getCredit: nextProps.user.getCredit,
+      });
+      const user = nextProps.user;
+      const decrementTime = () => {
+        const toMinSec = (restTime) => {
+          const min = parseInt((restTime / 60000), 10);
+          let sec = parseInt(((restTime - (min * 60000)) / 1000), 10);
+          if (sec < 10) sec = `0${sec}`;
+          return `${min}:${sec}`;
+        };
+        const interval = Date.now() - user.lastGetTime;
+        const credit = interval / user.getInterval;
+        const restTime = interval - credit * user.getInterval;
+        this.setState({ restTime: toMinSec(restTime), credit });
+      };
+      if (this.state.credit < user.maxGetCredit) {
+        setInterval(decrementTime(), 1000);
+      }
+    }
   }
   render() {
     const renderMyCollection = () => {
       if (this.props.user) {
         return (
           <li>
-            <Link to={`/collection/${this.props.user._id}`}>
+            <Link to={`/collection`}>
               <i className="menu-icon fa fa-github-alt"></i>
               <span className="menu-text"> 내 콜렉션 </span>
             </Link>
@@ -47,6 +76,18 @@ class SideBar extends React.Component {
         </li>
       );
     };
+    const renderGetMonTimeBadge = () => {
+      let returnComponent = null;
+      const getCredit = this.state.getCredit;
+      if (getCredit) {
+        if (getCredit > 0) {
+          returnComponent = (<span className="badge badge-info" id="credit">{this.state.getCredit}</span>);
+        } else {
+          returnComponent = (<span className="badge badge-info" id="credit">{this.state.restTime}</span>);
+        }
+      }
+      return returnComponent;
+    };
     return (
       <div id="sidebar" className="sidebar responsive sidebar-fixed">
         <ul className="nav nav-list">
@@ -66,6 +107,14 @@ class SideBar extends React.Component {
           </li>
           {renderMyCollection()}
           {renderHonor()}
+          <li>
+            <Link to="/get-mon">
+              <i className="menu-icon fa fa-paw"></i>
+              <span className="menu-text"> 포켓몬 채집
+                {renderGetMonTimeBadge()}
+              </span>
+            </Link>
+          </li>
           <li>
             <Link to="/mon-list">
               <i className="menu-icon fa fa-github-alt"></i>

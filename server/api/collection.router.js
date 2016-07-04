@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import Collection from '../models/collection.model';
 import User from '../models/user.model';
-import mongoose from 'mongoose';
-const ObjectId = mongoose.Schema.Types.ObjectId;
+import Monster from '../models/monster.model';
 
 const router = new Router();
 
@@ -46,7 +45,7 @@ router.post('/api/collections/basic-pick/:userId', (req, res) => {
 
 router.get('/api/collections/count-info/:userId', (req, res) => {
   const collectionCountInfo = {};
-  Collection.count({ grade: 'b', _user: ObjectId(req.params.userId) }, (err, count) => {
+  Collection.count({ grade: 'b', _user: req.params.userId }, (err, count) => {
     collectionCountInfo.basic = count;
   })
   .then(Collection.count({ grade: 'r', _user: req.params.userId }, (err, count) => {
@@ -67,6 +66,89 @@ router.get('/api/collections/count-info/:userId', (req, res) => {
   .then(() => {
     res.json({ collectionCountInfo });
   }))))));
+});
+
+const _isExistInCollection = (userId, monId) => {
+  return new Promise((resolve, reject) => {
+    console.log('userId: ' + userId + ', monId: ' + monId);
+    Collection.findOne({ _user: userId, _mon: monId }).exec((err, col) => {
+      if (err) reject(new Error(err));
+      console.log('col:' + col);
+      if (col) resolve(true);
+      resolve(false);
+    });
+  });
+};
+
+router.get('/api/collections/get-mon', (req, res) => {
+  const putMonIntoCollection = (mon) => {
+    console.log('베이직포켓몬 삽입중: ' + mon._id);
+    _isExistInCollection(req.user._id, mon._id)
+    .then((isExist) => {
+      if (isExist) { // 이미 가지고 있는 포켓몬의 경우
+        console.log('이미 가지고 있는 포켓몬');
+        let addedHp = 0;
+        let addedPower = 0;
+        let addedArmor = 0;
+        let addedSpecialPower = 0;
+        let addedSpecialArmor = 0;
+        let addedDex = 0;
+        for (let i = 0; i < mon.point; i++) {
+          const abilityIdx = Math.floor((Math.random() * 6) + 1);
+          if (abilityIdx === 0) {
+            addedHp++;
+          } else if (abilityIdx === 1) {
+            addedPower++;
+          } else if (abilityIdx === 2) {
+            addedArmor++;
+          } else if (abilityIdx === 3) {
+            addedSpecialPower++;
+          } else if (abilityIdx === 4) {
+            addedSpecialArmor++;
+          } else if (abilityIdx === 5) {
+            addedDex++;
+          }
+        }
+        // 콜렉션 업데이트
+        Collection.findOneAndUpdate(
+          { _user: req.user._id, _mon: mon._id },
+          { $inc: { level: 1, piece: 1, addedHp, addedPower, addedArmor, addedSpecialPower, addedSpecialArmor, addedDex } }
+        ).exec((err, col) => {
+          console.log('콜렉션: ' + col);
+          Collection.findById(col._id).populate('_mon').exec((err2, col2) => {
+            res.json({ mon: col2 });
+          });
+        });
+      } else { // 새로운 포켓몬인 경우
+        console.log('새로운 포켓몬');
+        const condition = Math.floor((Math.random() * 5) + 1);
+        const collection = new Collection({
+          _mon: mon._id,
+          _user: req.user._id,
+          condition,
+        });
+        console.log('콜렉션: ' + collection);
+        collection.save().then((err) => {
+          Collection.findById(collection._id).populate('_mon').exec((err2, collection2) => {
+            console.log('콜렉션: ' + collection);
+            res.json({ mon: collection2 });
+          });
+        });
+      }
+    });
+  };
+  const selectMon = (basicMonSize, basicMons) => {
+    console.log('베이직포켓몬 선택중');
+    const monNo = Math.floor((Math.random() * basicMonSize));
+    putMonIntoCollection(basicMons[monNo]);
+  };
+  Monster.find({ grade: 'b' }).exec((err, result) => {
+    console.log('베이직포켓몬 찾는중');
+    if (err) return res.status(500).send(err);
+    const basicMonSize = result.length;
+    const basicMons = result;
+    selectMon(basicMonSize, basicMons);
+  });
 });
 
 export default router;

@@ -6,6 +6,7 @@ import RegisterMemberView from './container/RegisterMemberView/RegisterMemberVie
 import RegisterMonsterView from './container/RegisterMonsterView/RegisterMonsterView';
 import MonsterListView from './container/MonsterListView/MonsterListView';
 import CollectionView from './container/CollectionView/CollectionView';
+import GetMonView from './container/GetMonView/GetMonView';
 
 const routes = (
   <Route path="/" component={App} >
@@ -15,6 +16,8 @@ const routes = (
     <Route path="/mon-list" component={MonsterListView}/>
     <Route path="/mon-list/:monNo" component={RegisterMonsterView}/>
     <Route path="/collection/:collectionUserId" component={CollectionView}/>
+    <Route path="/collection" component={CollectionView}/>
+    <Route path="/get-mon" component={GetMonView}/>
   </Route>
 );
 
