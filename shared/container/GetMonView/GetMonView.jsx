@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import LoadingView from '../../components/Common/LoadingView';
+import $ from 'jquery';
 
 const scratchStyle = {
   width: '200px',
@@ -16,7 +17,37 @@ class GetMonView extends React.Component {
     this.displayName = 'GetMonView';
   }
   componentDidMount() {
+    const user = this.props.user;
     this.props.dispatch(Actions.fetchOneMonWhenGet())
+    .then(() => {
+      return new Promise((resolve) => {
+        const isNewMon = this.props.mon.level === 1;
+        // 새로운 포켓몬일 경우 유저 콜렉션 점수 증가
+        if (isNewMon) user.colPoint += this.props.mon._mon.point;
+        // 유저 크레딧 차감
+        const interval = Date.now() - user.lastGetTime;
+        const credit = Math.floor(interval / user.getInterval);
+        user.getCredit += credit;
+        if (user.getCredit > user.maxGetCredit) user.getCredit = user.maxGetCredit;
+        user.getCredit--;
+        user.lastGetTime = Date.now();
+        console.log('user.lastGetTime: ' + user.lastGetTime);
+        // db에 유저정보 업데이트
+        // console.log('JSON.stringify(): ' + JSON.stringify(user));
+        $.ajax({
+          url: `/api/users/${user._id}`,
+          method: 'put',
+          headers: new Headers({
+            'Content-Type': 'application/json',
+          }),
+          data: { user: JSON.stringify(user) },
+          success: () => {
+            this.props.dispatch(Actions.fetchUserSession())
+            .then(resolve());
+          },
+        });
+      });
+    })
     .then(() => {
       const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
       for (const src of scriptSrcs) {
@@ -117,11 +148,13 @@ GetMonView.contextTypes = {
 
 const mapStateToProps = (store) => ({
   mon: store.mon,
+  user: store.user,
 });
 
 GetMonView.propTypes = {
   dispatch: PropTypes.func.isRequired,
   mon: PropTypes.object,
+  user: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(GetMonView);

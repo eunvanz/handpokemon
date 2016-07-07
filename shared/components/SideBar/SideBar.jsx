@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
 
 class SideBar extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class SideBar extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
+    console.log('nextProps.user: ' + nextProps.user);
     if (nextProps.user) {
       this.setState({
         user: nextProps.user,
@@ -26,7 +28,7 @@ class SideBar extends React.Component {
           return `${min}:${sec}`;
         };
         const interval = Date.now() - user.lastGetTime;
-        const credit = interval / user.getInterval;
+        const credit = Math.floor(interval / user.getInterval);
         const restTime = interval - credit * user.getInterval;
         this.setState({ restTime: toMinSec(restTime), credit });
       };
@@ -132,8 +134,12 @@ SideBar.contextTypes = {
   router: React.PropTypes.object,
 };
 
+const mapStateToProps = (store) => ({
+  user: store.user,
+});
+
 SideBar.propTypes = {
   user: PropTypes.object,
 };
 
-export default SideBar;
+export default connect(mapStateToProps)(SideBar);

@@ -108,7 +108,7 @@ class CollectionView extends React.Component {
       const gap = now - lastLogin;
       let text = '방금 전';
       if (gap > 2000 && gap < 1000 * 60) {
-        text = `${gap / 1000}초 전`;
+        text = `${Math.floor(gap / 1000)}초 전`;
       } else if (gap < 1000 * 60 * 60) {
         text = `${Math.floor(gap / (1000 * 60))}분 전`;
       } else if (gap < 1000 * 60 * 60 * 24) {

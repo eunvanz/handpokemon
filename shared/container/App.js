@@ -37,7 +37,7 @@ class App extends Component {
       <div>
         <Header user={this.props.user}/>
         <div className="main-container container" id="main-container">
-          <SideBar user={this.props.user}/>
+          <SideBar />
           <div className="main-content">
             <div className="main-content-inner">
               {this.props.children}

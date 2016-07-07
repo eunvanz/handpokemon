@@ -85,11 +85,12 @@ class RegisterMemberView extends React.Component {
     request.post('/api/users')
     .send(formData)
     .end((err, res) => {
-      // console.log('저기');
-      // console.log('res.body.pickedMons: ' + this.props.pickedMons);
+      console.log('저기');
+      console.log('res.body.pickedMons: ' + this.props.pickedMons);
       request.post(`/api/collections/basic-pick/${res.body.savedUser._id}`)
       .send({ pickedMons: this.props.pickedMons, email: this.state.email })
       .end(() => {
+        this.props.dispatch(Actions.fetchUserSession());
         this.props.dispatch(Actions.prepareMessageModal('회원가입이 완료되었습니다.'));
         browserHistory.push('/');
       });
@@ -99,7 +100,8 @@ class RegisterMemberView extends React.Component {
     e.preventDefault();
     this.setState({ [e.target.name]: e.target.value });
   }
-  _handleConfirmClick() {
+  _handleConfirmClick(e) {
+    e.target.disabled = true; // eslint-disable-line
     this._handleSubmit();
   }
   _handleCloseConfirmModal() {
@@ -283,7 +285,7 @@ class RegisterMemberView extends React.Component {
 
           <hr />
           <div className="wizard-actions">
-            <button className="btn btn-prev">
+            <button className="btn btn-prev" style={{ marginRight: '4px' }}>
               <i className="ace-icon fa fa-arrow-left"></i> 이전단계
             </button>
 

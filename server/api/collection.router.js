@@ -24,10 +24,11 @@ router.post('/api/collections/basic-pick/:userId', (req, res) => {
   for (const mon of pickedMons) {
     condition = Math.floor((Math.random() * 5) + 1);
     const collection = new Collection({
-      _monId: mon._id,
-      _userId: req.params.userId,
+      _mon: mon._id,
+      _user: req.params.userId,
       condition,
     });
+    console.log('추가된콜렉션: ' + collection);
     // this log prints right objects
     collections.push(collection);
   }
@@ -39,7 +40,10 @@ router.post('/api/collections/basic-pick/:userId', (req, res) => {
   }
   proms.push(User.findByIdAndUpdate(req.params.userId, { $pushAll: { _collections: collectionIds } }, { upsert: true }));
   Promise.all(proms).then(() => {
+    console.log('모든 프로미스 완료');
     return res.json({ success: true });
+  }, (reason) => {
+    console.log('프로미스 실패: ' + reason);
   });
 });
 
@@ -94,7 +98,7 @@ router.get('/api/collections/get-mon', (req, res) => {
         let addedSpecialArmor = 0;
         let addedDex = 0;
         for (let i = 0; i < mon.point; i++) {
-          const abilityIdx = Math.floor((Math.random() * 6) + 1);
+          const abilityIdx = Math.floor((Math.random() * 6));
           if (abilityIdx === 0) {
             addedHp++;
           } else if (abilityIdx === 1) {
@@ -130,8 +134,9 @@ router.get('/api/collections/get-mon', (req, res) => {
         console.log('콜렉션: ' + collection);
         collection.save().then((err) => {
           Collection.findById(collection._id).populate('_mon').exec((err2, collection2) => {
-            console.log('콜렉션: ' + collection);
-            res.json({ mon: collection2 });
+            User.findByIdAndUpdate(req.user._id, { $push: { _collections: collection._id } }, { upsert: true }, () => {
+              res.json({ mon: collection2 });
+            });
           });
         });
       }

@@ -201,4 +201,45 @@ router.get('/api/users/:id', (req, res) => {
   });
 });
 
+router.put('/api/users/:id', (req, res) => {
+  const userObject = JSON.parse(req.body.user);
+  const user = {
+    _id: userObject._id,
+    email: userObject.email,
+    nickname: userObject.nickname,
+    img: userObject.img,
+    introduce: userObject.introduce,
+    recommenderFlag: userObject.recommenderFlag,
+    _honor1: userObject._honor1,
+    _honor2: userObject._honor2,
+    pokemoney: userObject.pokemoney,
+    league: userObject.league,
+    maxWinInRow: userObject.maxWinInRow,
+    winInRow: userObject.winInRow,
+    getReward: userObject.getReward,
+    reward: userObject.reward,
+    maxBattleCredit: userObject.maxBattleCredit,
+    battleCredit: userObject.battleCredit,
+    maxGetCredit: userObject.maxGetCredit,
+    getCredit: userObject.getCredit,
+    scratchMode: userObject.scratchMode,
+    loseBattle: userObject.loseBattle,
+    winBattle: userObject.winBattle,
+    totalBattle: userObject.totalBattle,
+    lastLogin: userObject.lastLogin,
+    battleInterval: userObject.battleInterval,
+    getInterval: userObject.getInterval,
+    lastGameTime: userObject.lastGameTime,
+    lastGetTime: userObject.lastGetTime,
+    battlePoint: userObject.battlePoint,
+    colPoint: userObject.colPoint,
+  };
+  User
+  .findByIdAndUpdate(user._id, user)
+  .exec((err) => {
+    console.log('updatedUser: ' + JSON.stringify(user));
+    res.json(user);
+  });
+});
+
 export default router;

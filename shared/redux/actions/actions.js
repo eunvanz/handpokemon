@@ -144,6 +144,17 @@ export function getUserSession(user) {
 export function fetchUserSession() {
   // console.log('fetching user session');
   return (dispatch) => {
+    // return $.ajax({
+    //   url: `${baseURL}/api/session-user`,
+    //   method: 'get',
+    //   headers: new Headers({
+    //     'Content-Type': 'application/json',
+    //   }),
+    //   success: (response) => {
+    //     // console.log('user: ' + response.user);
+    //     dispatch(getUserSession(response.user));
+    //   },
+    // });
     return $.ajax({
       url: `${baseURL}/api/session-user`,
       method: 'get',
@@ -254,5 +265,20 @@ export function fetchOneMonWhenGet() {
     // return fetch(`${baseURL}/api/collections/get-mon`)
     // .then((response) => response.json())
     // .then((response) => dispatch(getOneMon(response.mon)));
+  };
+}
+
+export function minusGetCredit() {
+  return (dispatch) => {
+    return $.ajax({
+      url: `${baseURL}/api/minus-get-credit`,
+      method: 'get',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      success: (response) => {
+        dispatch(getUserSession(response.user));
+      },
+    });
   };
 }
