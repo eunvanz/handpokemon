@@ -7,6 +7,8 @@ import RegisterMonsterView from './container/RegisterMonsterView/RegisterMonster
 import MonsterListView from './container/MonsterListView/MonsterListView';
 import CollectionView from './container/CollectionView/CollectionView';
 import GetMonView from './container/GetMonView/GetMonView';
+import SelectDungeonView from './components/SelectDungeonView';
+import requireAuth from './container/Authentication/Authentication';
 
 const routes = (
   <Route path="/" component={App} >
@@ -16,8 +18,9 @@ const routes = (
     <Route path="/mon-list" component={MonsterListView}/>
     <Route path="/mon-list/:monNo" component={RegisterMonsterView}/>
     <Route path="/collection/:collectionUserId" component={CollectionView}/>
-    <Route path="/collection" component={CollectionView}/>
-    <Route path="/get-mon" component={GetMonView}/>
+    <Route path="/collection" component={requireAuth(CollectionView)}/>
+    <Route path="/get-mon-ready" component={requireAuth(SelectDungeonView)}/>
+    <Route path="/get-mon" component={requireAuth(GetMonView)}/>
   </Route>
 );
 

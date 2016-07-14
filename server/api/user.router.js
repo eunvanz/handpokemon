@@ -51,6 +51,35 @@ const _getBattleRank = (battlePoint) => {
   });
 };
 
+const _updateCredits = (user) => {
+  console.log('updating credits');
+  const updatedUser = user;
+  let modified = false;
+  return new Promise((resolve) => {
+    if (user.getCredit < user.maxGetCredit) {
+      const getInterval = Date.now() - user.lastGetTime;
+      const addGetCredit = Math.floor(getInterval / user.getInterval);
+      const finalGetCredit = (user.getCredit + addGetCredit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + addGetCredit);
+      updatedUser.getCredit = finalGetCredit;
+      modified = true;
+    }
+    if (user.battleCredit < user.maxBattleCredit) {
+      const battleInterval = Date.now() - user.lastGameTime;
+      const addBattleCredit = Math.floor(battleInterval / user.battleInterval);
+      const finalBattleCredit = (user.battleCredit + addBattleCredit > user.maxBattleCredit ? user.maxBattleCredit : user.battleCredit + addBattleCredit);
+      updatedUser.getCredit = finalBattleCredit;
+      modified = true;
+    }
+    if (modified) {
+      User.findByIdAndUpdate(user._id, updatedUser).exec(() => {
+        resolve(updatedUser);
+      });
+    } else {
+      resolve(updatedUser);
+    }
+  });
+};
+
 const _saveThumbnail = (imagePath) => {
   return new Promise((resolve, reject) => {
     // console.log('썸네일 생성중');
@@ -161,20 +190,23 @@ router.get('/api/logout', (req, res) => {
 
 router.get('/api/session-user', (req, res) => {
   if (req.user) {
-    User
-    .findById(req.user._id)
-    .populate('_collections')
-    .exec((err, user) => {
-      console.log('session-user: ' + user);
-      if (user) {
-        Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
-          user._collections = collections; // eslint-disable-line
-          if (err) return res.status(500).send(err);
+    _updateCredits(req.user)
+    .then(() => {
+      User
+      .findById(req.user._id)
+      .populate('_collections')
+      .exec((err, user) => {
+        console.log('session-user: ' + user);
+        if (user) {
+          Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
+            user._collections = collections; // eslint-disable-line
+            if (err) return res.status(500).send(err);
+            res.json({ user });
+          });
+        } else {
           res.json({ user });
-        });
-      } else {
-        res.json({ user });
-      }
+        }
+      });
     });
   } else {
     res.json({ user: null });

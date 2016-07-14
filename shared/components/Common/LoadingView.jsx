@@ -1,8 +1,19 @@
 import React from 'react';
 import Loading from 'react-loading';
+import $ from 'jquery';
 
 const style = {
-  textAlign: 'center',
+  // textAlign: 'center',
+  // opacity: '0.5',
+  // height: $(window).height(),
+  // position: 'relative',
+};
+
+const innerStyle = {
+  // position: 'relative',
+  // left: $('.main-content-inner').width() / 2 - 32,
+  // width: '64px',
+  // top: $(window).height() / 2 - 32,
 };
 
 class LoadingView extends React.Component {
@@ -13,7 +24,9 @@ class LoadingView extends React.Component {
   render() {
     return (
       <div style={style}>
-        <Loading type="bubbles" color="#585858"/>
+        <div style={innerStyle}>
+          <Loading type="bubbles" color="#585858"/>
+        </div>
       </div>
     );
   }

@@ -2,6 +2,8 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 
+let timer = null;
+let restTime = 0;
 class SideBar extends React.Component {
   constructor(props) {
     super(props);
@@ -13,28 +15,35 @@ class SideBar extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps.user: ' + nextProps.user);
+    clearInterval(timer);
     if (nextProps.user) {
       this.setState({
         user: nextProps.user,
         getCredit: nextProps.user.getCredit,
       });
       const user = nextProps.user;
-      const decrementTime = () => {
-        const toMinSec = (restTime) => {
-          const min = parseInt((restTime / 60000), 10);
-          let sec = parseInt(((restTime - (min * 60000)) / 1000), 10);
+      timer = setInterval(() => {
+        const toMinSec = (time) => {
+          const min = parseInt((time / 60000), 10);
+          let sec = parseInt(((time - (min * 60000)) / 1000), 10);
           if (sec < 10) sec = `0${sec}`;
           return `${min}:${sec}`;
         };
         const interval = Date.now() - user.lastGetTime;
+        // console.log('interval', interval);
         const credit = Math.floor(interval / user.getInterval);
-        const restTime = interval - credit * user.getInterval;
-        this.setState({ restTime: toMinSec(restTime), credit });
-      };
-      if (this.state.credit < user.maxGetCredit) {
-        setInterval(decrementTime(), 1000);
-      }
+        // console.log('credit', credit);
+        if (restTime > user.getInterval || restTime <= 0) {
+          // restTime을 초기화 시킴
+          restTime = user.getInterval - (interval - credit * user.getInterval);
+        } else {
+          // 초기화가 이미 되어있다면 감소만 시킴
+          restTime = restTime - 1000;
+        }
+        this.setState({ restTime: toMinSec(restTime), getCredit: user.getCredit + credit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + credit });
+        // console.log('this.state.restTime: ' + this.state.restTime);
+        // console.log('this.state.getCredit: ' + this.state.getCredit);
+      }, 1000);
     }
   }
   render() {
@@ -81,11 +90,11 @@ class SideBar extends React.Component {
     const renderGetMonTimeBadge = () => {
       let returnComponent = null;
       const getCredit = this.state.getCredit;
-      if (getCredit) {
+      if (getCredit !== (null || undefined)) {
         if (getCredit > 0) {
           returnComponent = (<span className="badge badge-info" id="credit">{this.state.getCredit}</span>);
         } else {
-          returnComponent = (<span className="badge badge-info" id="credit">{this.state.restTime}</span>);
+          returnComponent = (<span className="badge badge-danger" id="credit">{this.state.restTime}</span>);
         }
       }
       return returnComponent;
@@ -110,7 +119,7 @@ class SideBar extends React.Component {
           {renderMyCollection()}
           {renderHonor()}
           <li>
-            <Link to="/get-mon">
+            <Link to={ this.state.credit > 0 ? '/get-mon-ready' : '/get-mon'}>
               <i className="menu-icon fa fa-paw"></i>
               <span className="menu-text"> 포켓몬 채집
                 {renderGetMonTimeBadge()}
