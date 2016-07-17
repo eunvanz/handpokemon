@@ -169,7 +169,9 @@ class MonsterModal extends React.Component {
           fullStar = <i key={key++} className="fa fa-star fa-2 text-gold"></i>;
           emptyStar = <i key={key++} className="fa fa-star fa-2"></i>;
         }
-        if (i < cost % 5) {
+        if (cost === 5) {
+          resultComponent.push(fullStar);
+        } else if (i < cost % 5) {
           resultComponent.push(fullStar);
         } else {
           resultComponent.push(emptyStar);

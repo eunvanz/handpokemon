@@ -12,24 +12,16 @@ class CollectionView extends React.Component {
       collectionCountInfo: {},
       collections: [],
       collectionsMonNo: null,
-      designers: null,
     };
   }
   componentDidMount() {
-    const collectionUserId = this.props.params.collectionUserId ? this.props.params.collectionUserId : this.props.user._id;
+    const collectionUserId = this.props.params.collectionUserId;
+    this.props.dispatch(Actions.showLoading());
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
     .then(this.props.dispatch(Actions.fetchMonsterCountInfo())
     .then(this.props.dispatch(Actions.fetchAllMons())
+    .then(this.props.dispatch(Actions.fetchDesigners())
     .then(() => {
-      const designers = new Set();
-      for (const mon of this.props.allMons) {
-        for (const designer of mon.designer) {
-          designers.add(designer);
-        }
-      }
-      this.setState({
-        designers,
-      });
       const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
       for (const src of scriptSrcs) {
         const script = document.createElement('script');
@@ -37,7 +29,8 @@ class CollectionView extends React.Component {
         script.async = false;
         document.body.appendChild(script);
       }
-    })));
+      this.props.dispatch(Actions.hideLoading());
+    }))));
   }
   componentWillReceiveProps(nextProps) {
     // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));
@@ -77,6 +70,7 @@ class CollectionView extends React.Component {
     while (document.body.childElementCount !== 2) {
       document.body.removeChild(document.body.lastChild);
     }
+    this.props.dispatch(Actions.getCollectionUser(null));
   }
   render() {
     const collectionUser = this.props.collectionUser;
@@ -176,9 +170,9 @@ class CollectionView extends React.Component {
     };
     const renderDesignerBadges = () => {
       const returnComponent = [];
-      if (this.state.designers) {
+      if (this.props.designers) {
         let status = 0;
-        for (const designer of this.state.designers) {
+        for (const designer of this.props.designers) {
           returnComponent.push(
             <span key={status} className="badge badge-default check-badge" id={`filter-designer-${status++}`}>
               <i className="fa fa-check"></i> <span className="designer-name">{designer}</span>
@@ -223,6 +217,7 @@ class CollectionView extends React.Component {
             }
           } else {
             mon.img = ['nomonster.png'];
+            mon.name = '????';
             const filterData = { 'data-have': '미보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
             'data-grade': mon.grade, 'data-designer': mon.designer };
             returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
@@ -650,13 +645,12 @@ class CollectionView extends React.Component {
         );
       } else {
         returnComponent = (
-          <LoadingView/>
+          <div></div>
         );
       }
       return returnComponent;
     };
     return renderCollectionView();
-    // return <div></div>;
   }
 }
 
@@ -664,7 +658,7 @@ CollectionView.need = [
   (params) => { return Actions.fetchCollectionUser.bind(null, params.collectionUserId)(); },
   () => { return Actions.fetchMonsterCountInfo(); },
   () => { return Actions.fetchAllMons(); },
-  // () => { return Actions.fetchUserSession(); },
+  () => { return Actions.fetchDesigners(); },
 ];
 
 CollectionView.contextTypes = {
@@ -677,6 +671,7 @@ const mapStateToProps = (store) => ({
   monsterCountInfo: store.monsterCountInfo,
   user: store.user,
   allMons: store.allMons,
+  designers: store.designers,
 });
 
 CollectionView.propTypes = {
@@ -686,6 +681,7 @@ CollectionView.propTypes = {
   monsterCountInfo: PropTypes.object,
   user: PropTypes.object,
   allMons: PropTypes.array,
+  designers: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(CollectionView);

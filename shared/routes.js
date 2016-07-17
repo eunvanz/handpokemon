@@ -18,7 +18,6 @@ const routes = (
     <Route path="/mon-list" component={MonsterListView}/>
     <Route path="/mon-list/:monNo" component={RegisterMonsterView}/>
     <Route path="/collection/:collectionUserId" component={CollectionView}/>
-    <Route path="/collection" component={requireAuth(CollectionView)}/>
     <Route path="/get-mon-ready" component={requireAuth(SelectDungeonView)}/>
     <Route path="/get-mon" component={requireAuth(GetMonView)}/>
   </Route>

@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import LoadingView from '../../components/Common/LoadingView';
-import $ from 'jquery';
 import ErrorView from '../../components/Common/ErrorView';
 import { Link } from 'react-router';
 
@@ -20,51 +19,24 @@ class GetMonView extends React.Component {
     this.displayName = 'GetMonView';
   }
   componentWillMount() {
-    const user = this.props.user;
-    // console.log('this.props.user.getCredit', this.props.user.getCredit);
-    if (user.getCredit > 0) {
-      this.props.dispatch(Actions.fetchOneMonWhenGet())
-      .then(() => {
-        return new Promise((resolve) => {
-          const isNewMon = this.props.mon.level === 1;
-          // 새로운 포켓몬일 경우 유저 콜렉션 점수 증가
-          if (isNewMon) user.colPoint += this.props.mon._mon.point;
-          // 유저 크레딧 차감
-          const interval = Date.now() - user.lastGetTime;
-          const credit = Math.floor(interval / user.getInterval);
-          user.getCredit += credit;
-          if (user.getCredit > user.maxGetCredit) user.getCredit = user.maxGetCredit;
-          user.getCredit--;
-          user.lastGetTime = Date.now();
-          // console.log('user.lastGetTime: ' + user.lastGetTime);
-          // db에 유저정보 업데이트
-          // console.log('JSON.stringify(): ' + JSON.stringify(user));
-          $.ajax({
-            url: `/api/users/${user._id}`,
-            method: 'put',
-            headers: new Headers({
-              'Content-Type': 'application/json',
-            }),
-            data: { user: JSON.stringify(user) },
-            success: () => {
-              this.props.dispatch(Actions.fetchUserSession())
-              .then(resolve());
-            },
-          });
-        });
-      })
-      .then(() => {
-        const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
-        for (const src of scriptSrcs) {
-          const script = document.createElement('script');
-          script.src = src;
-          script.async = false;
-          document.body.appendChild(script);
-        }
-      });
-    } else {
+    this.props.dispatch(Actions.fetchUserSession())
+    .then(() => {
+      const user = this.props.user;
+      if (user.getCredit > 0) {
+        return this.props.dispatch(Actions.fetchOneMonWhenGet(user))
+        .then(this.props.dispatch(Actions.fetchUserSession())
+        .then(() => {
+          const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
+          for (const src of scriptSrcs) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = false;
+            document.body.appendChild(script);
+          }
+        }));
+      }
       noCredit = true;
-    }
+    });
   }
   componentWillUnmount() {
     while (document.body.childElementCount !== 2) {
@@ -153,6 +125,7 @@ class GetMonView extends React.Component {
                 </div>
               </div>
             </div>
+            <LoadingView />
           </div>
         );
       } else {

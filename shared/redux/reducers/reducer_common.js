@@ -10,3 +10,14 @@ export const appMounted = (state = false, action) => {
       return state;
   }
 };
+
+export const loading = (state = false, action) => {
+  switch (action.type) {
+    case ActionTypes.SHOW_LOADING :
+      return true;
+    case ActionTypes.HIDE_LOADING :
+      return false;
+    default :
+      return state;
+  }
+};

@@ -51,7 +51,7 @@ class SideBar extends React.Component {
       if (this.props.user) {
         return (
           <li>
-            <Link to={`/collection`}>
+            <Link to={`/collection/${this.props.user._id}`}>
               <i className="menu-icon fa fa-github-alt"></i>
               <span className="menu-text"> 내 콜렉션 </span>
             </Link>
@@ -119,7 +119,7 @@ class SideBar extends React.Component {
           {renderMyCollection()}
           {renderHonor()}
           <li>
-            <Link to={ this.state.credit > 0 ? '/get-mon-ready' : '/get-mon'}>
+            <Link to={ this.state.getCredit > 0 ? '/get-mon-ready' : '/get-mon'}>
               <i className="menu-icon fa fa-paw"></i>
               <span className="menu-text"> 포켓몬 채집
                 {renderGetMonTimeBadge()}

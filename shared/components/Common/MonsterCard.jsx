@@ -23,7 +23,7 @@ class MonsterCard extends React.Component {
       if (this.props.monster.level) {
         return (
           <span className="label label-info arrowed-in-right label-level">
-            {`LV.${this.props.monster.level}`}
+            {`LV. ${this.props.monster.level}`}
           </span>
         );
       }

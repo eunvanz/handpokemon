@@ -27,13 +27,13 @@ export default (ComposedComponent) => {
                 <Link to="/sign-up">
                   <button className="btn btn-grey" style={{ marginRight: '4px' }}>
                     <i className="ace-icon fa fa-pencil-square-o"></i> 회원가입
-                    </button>
-                  </Link>
-                  <a href="" onClick={this._showLoginModal}>
-                    <button className="btn btn-primary">
-                      <i className="ace-icon fa fa-key"></i> 로그인
-                    </button>
-                  </a>
+                  </button>
+                </Link>
+                <a href="" onClick={this._showLoginModal}>
+                  <button className="btn btn-primary">
+                    <i className="ace-icon fa fa-key"></i> 로그인
+                  </button>
+                </a>
               </div>
             }
           />

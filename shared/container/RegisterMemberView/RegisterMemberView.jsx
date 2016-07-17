@@ -85,8 +85,6 @@ class RegisterMemberView extends React.Component {
     request.post('/api/users')
     .send(formData)
     .end((err, res) => {
-      console.log('저기');
-      console.log('res.body.pickedMons: ' + this.props.pickedMons);
       request.post(`/api/collections/basic-pick/${res.body.savedUser._id}`)
       .send({ pickedMons: this.props.pickedMons, email: this.state.email })
       .end(() => {

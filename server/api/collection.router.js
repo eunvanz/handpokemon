@@ -140,6 +140,9 @@ router.get('/api/collections/get-mon', (req, res) => {
           });
         });
       }
+    })
+    .catch(err => {
+      return res.status(500).send(err);
     });
   };
   const selectMon = (basicMonSize, basicMons) => {
@@ -153,6 +156,52 @@ router.get('/api/collections/get-mon', (req, res) => {
     const basicMonSize = result.length;
     const basicMons = result;
     selectMon(basicMonSize, basicMons);
+  });
+});
+
+router.get('/api/collections/:collectionId', (req, res) => {
+  const collectionId = req.params.collectionId;
+  Collection.findById(collectionId)
+  .populate('_mon')
+  .exec((err, collection) => {
+    if (err) return res.status(500).send(err);
+    res.json({ collection });
+  });
+});
+
+router.put('/api/collections/:collectionId', (req, res) => {
+  const collectionId = req.params.collectionId;
+  const updatedCollection = req.body.collection;
+  Collection.findByIdAndUpdate(collectionId, {
+    level: updatedCollection.level,
+    piece: updatedCollection.piece,
+    addedHp: updatedCollection.addedHp,
+    addedPower: updatedCollection.addedPower,
+    addedArmor: updatedCollection.addedArmor,
+    addedSpecialPower: updatedCollection.addedSpecialPower,
+    addedSpecialArmor: updatedCollection.addedSpecialArmor,
+    addedDex: updatedCollection.addedDex,
+  })
+  .exec((err, collection) => {
+    Collection.findById(collection._id).populate('_mon').exec((err2, col2) => {
+      res.json({ collection: col2 });
+    });
+  });
+});
+
+router.post('/api/collections', (req, res) => {
+  const userId = req.body.userId;
+  const monId = req.body.monId;
+  const condition = Math.floor((Math.random() * 5) + 1);
+  const collection = new Collection({
+    _mon: monId,
+    _user: userId,
+    condition,
+  });
+  collection.save((err, savedCollection) => {
+    Collection.findById(savedCollection._id).populate('_mon').exec((err2, col) => {
+      res.json({ collection: col });
+    });
   });
 });
 

@@ -2,35 +2,19 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Header from '../components/Header/Header';
 import SideBar from '../components/SideBar/SideBar';
+import LoadingView from '../components/Common/LoadingView';
 import * as Actions from '../redux/actions/actions';
-import $ from 'jquery';
 
 class App extends Component {
   constructor(props, context) {
     super(props, context);
   }
-  // componentWillMount() {
-  //   this.props.dispatch(Actions.fetchUserSession());
-  // }
   componentDidMount() {
-    $.ajax({
-      url: '/api/cookie-user',
-      method: 'get',
-      success: (res) => {
-        if (!res.nouser) {
-          $.ajax({
-            url: '/api/login',
-            method: 'post',
-            data: { email: res.email, password: res.password },
-            success: () => {
-              this.props.dispatch(Actions.fetchUserSession());
-            },
-          });
-        } else {
-          this.props.dispatch(Actions.fetchUserSession());
-        }
-      },
-    });
+    this.props.dispatch(Actions.showLoading());
+    this.props.dispatch(Actions.fetchUserSession())
+    .then(this.props.dispatch(Actions.hideLoading()));
+    // this.props.dispatch(Actions.fetchUserSession());
+    // this.props.dispatch(Actions.hideLoading());
   }
   render() {
     return (
@@ -42,6 +26,7 @@ class App extends Component {
             <div className="main-content-inner">
               {this.props.children}
             </div>
+            <LoadingView />
           </div>
         </div>
       </div>
@@ -60,6 +45,7 @@ App.contextTypes = {
 function mapStateToProps(store) {
   return {
     user: store.user,
+    loading: store.loading,
   };
 }
 

@@ -180,12 +180,23 @@ router.get('/api/monsters/get-mon', (req, res) => {
   });
 });
 
-router.get('/api/monsters/:monNo', (req, res) => {
-  const monNo = req.params.monNo;
-  Monster.findOne({ monNo }, (err, mon) => {
-    if (err) return res.status(500).send(err);
-    return res.json({ mon });
-  });
+router.get('/api/monsters/:param', (req, res) => {
+  const param = req.params.param;
+  let query = {};
+  const grades = ['b', 'a', 's', 'ar', 'e', 'l'];
+  if (grades.includes(param)) {
+    query = { grade: param };
+    Monster.find(query).exec((err, mons) => {
+      if (err) return res.status(500).send(err);
+      res.json({ mons });
+    });
+  } else {
+    query = { monNo: param };
+    Monster.findOne(query).exec((err, mon) => {
+      if (err) return res.status(500).send(err);
+      res.json({ mon });
+    });
+  }
 });
 
 router.delete('/api/monsters/:_id', (req, res) => {

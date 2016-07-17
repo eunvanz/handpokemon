@@ -14,7 +14,7 @@ router.get('/api/user-email-check', (req, res) => {
   const email = req.query.email;
   User.findOne({ email }, (err, user) => {
     if (err) return res.status(500).send(err);
-    return res.json(user);
+    res.json(user);
   });
 });
 
@@ -23,7 +23,7 @@ router.get('/api/user-nickname-check', (req, res) => {
   const nickname = req.query.nickname;
   User.findOne({ nickname }, (err, user) => {
     if (err) return res.status(500).send(err);
-    return res.json(user);
+    res.json(user);
   });
 });
 
@@ -149,20 +149,6 @@ router.post('/api/users', upload.single('img'), (req, res) => {
 });
 
 router.post('/api/login', passport.authenticate('local'), (req, res) => {
-  // User
-  // .findById(req.user._id)
-  // .populate('_collections')
-  // .exec((err, user) => {
-  //   if (user) {
-  //     Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
-  //       user._collections = collections; // eslint-disable-line
-  //       if (err) return res.status(500).send(err);
-  //       res.json({ user });
-  //     });
-  //   } else {
-  //     res.json({ user });
-  //   }
-  // });
   res.json({ user: req.user });
 });
 
@@ -234,7 +220,8 @@ router.get('/api/users/:id', (req, res) => {
 });
 
 router.put('/api/users/:id', (req, res) => {
-  const userObject = JSON.parse(req.body.user);
+  // const userObject = JSON.parse(req.body.user);
+  const userObject = req.body.user;
   const user = {
     _id: userObject._id,
     email: userObject.email,
@@ -270,7 +257,7 @@ router.put('/api/users/:id', (req, res) => {
   .findByIdAndUpdate(user._id, user)
   .exec((err) => {
     console.log('updatedUser: ' + JSON.stringify(user));
-    res.json(user);
+    res.json({ user });
   });
 });
 
