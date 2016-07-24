@@ -4,6 +4,8 @@ import Collection from '../models/collection.model';
 import passport from 'passport';
 import gm from 'gm';
 import multer from 'multer';
+import mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
 
 const router = new Router();
 
@@ -30,9 +32,10 @@ router.get('/api/user-nickname-check', (req, res) => {
 const _getColRank = (colPoint) => {
   return new Promise((resolve, reject) => {
     let resultCnt = 0;
-    User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }, (err, count) => {
+    return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }, (err, count) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
+      console.log('콜렉션랭킹', resultCnt);
     }).then(() => {
       resolve(resultCnt);
     });
@@ -42,9 +45,10 @@ const _getColRank = (colPoint) => {
 const _getBattleRank = (battlePoint) => {
   return new Promise((resolve, reject) => {
     let resultCnt = 0;
-    User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }, (err, count) => {
+    return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }, (err, count) => {
       if (err) reject(new Error(err));
       resultCnt = count + 1;
+      console.log('시합랭킹', resultCnt);
     }).then(() => {
       resolve(resultCnt);
     });
@@ -149,6 +153,9 @@ router.post('/api/users', upload.single('img'), (req, res) => {
 });
 
 router.post('/api/login', passport.authenticate('local'), (req, res) => {
+  if (req.status === 401) {
+    return res.json({ unauthorized: true });
+  }
   res.json({ user: req.user });
 });
 
@@ -221,44 +228,133 @@ router.get('/api/users/:id', (req, res) => {
 
 router.put('/api/users/:id', (req, res) => {
   // const userObject = JSON.parse(req.body.user);
-  const userObject = req.body.user;
-  const user = {
-    _id: userObject._id,
-    email: userObject.email,
-    nickname: userObject.nickname,
-    img: userObject.img,
-    introduce: userObject.introduce,
-    recommenderFlag: userObject.recommenderFlag,
-    _honor1: userObject._honor1,
-    _honor2: userObject._honor2,
-    pokemoney: userObject.pokemoney,
-    league: userObject.league,
-    maxWinInRow: userObject.maxWinInRow,
-    winInRow: userObject.winInRow,
-    getReward: userObject.getReward,
-    reward: userObject.reward,
-    maxBattleCredit: userObject.maxBattleCredit,
-    battleCredit: userObject.battleCredit,
-    maxGetCredit: userObject.maxGetCredit,
-    getCredit: userObject.getCredit,
-    scratchMode: userObject.scratchMode,
-    loseBattle: userObject.loseBattle,
-    winBattle: userObject.winBattle,
-    totalBattle: userObject.totalBattle,
-    lastLogin: userObject.lastLogin,
-    battleInterval: userObject.battleInterval,
-    getInterval: userObject.getInterval,
-    lastGameTime: userObject.lastGameTime,
-    lastGetTime: userObject.lastGetTime,
-    battlePoint: userObject.battlePoint,
-    colPoint: userObject.colPoint,
-  };
-  User
-  .findByIdAndUpdate(user._id, user)
-  .exec((err) => {
-    console.log('updatedUser: ' + JSON.stringify(user));
-    res.json({ user });
+  let user = {}; // user object
+  const addedCollections = req.body.addedCollections; // should be an array
+  // const settings = []; // compose user and addedCollections
+  if (req.body.user) {
+    const userObject = req.body.user;
+    user = {
+      email: userObject.email,
+      nickname: userObject.nickname,
+      img: userObject.img,
+      introduce: userObject.introduce,
+      recommenderFlag: userObject.recommenderFlag,
+      _honor1: userObject._honor1,
+      _honor2: userObject._honor2,
+      pokemoney: userObject.pokemoney,
+      league: userObject.league,
+      maxWinInRow: userObject.maxWinInRow,
+      winInRow: userObject.winInRow,
+      getReward: userObject.getReward,
+      reward: userObject.reward,
+      maxBattleCredit: userObject.maxBattleCredit,
+      battleCredit: userObject.battleCredit,
+      maxGetCredit: userObject.maxGetCredit,
+      getCredit: userObject.getCredit,
+      scratchMode: userObject.scratchMode,
+      loseBattle: userObject.loseBattle,
+      winBattle: userObject.winBattle,
+      totalBattle: userObject.totalBattle,
+      lastLogin: userObject.lastLogin,
+      battleInterval: userObject.battleInterval,
+      getInterval: userObject.getInterval,
+      lastGameTime: userObject.lastGameTime,
+      lastGetTime: userObject.lastGetTime,
+      battlePoint: userObject.battlePoint,
+      colPoint: userObject.colPoint,
+    };
+  }
+  // compose settiongs
+  // settings = Object.assign({}, user, { $pushAll: { _collections: addedCollections } });
+  console.log('user', user);
+  console.log('addedCollections', addedCollections);
+  let resultUser = null;
+  User.findByIdAndUpdate(req.params._id, user, { upsert: true })
+  .then(() => {
+    console.log('1');
+    if (addedCollections) {
+      return User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true });
+    }
+  })
+  .then(() => {
+    console.log('2');
+    return User.findById(req.params._id).populate('_collections');
+  })
+  .then(updatedUser => {
+    resultUser = updatedUser;
+    console.log('3');
+    if (updatedUser) {
+      return Collection.populate(updatedUser._collections, { path: '_mon' });
+      // .exec((err2, collections) => {
+      //   updatedUser._collections = collections; // eslint-disable-line
+      //   console.log('updatedUser', updatedUser);
+      //   res.json({ user: updatedUser });
+      // });
+    }
+    res.json({ user: updatedUser });
+  })
+  .then(collections => {
+    resultUser._collections = collections;
+    console.log('updatedUser', resultUser);
+    res.json({ user: resultUser });
   });
+  // User
+  // .findByIdAndUpdate(req.params._id, user, { upsert: true })
+  // .exec((err) => {
+  //   console.log('1');
+  //   if (err) return res.status(500).send(err);
+  //   if (addedCollections) {
+  //     console.log('4');
+  //     return User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true }).exec();
+  //   }
+  //   console.log('5');
+  //   return new Promise;
+  // })
+  // .then(() => {
+  //   return User.findById(req.params._id).populate('_collections');
+  // })
+  // .exec((err, updatedUser) => {
+  //   console.log('3');
+  //   if (err) return res.status(500).send(err);
+  //   if (updatedUser) {
+  //     Collection.populate(updatedUser._collections, { path: '_mon' })
+  //     .exec((err2, collections) => {
+  //       updatedUser._collections = collections; // eslint-disable-line
+  //       res.json({ user: updatedUser });
+  //     });
+  //   } else {
+  //     res.json({ user: updatedUser });
+  //   }
+  // })
+  // .catch(err => {
+  //   console.log('err', err);
+  // });
+  // .exec((err) => {
+  //   console.log('1');
+  //   if (err) return res.status(500).send(err);
+  //   User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true })
+  //   .exec(err4 => {
+  //     console.log('2');
+  //     if (err4) return res.status(500).send(err4);
+  //     User
+  //     .findById(req.params._id)
+  //     .populate('_collections')
+  //     .exec((err2, updatedUser) => {
+  //       console.log('3');
+  //       if (err2) return res.status(500).send(err2);
+  //       if (updatedUser) {
+  //         Collection.populate(updatedUser._collections, { path: '_mon' }, (err3, collections) => {
+  //           updatedUser._collections = collections; // eslint-disable-line
+  //           if (err3) return res.status(500).send(err3);
+  //           console.log('updatedUser: ' + updatedUser);
+  //           res.json({ user: updatedUser });
+  //         });
+  //       } else {
+  //         res.json({ user: updatedUser });
+  //       }
+  //     });
+  //   });
+  // });
 });
 
 export default router;

@@ -18,7 +18,8 @@ class GetMonView extends React.Component {
     super(props);
     this.displayName = 'GetMonView';
   }
-  componentWillMount() {
+  componentDidMount() {
+    console.log('GetMonView is mounted');
     this.props.dispatch(Actions.fetchUserSession())
     .then(() => {
       const user = this.props.user;
@@ -39,6 +40,7 @@ class GetMonView extends React.Component {
     });
   }
   componentWillUnmount() {
+    console.log('GetMonView is unmounted');
     while (document.body.childElementCount !== 2) {
       document.body.removeChild(document.body.lastChild);
     }

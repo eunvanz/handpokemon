@@ -361,6 +361,7 @@ export function fetchOneMonWhenGet(user) {
               data: { collection },
             })
             .then(res => {
+              console.log('레벨업한 포켓몬', res.data.collection);
               dispatch(getOneMon(res.data.collection));
             });
           });
@@ -370,8 +371,17 @@ export function fetchOneMonWhenGet(user) {
           url: `${baseURL}/api/collections`,
           data: { userId: user._id, monId: pickedMon._id },
         })
-        .then((res) => {
-          dispatch(getOneMon(res.data.collection));
+        .then(postCollectionRes => {
+          return axios({
+            method: 'put',
+            url: `${baseURL}/api/users/${updatedUser._id}`,
+            data: { user: null, addedCollections: [postCollectionRes.data.collection._id] },
+          })
+          .then(putUserRes => {
+            const mon = putUserRes.data.user._collections[putUserRes.data.user._collections.length - 1];
+            console.log('새로운 포켓몬', mon);
+            dispatch(getOneMon(mon));
+          });
         });
       });
     });
