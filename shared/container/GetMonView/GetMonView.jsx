@@ -18,14 +18,16 @@ class GetMonView extends React.Component {
     super(props);
     this.displayName = 'GetMonView';
   }
-  componentDidMount() {
-    console.log('GetMonView is mounted');
+  componentWillMount() {
+    console.log('GetMonView will mount');
     this.props.dispatch(Actions.fetchUserSession())
     .then(() => {
       const user = this.props.user;
       if (user.getCredit > 0) {
         return this.props.dispatch(Actions.fetchOneMonWhenGet(user))
-        .then(this.props.dispatch(Actions.fetchUserSession())
+        .then(() => {
+          return this.props.dispatch(Actions.fetchUserSession());
+        })
         .then(() => {
           const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
           for (const src of scriptSrcs) {
@@ -34,7 +36,7 @@ class GetMonView extends React.Component {
             script.async = false;
             document.body.appendChild(script);
           }
-        }));
+        });
       }
       noCredit = true;
     });

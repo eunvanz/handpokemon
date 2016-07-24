@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import LoadingView from '../../components/Common/LoadingView';
 import MonsterCard from '../../components/Common/MonsterCard';
 
 class CollectionView extends React.Component {
@@ -18,9 +17,9 @@ class CollectionView extends React.Component {
     const collectionUserId = this.props.params.collectionUserId;
     this.props.dispatch(Actions.showLoading());
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
-    .then(this.props.dispatch(Actions.fetchMonsterCountInfo())
-    .then(this.props.dispatch(Actions.fetchAllMons())
-    .then(this.props.dispatch(Actions.fetchDesigners())
+    .then(() => { return this.props.dispatch(Actions.fetchMonsterCountInfo()); })
+    .then(() => { return this.props.dispatch(Actions.fetchAllMons()); })
+    .then(() => { return this.props.dispatch(Actions.fetchDesigners()); })
     .then(() => {
       const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
       for (const src of scriptSrcs) {
@@ -30,7 +29,7 @@ class CollectionView extends React.Component {
         document.body.appendChild(script);
       }
       this.props.dispatch(Actions.hideLoading());
-    }))));
+    });
   }
   componentWillReceiveProps(nextProps) {
     // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));

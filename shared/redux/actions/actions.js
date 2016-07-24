@@ -3,7 +3,7 @@ import Config from '../../../server/config';
 import fetch from 'isomorphic-fetch';
 // import $ from 'jquery';
 import axios from 'axios';
-
+import jwt from 'jwt-simple';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
@@ -149,7 +149,7 @@ export function getAppMounted() {
 
 // user session
 export function getUserSession(user) {
-  console.log('user', user);
+  console.log('getUserSession', user);
   return {
     type: ActionTypes.GET_USER_SESSION,
     user,
@@ -159,26 +159,39 @@ export function getUserSession(user) {
 export function fetchUserSession() {
   // console.log('fetching user session');
   return (dispatch) => {
-    return axios.get(`${baseURL}/api/cookie-user`)
-    .then(res => {
-      // 쿠키에 유저가 존재할 경우 자동 로그인
-      if (!res.data.nouser) {
-        axios({
-          method: 'post',
-          url: `${baseURL}/api/login`,
-          data: { email: res.data.email, password: res.data.password },
-        })
-        .then(() => {
-          axios.get(`${baseURL}/api/session-user`)
-          .then(res2 => {
-            dispatch(getUserSession(res2.data.user));
-          });
-        });
-      } else {
-        console.log('user not exist');
-        dispatch(getUserSession(null));
-      }
+    // If 'token' exists in localStorage - auto login
+    // otherwise, return UserSession as null
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedJwt = jwt.decode(token, Config.secret);
+      return fetch(`${baseURL}/api/users/${decodedJwt.sub}`)
+      .then(response => response.json())
+      .then(response => dispatch(getUserSession(response.user)));
+    }
+    return new Promise((resolve) => {
+      dispatch(getUserSession(null));
+      resolve();
     });
+    // return axios.get(`${baseURL}/api/cookie-user`)
+    // .then(res => {
+    //   // 쿠키에 유저가 존재할 경우 자동 로그인
+    //   if (!res.data.nouser) {
+    //     axios({
+    //       method: 'post',
+    //       url: `${baseURL}/api/login`,
+    //       data: { email: res.data.email, password: res.data.password },
+    //     })
+    //     .then(() => {
+    //       axios.get(`${baseURL}/api/session-user`)
+    //       .then(res2 => {
+    //         dispatch(getUserSession(res2.data.user));
+    //       });
+    //     });
+    //   } else {
+    //     console.log('user not exist');
+    //     dispatch(getUserSession(null));
+    //   }
+    // });
     // return $.ajax({
     //   url: `${baseURL}/api/session-user`,
     //   method: 'get',
@@ -286,7 +299,7 @@ export function fetchOneMonWhenGet(user) {
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
-      let updatedUser = user;
+      const updatedUser = user;
       for (const collection of userCollections) {
         if (pickedMon.monNo === collection._mon.monNo) {
           collectionId = collection._id;
@@ -321,7 +334,6 @@ export function fetchOneMonWhenGet(user) {
           }
         }
       } else {
-        updatedUser = user;
         updatedUser.colPoint++;
       }
       return { collectionId, updatedUser };
@@ -329,6 +341,7 @@ export function fetchOneMonWhenGet(user) {
     .then(rtnObj => {
       const collectionId = rtnObj.collectionId;
       const updatedUser = rtnObj.updatedUser;
+      // user 업데이트
       return axios({
         method: 'put',
         url: `${baseURL}/api/users/${updatedUser._id}`,
@@ -336,12 +349,14 @@ export function fetchOneMonWhenGet(user) {
       })
       .then(() => {
         console.log('updatedUser', updatedUser);
+        // 이미 가지고 있는 포켓몬일 경우 스탯 상승
         if (collectionId) {
           return fetch(`${baseURL}/api/collections/${collectionId}`)
           .then(res => res.json())
           .then(res => {
             const collection = res.collection;
             console.log('collection', collection);
+            // TODO : collection 객체에 immutable 적용
             collection.addedHp = collection.addedHp + addedHp;
             collection.addedPower = collection.addedPower + addedPower;
             collection.addedArmor = collection.addedArmor + addedArmor;
@@ -366,6 +381,7 @@ export function fetchOneMonWhenGet(user) {
             });
           });
         }
+        // 새로운 포켓몬일 경우에는 콜렉션 입력
         return axios({
           method: 'post',
           url: `${baseURL}/api/collections`,
@@ -417,5 +433,31 @@ export function minusGetCredit() {
     //     dispatch(getUserSession(response.user));
     //   },
     // });
+  };
+}
+
+export function login(email, password, remember) {
+  return dispatch => {
+    return axios({
+      url: `${baseURL}/api/login`,
+      method: 'post',
+      data: { email, password },
+    })
+    .then(res => {
+      if (remember) localStorage.setItem('token', res.data.token);
+      return new Promise(resolve => {
+        dispatch(fetchUserSession(res.data.user));
+        resolve();
+      });
+    });
+  };
+}
+
+export function logout() {
+  return dispatch => {
+    return new Promise((resolve) => {
+      dispatch(getUserSession(null));
+      resolve();
+    });
   };
 }

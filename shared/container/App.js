@@ -26,7 +26,7 @@ class App extends Component {
             <div className="main-content-inner">
               {this.props.children}
             </div>
-            <LoadingView />
+            {/*<LoadingView />*/}
           </div>
         </div>
       </div>

@@ -199,6 +199,7 @@ router.post('/api/collections', (req, res) => {
     condition,
   });
   collection.save((err, savedCollection) => {
+    if (err) return res.status(500).send(err);
     Collection.findById(savedCollection._id).populate('_mon').exec((err2, col) => {
       res.json({ collection: col });
     });

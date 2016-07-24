@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
-import passportLocalMongoose from 'passport-local-mongoose';
+// import passportLocalMongoose from 'passport-local-mongoose';
+import bcrypt from 'bcrypt-nodejs';
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
   nickname: { type: String, required: true },
   img: { type: String },
@@ -41,10 +42,37 @@ const userSchema = new Schema({
   online: { type: Boolean, default: true, required: true },
 });
 
-userSchema.plugin(passportLocalMongoose, {
-  usernameField: 'email',
-  lastLoginField: 'lastLogin',
-  hashField: 'password',
+// userSchema.plugin(passportLocalMongoose, {
+//   usernameField: 'email',
+//   lastLoginField: 'lastLogin',
+//   hashField: 'password',
+// });
+
+// Before saving a model, run this function
+userSchema.pre('save', function(next) { // eslint-disable-line
+  // get access to the user model
+  const user = this;
+  // generate a salt then run callback
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) return next(err);
+
+    // hash our password using the salt
+    bcrypt.hash(user.password, salt, null, (err2, hash) => {
+      if (err2) return next(err2);
+
+      // overwrite plain text password with encrypted password
+      user.password = hash;
+      next();
+    });
+  });
 });
+
+userSchema.methods.comparePassword = function(candidatePassword, callback) { // eslint-disable-line
+  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    if (err) return callback(err);
+
+    callback(null, isMatch);
+  });
+};
 
 export default mongoose.model('User', userSchema);

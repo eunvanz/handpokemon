@@ -4,7 +4,6 @@ import MessageModal from '../../components/Modals/MessageModal';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import $ from 'jquery';
 import { browserHistory } from 'react-router';
 
 const style = {
@@ -23,6 +22,7 @@ class Header extends React.Component {
     this._showLoginModal = this._showLoginModal.bind(this);
     this._hideLoginModal = this._hideLoginModal.bind(this);
     this._hideMessageModal = this._hideMessageModal.bind(this);
+    this._handleLogoutClick = this._handleLogoutClick.bind(this);
   }
   _showLoginModal(e) {
     e.preventDefault();
@@ -35,12 +35,15 @@ class Header extends React.Component {
     this.props.dispatch(Actions.hideMessageModal());
   }
   _handleLogoutClick() {
-    $.ajax({
-      url: '/api/logout',
-      success: () => {
-        browserHistory.push('/');
-      },
-    });
+    localStorage.removeItem('token');
+    this.props.dispatch(Actions.logout())
+    .then(() => browserHistory.push('/'));
+    // $.ajax({
+    //   url: '/api/logout',
+    //   success: () => {
+    //     browserHistory.push('/');
+    //   },
+    // });
   }
   render() {
     const renderLoginComponent = () => {

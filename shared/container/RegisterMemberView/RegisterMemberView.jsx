@@ -88,8 +88,7 @@ class RegisterMemberView extends React.Component {
       request.post(`/api/collections/basic-pick/${res.body.savedUser._id}`)
       .send({ pickedMons: this.props.pickedMons, email: this.state.email })
       .end(() => {
-        this.props.dispatch(Actions.fetchUserSession());
-        this.props.dispatch(Actions.prepareMessageModal('회원가입이 완료되었습니다.'));
+        this.props.dispatch(Actions.prepareMessageModal('회원가입이 완료되었습니다. 가입한 계정으로 로그인 해주세요.'));
         browserHistory.push('/');
       });
     });

@@ -4,12 +4,21 @@ import Collection from '../models/collection.model';
 import passport from 'passport';
 import gm from 'gm';
 import multer from 'multer';
-import mongoose from 'mongoose';
-mongoose.Promise = require('bluebird');
+import jwt from 'jwt-simple';
+import config from '../config';
+import passportService from '../passport';
+
+const requireAuth = passport.authenticate('jwt', { session: false });
+const requireSignin = passport.authenticate('local', { session: false });
 
 const router = new Router();
 
 const upload = multer({ dest: './static/img/user/' });
+
+const tokenForUser = (user) => {
+  const timestamp = new Date().getTime();
+  return jwt.encode({ sub: user._id, iat: timestamp }, config.secret);
+};
 
 // 이메일 중복 체크
 router.get('/api/user-email-check', (req, res) => {
@@ -128,6 +137,8 @@ router.post('/api/users', upload.single('img'), (req, res) => {
   const battleRank = _getBattleRank(1000);
   Promise.all([colRank, battleRank]).then((ranks) => {
     // console.log('promise.all 완료');
+    console.log('ranks[0]', ranks[0]);
+    console.log('ranks[1]', ranks[1]);
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
@@ -141,35 +152,31 @@ router.post('/api/users', upload.single('img'), (req, res) => {
     });
     // console.log('user 객체 생성 완료');
     _saveThumbnail(imagePath).then(() => {
-      User.register(user, user.password, (err, savedUser) => {
+      user.save((err, savedUser) => {
         if (err) return res.status(500).send(err);
-        passport.authenticate('local')(req, res, () => {
-          // console.log('유저등록 완료 : ' + savedUser);
-          res.json({ savedUser });
-        });
+        res.json({ token: tokenForUser(user), savedUser });
       });
+      // User.register(user, user.password, (err, savedUser) => {
+      //   if (err) return res.status(500).send(err);
+      //   passport.authenticate('local')(req, res, () => {
+      //     // console.log('유저등록 완료 : ' + savedUser);
+      //     res.json({ savedUser });
+      //   });
+      // });
     });
   });
 });
 
-router.post('/api/login', passport.authenticate('local'), (req, res) => {
-  if (req.status === 401) {
-    return res.json({ unauthorized: true });
-  }
-  res.json({ user: req.user });
-});
-
-router.post('/api/remember-user', (req, res) => {
-  res.cookie('rememberme', JSON.stringify(req.body));
-  res.json({ success: true });
-});
-
-router.get('/api/cookie-user', (req, res) => {
-  if (req.cookies.rememberme) {
-    res.json(JSON.parse(req.cookies.rememberme));
-  } else {
-    res.json({ nouser: true });
-  }
+// router.post('/api/login', passport.authenticate('local'), (req, res) => {
+router.post('/api/login', requireSignin, (req, res) => {
+  // User has already had their email and password auth'd
+  // We just need to give them a token
+  const token = tokenForUser(req.user);
+  res.send({ token, user: req.user });
+  // if (req.status === 401) {
+  //   return res.json({ unauthorized: true });
+  // }
+  // res.json({ user: req.user });
 });
 
 router.get('/api/logout', (req, res) => {
@@ -266,19 +273,20 @@ router.put('/api/users/:id', (req, res) => {
   }
   // compose settiongs
   // settings = Object.assign({}, user, { $pushAll: { _collections: addedCollections } });
-  console.log('user', user);
+  console.log('user in put', user);
   console.log('addedCollections', addedCollections);
   let resultUser = null;
-  User.findByIdAndUpdate(req.params._id, user, { upsert: true })
+  User.findByIdAndUpdate(req.params.id, user, { upsert: true })
   .then(() => {
     console.log('1');
     if (addedCollections) {
-      return User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true });
+      console.log('user._id: ' + req.params.id + '에 콜렉션 ' + addedCollections + ' 삽입');
+      return User.findByIdAndUpdate(req.params.id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true });
     }
   })
   .then(() => {
     console.log('2');
-    return User.findById(req.params._id).populate('_collections');
+    return User.findById(req.params.id).populate('_collections');
   })
   .then(updatedUser => {
     resultUser = updatedUser;
