@@ -1,84 +1,72 @@
-import React, { PropTypes } from 'react';
-import CustomModal from './CustomModal';
-import $ from 'jquery';
+import React from 'react';
 import _ from 'lodash';
-import { Link } from 'react-router';
 
-class MonsterModal extends React.Component {
+const show = {
+  display: 'block',
+};
+
+const hide = {
+  display: 'none',
+};
+
+class MonsterInfoView extends React.Component {
   constructor(props) {
     super(props);
-    this.displayName = 'MonsterModal';
-    this.state = {
-      showModal: false,
-    };
-    this._flip = this._flip.bind(this);
-    this._handleImgChange = this._handleImgChange.bind(this);
-  }
-  componentWillReceiveProps(nextProps) {
-    this.setState({ showModal: nextProps.show });
-  }
-  _flip() {
-    $('.modal .front').toggle();
-    $('.modal .back').toggle();
-  }
-  _handleImgChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-    // TODO: 이미지 타입 업데이트 하는 코드 들어가야 함
+    this.displayName = 'MonsterInfoView';
   }
   render() {
-    const renderSelectImgComponent = () => {
-      const imgArr = this.props.monster.img;
+    const mon = this.props.mon;
+    const monInfo = this.props.mon._mon;
+    const renderGradeTag = () => {
       const returnComponent = [];
-      let idx = 0;
-      if (imgArr.length > 1) {
-        const itemListComponent = imgArr.map((img) => <option key={idx} value={img}>타입 {idx++}</option>);
-        return (
-          returnComponent.push(<select key="selectImg" style={{ maxWidth: '200px' }} onChange={this._handleImgChange}>{itemListComponent()}</select>)
-        );
-      }
-    };
-    const renderLevelComponent = () => {
-      const level = this.props.monster.level;
-      const evolutePiece = this.props.monster.evolutePiece;
-      const returnComponent = [];
-      if (level) {
-        returnComponent.push(<p key="level"><span className="label label-info arrowed-in-right">{`LV. ${level}`}</span></p>);
-      }
-      if (evolutePiece) {
-        returnComponent.push(<p key="evolutePiece"><span className="label label-default arrowed-in-right">{`LV. ${evolutePiece}`}</span> 에 진화</p>);
-      }
-      if (level > evolutePiece) {
+      if (monInfo.grade === 'b') {
         returnComponent.push(
-          <Link to="/evolution">
-            <button className="btn btn-primary btn-minier ev-btn" id="ev-btn">
-              <i className="ace-icon fa fa-flash"></i> 진화하기
-            </button>
-          </Link>
+          <span key="1"
+            className="label label-sm label-yellow arrowed-right"
+            style={{ marginRight: '1px' }}
+          >BASIC</span>
+        );
+      } else if (monInfo.grade === 'r') {
+        returnComponent.push(
+          <span key="1"
+            className="label label-sm label-rare arrowed-right"
+            style={{ marginRight: '1px' }}
+          >RARE</span>
+        );
+      } else if (monInfo.grade === 'a') {
+        returnComponent.push(
+          <span key="1"
+            className="label label-sm label-adv arrowed-right"
+            style={{ marginRight: '1px' }}
+          >SPECIAL</span>
+        );
+      } else if (monInfo.grade === 'ar') {
+        returnComponent.push(
+          <span key="1"
+            className="label label-sm label-advr arrowed-right"
+            style={{ marginRight: '1px' }}
+          >S.RARE</span>
+        );
+      } else if (monInfo.grade === 'e') {
+        returnComponent.push(
+          <span key="1"
+            className="label label-sm label-elite arrowed-right"
+            style={{ marginRight: '1px' }}
+          >ELITE</span>
+        );
+      } else if (monInfo.grade === 'l') {
+        returnComponent.push(
+          <span key="1"
+            className="label label-sm label-limited arrowed-right"
+            style={{ marginRight: '1px' }}
+          >LEGEND</span>
         );
       }
       return returnComponent;
     };
-    const renderGradeComponent = () => {
-      const grade = this.props.monster.grade;
-      let gradeLabel = null;
-      if (grade === 'b') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BASIC</span>;
-      } else if (grade === 'a') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SPECIAL</span>;
-      } else if (grade === 'r') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RARE</span>;
-      } else if (grade === 'ar') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>S.RARE</span>;
-      } else if (grade === 'e') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>ELITE</span>;
-      } else if (grade === 'l') {
-        gradeLabel = <span key="gradeLabel" className="label label-sm label-limited arrowed-right" style={{ marginRight: '1px' }}>LEGEND</span>;
-      }
-      return gradeLabel;
-    };
-    const renderAttrComponent = () => {
-      const mainAttr = this.props.monster.mainAttr;
-      const subAttr = this.props.monster.subAttr;
+    const renderAttrTag = () => {
+      const mainAttr = monInfo.mainAttr;
+      const subAttr = monInfo.subAttr;
       let mainAttrLabel = null;
       let subAttrLabel = null;
       const resultComponent = [];
@@ -163,7 +151,7 @@ class MonsterModal extends React.Component {
     };
     const renderCostComponent = () => {
       const resultComponent = [];
-      const cost = this.props.monster.cost;
+      const cost = monInfo.cost;
       let fullStar = null;
       let emptyStar = null;
       let key = 0;
@@ -185,26 +173,28 @@ class MonsterModal extends React.Component {
       }
       return resultComponent;
     };
-    const renderImgComponent = () => {
-      const returnComponent = [];
-      returnComponent.push(
-          <p key="img">
-            <img className="monster-image picks"
-              src={`/img/monsters/${this.props.monster.img }`}
-              width="100%"
-              style={{ maxWidth: '150px' }}
-            />
-          </p>
-        );
-      returnComponent.push(<p key="selectImgComponent">{renderSelectImgComponent()}</p>);
-      returnComponent.push(renderLevelComponent());
-      return returnComponent;
-    };
-    const renderStatBarComponent = (honorStat, initStat, stat) => {
+    const renderStatBarComponent = (honorStat, initStat, stat, name) => {
       const returnComponent = [];
       let honorStatPct = 0;
       let statPct = 0;
       let addStatPct = 0;
+      let upStatPct = 0;
+      let upStat = 0;
+      if (this.props.addedAbility) {
+        if (name === 'hp') {
+          upStat = this.props.addedAbility.addedHp;
+        } else if (name === 'power') {
+          upStat = this.props.addedAbility.addedPower;
+        } else if (name === 'armor') {
+          upStat = this.props.addedAbility.addedArmor;
+        } else if (name === 'specialPower') {
+          upStat = this.props.addedAbility.addedSpecialPower;
+        } else if (name === 'specialArmor') {
+          upStat = this.props.addedAbility.addedSpecialArmor;
+        } else if (name === 'dex') {
+          upStat = this.props.addedAbility.addedDex;
+        }
+      }
       honorStatPct = _.toString(honorStat / 200 * 100);
       returnComponent.push(
         <div
@@ -213,7 +203,7 @@ class MonsterModal extends React.Component {
           style={{ width: `${honorStatPct}%` }}
         >
         </div>
-        );
+      );
       if (honorStat + stat > 200) {
         statPct = _.toString(initStat / 200 * 100);
         addStatPct = _.toString(200 - honorStat - initStat);
@@ -224,7 +214,7 @@ class MonsterModal extends React.Component {
             style={{ width: `${statPct}%` }}
           >
           </div>
-          );
+        );
         returnComponent.push(
           <div
             key="3"
@@ -232,10 +222,11 @@ class MonsterModal extends React.Component {
             style={{ width: `${addStatPct}%` }}
           >
           </div>
-          );
+        );
       } else if (stat - initStat > 0) {
         statPct = _.toString(initStat / 200 * 100);
         addStatPct = _.toString((stat - initStat) / 200 * 100);
+        upStatPct = _.toString(upStat / 200 * 100);
         returnComponent.push(
           <div
             key="4"
@@ -243,7 +234,7 @@ class MonsterModal extends React.Component {
             style={{ width: `${statPct}%` }}
           >
           </div>
-          );
+        );
         returnComponent.push(
           <div
             key="5"
@@ -251,7 +242,15 @@ class MonsterModal extends React.Component {
             style={{ width: `${addStatPct}%` }}
           >
           </div>
-          );
+        );
+        returnComponent.push(
+          <div
+            key="9"
+            className="progress-bar progress-bar-info monster-skill1-bar"
+            style={{ width: `${upStatPct}%` }}
+          >
+          </div>
+        );
       } else if (stat - initStat < 0) {
         statPct = _.toString(stat / 200 * 100);
         addStatPct = _.toString((stat - initStat) / 200 * 100);
@@ -284,7 +283,23 @@ class MonsterModal extends React.Component {
       }
       return returnComponent;
     };
-    const renderStatBadgeComponent = (honorStat, initStat, stat) => {
+    const renderStatBadgeComponent = (honorStat, initStat, stat, name) => {
+      let upStat = 0;
+      if (this.props.addedAbility) {
+        if (name === 'hp') {
+          upStat = this.props.addedAbility.addedHp;
+        } else if (name === 'power') {
+          upStat = this.props.addedAbility.addedPower;
+        } else if (name === 'armor') {
+          upStat = this.props.addedAbility.addedArmor;
+        } else if (name === 'specialPower') {
+          upStat = this.props.addedAbility.addedSpecialPower;
+        } else if (name === 'specialArmor') {
+          upStat = this.props.addedAbility.addedSpecialArmor;
+        } else if (name === 'dex') {
+          upStat = this.props.addedAbility.addedDex;
+        }
+      }
       const returnComponent = [];
       if (honorStat > 0) {
         returnComponent.push(<span key="1" className="badge badge-success">+{honorStat}</span>);
@@ -294,160 +309,152 @@ class MonsterModal extends React.Component {
       } else if (stat - initStat < 0) {
         returnComponent.push(<span key="3" className="badge badge-danger">{stat - initStat}</span>);
       }
+      if (upStat > 0) returnComponent.push(<strong key="4" className="text-info">+{upStat}</strong>);
       return returnComponent;
-    };
-    const renderGetDateComponent = () => {
-      if (this.props.monster.getDate) {
-        return (
-          <small>
-          (<span className="text-info">{this.props.monster.getDate}</span> 발견)
-          </small>
-        );
-      }
     };
     const renderStatComponent = () => {
       const returnComponent = [];
 
-      const honorHp = Number(this.props.monster.honorHp);
-      const initHp = Number(this.props.monster.initHp);
-      const hp = Number(this.props.monster.hp);
+      const honorHp = Number(mon.honorHp);
+      const initHp = Number(monInfo.hp);
+      const hp = honorHp + initHp + mon.addedHp - (this.props.addedAbility ? this.props.addedAbility.addedHp : 0);
 
-      const honorPower = Number(this.props.monster.honorPower);
-      const initPower = Number(this.props.monster.initPower);
-      const power = Number(this.props.monster.power);
+      const honorPower = Number(mon.honorPower);
+      const initPower = Number(monInfo.power);
+      const power = honorPower + initPower + mon.addedPower - (this.props.addedAbility ? this.props.addedAbility.addedPower : 0);
 
-      const honorArmor = Number(this.props.monster.honorArmor);
-      const initArmor = Number(this.props.monster.initArmor);
-      const armor = Number(this.props.monster.armor);
+      const honorArmor = Number(mon.honorArmor);
+      const initArmor = Number(monInfo.armor);
+      const armor = honorArmor + initArmor + mon.addedArmor - (this.props.addedAbility ? this.props.addedAbility.addedArmor : 0);
 
-      const honorSpecialPower = Number(this.props.monster.honorSpecialPower);
-      const initSpecialPower = Number(this.props.monster.initSpecialPower);
-      const specialPower = Number(this.props.monster.specialPower);
+      const honorSpecialPower = Number(mon.honorSpecialPower);
+      const initSpecialPower = Number(monInfo.specialPower);
+      const specialPower = honorSpecialPower + initSpecialPower + mon.addedSpecialPower - (this.props.addedAbility ? this.props.addedAbility.addedSpecialPower : 0);
 
-      const honorSpecialArmor = Number(this.props.monster.honorSpecialArmor);
-      const initSpecialArmor = Number(this.props.monster.initSpecialArmor);
-      const specialArmor = Number(this.props.monster.specialArmor);
+      const honorSpecialArmor = Number(mon.honorSpecialArmor);
+      const initSpecialArmor = Number(monInfo.specialArmor);
+      const specialArmor = honorSpecialArmor + initSpecialArmor + mon.addedSpecialArmor - (this.props.addedAbility ? this.props.addedAbility.addedSpecialArmor : 0);
 
-      const honorDex = Number(this.props.monster.honorDex);
-      const initDex = Number(this.props.monster.initDex);
-      const dex = Number(this.props.monster.dex);
+      const honorDex = Number(mon.honorDex);
+      const initDex = Number(monInfo.dex);
+      const dex = honorDex + initDex + mon.addedDex - (this.props.addedAbility ? this.props.addedAbility.addedDex : 0);
 
       let key = 0;
       returnComponent.push(
           <div key={key++}>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>체력</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorHp, initHp, hp)}
+                  {renderStatBarComponent(honorHp, initHp, hp, 'hp')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorHp) ? hp : hp + honorHp}
-                {renderStatBadgeComponent(honorHp, initHp, hp)}
+                {renderStatBadgeComponent(honorHp, initHp, hp, 'hp')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>공격</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorPower, initPower, power)}
+                  {renderStatBarComponent(honorPower, initPower, power, 'power')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorPower) ? power : power + honorPower}
-                {renderStatBadgeComponent(honorPower, initPower, power)}
+                {renderStatBadgeComponent(honorPower, initPower, power, 'power')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>방어</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorArmor, initArmor, armor)}
+                  {renderStatBarComponent(honorArmor, initArmor, armor, 'armor')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorArmor) ? armor : armor + honorArmor}
-                {renderStatBadgeComponent(honorArmor, initArmor, armor)}
+                {renderStatBadgeComponent(honorArmor, initArmor, armor, 'armor')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>특공</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorSpecialPower, initSpecialPower, specialPower)}
+                  {renderStatBarComponent(honorSpecialPower, initSpecialPower, specialPower, 'specialPower')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorSpecialPower) ? specialPower : specialPower + honorSpecialPower}
-                {renderStatBadgeComponent(honorSpecialPower, initSpecialPower, specialPower)}
+                {renderStatBadgeComponent(honorSpecialPower, initSpecialPower, specialPower, 'specialPower')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>특방</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
+                  {renderStatBarComponent(honorSpecialArmor, initSpecialArmor, specialArmor, 'specialArmor')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorSpecialArmor) ? specialArmor : specialArmor + honorSpecialArmor}
-                {renderStatBadgeComponent(honorSpecialArmor, initSpecialArmor, specialArmor)}
+                {renderStatBadgeComponent(honorSpecialArmor, initSpecialArmor, specialArmor, 'specialArmor')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-2 thin-padding">
+              <div className="col-xs-2 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>민첩</b></big>
                 </p>
               </div>
-              <div className="col-xs-5 thin-padding">
+              <div className="col-xs-6 thin-padding">
                 <div className="progress progress-striped active">
-                  {renderStatBarComponent(honorDex, initDex, dex)}
+                  {renderStatBarComponent(honorDex, initDex, dex, 'dex')}
                 </div>
               </div>
-              <div className="col-xs-5 monster-hp thin-padding">
+              <div className="col-xs-4 monster-hp thin-padding align-left">
                 {isNaN(honorDex) ? dex : dex + honorDex}
-                {renderStatBadgeComponent(honorDex, initDex, dex)}
+                {renderStatBadgeComponent(honorDex, initDex, dex, 'dex')}
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-3 thin-padding">
+              <div className="col-xs-3 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>기술명</b></big>
                 </p>
               </div>
-              <div className="col-xs-9 monster-skills thin-padding">
-                <span className="badge badge-warning">{this.props.monster.skillName}</span>
+              <div className="col-xs-9 monster-skills thin-padding align-left">
+                <span className="badge badge-warning">{monInfo.skillName}</span>
               </div>
             </div>
             <div className="row">
-              <div className="col-xs-3 thin-padding">
+              <div className="col-xs-3 thin-padding align-left">
                 <p>
                   <big className="text-primary"><b>전투력</b></big>
                 </p>
               </div>
-              <div className="col-xs-9 monster-skills thin-padding">
+              <div className="col-xs-9 monster-skills thin-padding align-left">
                 <span className="badge badge-inverse">
                   {hp + power + armor + dex + specialPower + specialArmor +
                     (isNaN(honorHp) ? 0 : honorHp) +
@@ -457,124 +464,90 @@ class MonsterModal extends React.Component {
                     (isNaN(honorSpecialPower) ? 0 : honorSpecialPower) +
                     (isNaN(honorSpecialArmor) ? 0 : honorSpecialArmor)}
                 </span>
+                <strong className="text-primary">+{monInfo.point}</strong>
               </div>
             </div>
           </div>
         );
       return returnComponent;
     };
-    const renderBodyComponent = () => {
-      return (
-        <div>
-          <div className="modal-body front">
-            <div className="row">
-              <div className="col-sm-4 col-xs-12 align-center">
-                {renderImgComponent()}
-              </div>
-              <div className="col-sm-8 col-xs-12 align-left">
-                <div className="row">
-                  <div className="col-xs-3">
-                    <p>
-                      <big className="text-primary"><b>이름</b></big>
-                    </p>
-                  </div>
-                  <div className="col-xs-9">
-                    <p className="monster-name">
-                      <big>{this.props.monster.name}</big>
-                      {renderGetDateComponent()}
-                    </p>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-xs-3">
-                    <p>
-                      <big className="text-primary"><b>등급</b></big>
-                    </p>
-                  </div>
-                  <div className="col-xs-9">
-                    <p className="monster-grade">
-                      {renderGradeComponent()}
-                      (<span className="badge badge-warning">+{this.props.monster.point}</span> 콜렉션 점수)
-                    </p>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-xs-3">
-                    <p>
-                      <big className="text-primary"><b>속성</b></big>
-                    </p>
-                  </div>
-                  <div className="col-xs-9">
-                    <p className="monster-attribute">
-                      {renderAttrComponent()}
-                    </p>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-xs-3">
-                    <p>
-                      <big className="text-primary"><b>코스트</b></big>
-                    </p>
-                  </div>
-                  <div className="col-xs-9">
-                    <p className="monster-cost">
-                      {renderCostComponent()}
-                    </p>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-xs-12">
-                    <p className="monster-description">{this.props.monster.desc}
-                      (designed by <span className="badge badge-grey" id={`designer-mon-${this.props.monster.monNo}`}>{this.props.monster.designer}</span>)
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-body back">
-            <div className="row">
-              <div className="col-sm-4 col-xs-12 align-center">
-                {renderImgComponent()}
-              </div>
-              <div className="col-sm-8 col-xs-12 align-left">
-                {renderStatComponent()}
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    };
-    const renderFooterComponent = () => {
-      return (
-        <div>
-          <button className="btn btn-default flip-btn" onClick={this.props.close}>
-            닫기
-          </button>
-          <button className="btn btn-primary flip-btn" onClick={this._flip}>
-            <i className="fa fa-refresh"></i> 뒤집기
-          </button>
-        </div>
-      );
-    };
     return (
       <div>
-        <CustomModal show={this.state.showModal}
-          title="포켓몬 정보"
-          bodyComponent={renderBodyComponent()}
-          footerComponent={renderFooterComponent()}
-          close={this.props.close}
-          width="500px"
-          backdrop
-        />
+        <div className="front" style={this.props.flip ? show : hide}>
+          <div className="row">
+            <div className="col-xs-12 align-center">
+              <div className="row">
+                <div className="col-xs-3 align-left">
+                  <p>
+                    <big className="text-primary"><b>이름</b></big>
+                  </p>
+                </div>
+                <div className="col-xs-9 align-left">
+                  <p className="monster-name">
+                    <big>{monInfo.name}</big>
+                  </p>
+                </div>
+              </div>
+              <div className="row">
+								<div className="col-xs-3 align-left">
+									<p>
+										<big className="text-primary"><b>등급</b></big>
+									</p>
+								</div>
+								<div className="col-xs-9 align-left">
+									<p className="monster-grade">
+                    {renderGradeTag()}
+                  </p>
+                </div>
+              </div>
+              <div className="row">
+								<div className="col-xs-3 align-left">
+									<p>
+										<big className="text-primary"><b>속성</b></big>
+									</p>
+								</div>
+								<div className="col-xs-9 align-left">
+									<p className="monster-attribute">
+                    {renderAttrTag()}
+                  </p>
+                </div>
+              </div>
+              <div className="row">
+								<div className="col-xs-3 align-left">
+									<p>
+										<big className="text-primary"><b>코스트</b></big>
+									</p>
+								</div>
+								<div className="col-xs-9 align-left">
+									<p className="monster-cost">
+                    {renderCostComponent()}
+                  </p>
+                </div>
+              </div>
+              <div className="row">
+								<div className="col-xs-12 align-left">
+									<p className="monster-description">{monInfo.desc} (designed by <span className="badge badge-grey">{monInfo.designer[0]}</span>)</p>
+								</div>
+							</div>
+            </div>
+          </div>
+        </div>
+        <div className="back" style={this.props.flip ? hide : show}>
+          {renderStatComponent()}
+        </div>
       </div>
     );
   }
 }
 
-MonsterModal.propTypes = {
-  monster: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired,
+MonsterInfoView.contextTypes = {
+  router: React.PropTypes.object,
 };
 
-export default MonsterModal;
+MonsterInfoView.propTypes = {
+  mon: React.PropTypes.object,
+  flip: React.PropTypes.bool,
+  addedAbility: React.PropTypes.object,
+};
+
+export default MonsterInfoView;

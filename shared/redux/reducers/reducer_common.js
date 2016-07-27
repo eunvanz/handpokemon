@@ -21,3 +21,14 @@ export const loading = (state = false, action) => {
       return state;
   }
 };
+
+export const monInfoFlip = (state = true, action) => {
+  switch (action.type) {
+    case ActionTypes.SHOW_MON_INFO_FRONT :
+      return true;
+    case ActionTypes.SHOW_MON_INFO_BACK :
+      return false;
+    default :
+      return state;
+  }
+};

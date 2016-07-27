@@ -4,6 +4,7 @@ import * as Actions from '../../redux/actions/actions';
 import LoadingView from '../../components/Common/LoadingView';
 import ErrorView from '../../components/Common/ErrorView';
 import { Link } from 'react-router';
+import MonsterInfoView from '../../components/Common/MonsterInfoView';
 
 const scratchStyle = {
   width: '200px',
@@ -12,11 +13,11 @@ const scratchStyle = {
   margin: '0 auto',
 };
 
-let noCredit = false;
 class GetMonView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'GetMonView';
+    this._handleFlipClick = this._handleFlipClick.bind(this);
   }
   componentWillMount() {
     console.log('GetMonView will mount');
@@ -38,13 +39,22 @@ class GetMonView extends React.Component {
           }
         });
       }
-      noCredit = true;
     });
   }
   componentWillUnmount() {
-    console.log('GetMonView is unmounted');
+    this.props.dispatch(Actions.resetMon());
+    this.props.dispatch(Actions.showMonInfoFront());
+    this.props.dispatch(Actions.getAddedAbility(null));
     while (document.body.childElementCount !== 2) {
       document.body.removeChild(document.body.lastChild);
+    }
+  }
+  _handleFlipClick(e) {
+    e.preventDefault();
+    if (!this.props.monInfoFlip) {
+      this.props.dispatch(Actions.showMonInfoFront());
+    } else {
+      this.props.dispatch(Actions.showMonInfoBack());
     }
   }
   render() {
@@ -83,14 +93,14 @@ class GetMonView extends React.Component {
     };
     const renderGetResult = () => {
       let returnComponent = null;
-      if (noCredit) {
+      if (this.props.user.getCredit <= 0) {
         returnComponent = (
           <div>
             <ErrorView
               title="아직 채집을 할 수 없어."
               msg="그 동안 교배나 진화를 시켜보는 건 어때?"
               buttons={
-                <Link to="/collection">
+                <Link to={`/collection/${this.props.user._id}`}>
                   <button className="btn btn-primary">
                     <i className="ace-icon fa fa-github-alt"></i> 내 콜렉션
                   </button>
@@ -124,6 +134,16 @@ class GetMonView extends React.Component {
                       <div className="row">
                         {renderLevelInfo()}
                       </div>
+                      <div className="space"></div>
+                      <MonsterInfoView mon={this.props.mon} flip={this.props.monInfoFlip} addedAbility={this.props.addedAbility} />
+                      <p>
+                        <Link to={`/collection/${this.props.user._id}`}>
+                          <button className="btn btn-default">내 콜렉션</button>
+                        </Link>
+                        <button className="btn btn-warning flip-btn" onClick={this._handleFlipClick} style={{ marginLeft: '5px' }}>
+                          <i className="fa fa-refresh"></i> 뒤집기
+                        </button>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -149,13 +169,17 @@ GetMonView.contextTypes = {
 
 const mapStateToProps = (store) => ({
   mon: store.mon,
-  // user: store.user,
+  user: store.user,
+  monInfoFlip: store.monInfoFlip,
+  addedAbility: store.addedAbility,
 });
 
 GetMonView.propTypes = {
   dispatch: PropTypes.func.isRequired,
   mon: PropTypes.object,
   user: PropTypes.object,
+  monInfoFlip: PropTypes.bool,
+  addedAbility: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(GetMonView);

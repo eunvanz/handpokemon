@@ -184,25 +184,27 @@ class CollectionView extends React.Component {
     const renderMonsterCardComponent = () => {
       const returnComponent = [];
       const allMons = this.props.allMons;
+      let mon = null;
       if (this.state.collectionsMonNo) {
-        for (const mon of allMons) {
-          if (this.state.collectionsMonNo.has(mon.monNo)) {
+        for (const mon2 of allMons) {
+          mon = Object.assign({}, mon2);
+          if (this.state.collectionsMonNo.has(mon2.monNo)) {
             for (const col of collections) {
-              if (col._mon.monNo === mon.monNo) {
-                mon.img = [mon.img[col.imgIdx]];
+              if (col._mon.monNo === mon2.monNo) {
+                mon.img = [mon2.img[col.imgIdx]];
                 mon.level = col.level;
-                mon.initHp = mon.hp;
-                mon.initPower = mon.power;
-                mon.initArmor = mon.armor;
-                mon.initSpecialPower = mon.specialPower;
-                mon.initSpecialArmor = mon.specialArmor;
-                mon.initDex = mon.dex;
-                mon.hp = mon.hp + col.addedHp;
-                mon.power = mon.power + col.addedPower;
-                mon.armor = mon.armor + col.addedArmor;
-                mon.specialPower = mon.specialPower + col.addedSpecialPower;
-                mon.specialArmor = mon.specialArmor + col.addedSpecialPower;
-                mon.dex = mon.dex + col.addedDex;
+                mon.initHp = mon2.hp;
+                mon.initPower = mon2.power;
+                mon.initArmor = mon2.armor;
+                mon.initSpecialPower = mon2.specialPower;
+                mon.initSpecialArmor = mon2.specialArmor;
+                mon.initDex = mon2.dex;
+                mon.hp = mon2.hp + col.addedHp;
+                mon.power = mon2.power + col.addedPower;
+                mon.armor = mon2.armor + col.addedArmor;
+                mon.specialPower = mon2.specialPower + col.addedSpecialPower;
+                mon.specialArmor = mon2.specialArmor + col.addedSpecialArmor;
+                mon.dex = mon2.dex + col.addedDex;
                 mon.honorHp = col.honorHp;
                 mon.honorPower = col.honorPower;
                 mon.honorArmor = col.honorArmor;

@@ -8,3 +8,13 @@ export const collectionCountInfo = (state = {}, action) => {
       return state;
   }
 };
+
+export const addedAbility = (state = null, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_ADDED_ABILITY :
+      console.log('GET_ADDED_ABILITY', action.addedAbility);
+      return action.addedAbility;
+    default:
+      return state;
+  }
+};

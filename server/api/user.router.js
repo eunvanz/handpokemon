@@ -39,56 +39,42 @@ router.get('/api/user-nickname-check', (req, res) => {
 });
 
 const _getColRank = (colPoint) => {
-  return new Promise((resolve, reject) => {
-    let resultCnt = 0;
-    return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }, (err, count) => {
-      if (err) reject(new Error(err));
-      resultCnt = count + 1;
-      console.log('콜렉션랭킹', resultCnt);
-    }).then(() => {
-      resolve(resultCnt);
-    });
-  });
+  return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } });
 };
 
 const _getBattleRank = (battlePoint) => {
-  return new Promise((resolve, reject) => {
-    let resultCnt = 0;
-    return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }, (err, count) => {
-      if (err) reject(new Error(err));
-      resultCnt = count + 1;
-      console.log('시합랭킹', resultCnt);
-    }).then(() => {
-      resolve(resultCnt);
-    });
-  });
+  return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } });
 };
 
 const _updateCredits = (user) => {
   console.log('updating credits');
-  const updatedUser = user;
+  console.log('user', user);
+  const updateQuery = {};
   let modified = false;
   return new Promise((resolve) => {
     if (user.getCredit < user.maxGetCredit) {
       const getInterval = Date.now() - user.lastGetTime;
       const addGetCredit = Math.floor(getInterval / user.getInterval);
+      console.log('getInterval', getInterval);
+      console.log('addGetCredit', addGetCredit);
       const finalGetCredit = (user.getCredit + addGetCredit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + addGetCredit);
-      updatedUser.getCredit = finalGetCredit;
+      updateQuery.getCredit = finalGetCredit;
       modified = true;
     }
     if (user.battleCredit < user.maxBattleCredit) {
       const battleInterval = Date.now() - user.lastGameTime;
       const addBattleCredit = Math.floor(battleInterval / user.battleInterval);
       const finalBattleCredit = (user.battleCredit + addBattleCredit > user.maxBattleCredit ? user.maxBattleCredit : user.battleCredit + addBattleCredit);
-      updatedUser.getCredit = finalBattleCredit;
+      updateQuery.battleCredit = finalBattleCredit;
       modified = true;
     }
+    console.log('updateQuery', updateQuery);
     if (modified) {
-      User.findByIdAndUpdate(user._id, updatedUser).exec(() => {
+      User.findByIdAndUpdate(user._id, updateQuery).exec((updatedUser) => {
         resolve(updatedUser);
       });
     } else {
-      resolve(updatedUser);
+      resolve(user);
     }
   });
 };
@@ -147,8 +133,8 @@ router.post('/api/users', upload.single('img'), (req, res) => {
       introduce: req.body.introduce,
       recommender: req.body.recommender,
       colPoint: 4,
-      colRank: ranks[0],
-      battleRank: ranks[1],
+      colRank: ranks[0] + 1,
+      battleRank: ranks[1] + 1,
     });
     // console.log('user 객체 생성 완료');
     _saveThumbnail(imagePath).then(() => {
@@ -216,67 +202,42 @@ router.get('/api/session-user', (req, res) => {
 router.get('/api/users/:id', (req, res) => {
   const _id = req.params.id;
   console.log('_id: ' + _id);
-  User
-  .findById(_id)
-  .populate('_collections')
-  .exec((err, user) => {
-    console.log('user: ' + user);
-    if (user) {
-      Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
-        user._collections = collections; // eslint-disable-line
-        if (err) return res.status(500).send(err);
-        res.json({ user });
+  User.findById(_id).exec((err, user) => {
+    if (err) return res.status(500).send(err);
+    return _updateCredits(user);
+  })
+  .then(() => {
+    return User.findById(_id).populate('_collections');
+  })
+  .then((populatedUser) => {
+    console.log('user: ' + populatedUser);
+    if (populatedUser) {
+      Collection.populate(populatedUser._collections, { path: '_mon' }, (err2, collections) => {
+        populatedUser._collections = collections; // eslint-disable-line
+        res.json({ user: populatedUser });
       });
     } else {
-      res.json({ user });
+      res.json({ user: populatedUser });
     }
   });
 });
 
 router.put('/api/users/:id', (req, res) => {
-  // const userObject = JSON.parse(req.body.user);
-  let user = {}; // user object
+  const user = req.body.user || {}; // user object
   const addedCollections = req.body.addedCollections; // should be an array
-  // const settings = []; // compose user and addedCollections
-  if (req.body.user) {
-    const userObject = req.body.user;
-    user = {
-      email: userObject.email,
-      nickname: userObject.nickname,
-      img: userObject.img,
-      introduce: userObject.introduce,
-      recommenderFlag: userObject.recommenderFlag,
-      _honor1: userObject._honor1,
-      _honor2: userObject._honor2,
-      pokemoney: userObject.pokemoney,
-      league: userObject.league,
-      maxWinInRow: userObject.maxWinInRow,
-      winInRow: userObject.winInRow,
-      getReward: userObject.getReward,
-      reward: userObject.reward,
-      maxBattleCredit: userObject.maxBattleCredit,
-      battleCredit: userObject.battleCredit,
-      maxGetCredit: userObject.maxGetCredit,
-      getCredit: userObject.getCredit,
-      scratchMode: userObject.scratchMode,
-      loseBattle: userObject.loseBattle,
-      winBattle: userObject.winBattle,
-      totalBattle: userObject.totalBattle,
-      lastLogin: userObject.lastLogin,
-      battleInterval: userObject.battleInterval,
-      getInterval: userObject.getInterval,
-      lastGameTime: userObject.lastGameTime,
-      lastGetTime: userObject.lastGetTime,
-      battlePoint: userObject.battlePoint,
-      colPoint: userObject.colPoint,
-    };
-  }
-  // compose settiongs
-  // settings = Object.assign({}, user, { $pushAll: { _collections: addedCollections } });
   console.log('user in put', user);
   console.log('addedCollections', addedCollections);
   let resultUser = null;
-  User.findByIdAndUpdate(req.params.id, user, { upsert: true })
+  const ranksPromise = [];
+  if (user.colPoint) ranksPromise.push(_getColRank(user.colPoint));
+  if (user.battlePoint) ranksPromise.push(_getBattleRank(user.battlePoint));
+  Promise.all(ranksPromise)
+  .then(ranks => {
+    if (user.colPoint) user.colRank = ranks[0];
+    if (user.colPoint && user.battlePoint) user.battleRank = ranks[1];
+    else if (!user.colPoint && user.battlePoint) user.battleRank = ranks[0];
+    return User.findByIdAndUpdate(req.params.id, user, { upsert: true });
+  })
   .then(() => {
     console.log('1');
     if (addedCollections) {
@@ -293,11 +254,6 @@ router.put('/api/users/:id', (req, res) => {
     console.log('3');
     if (updatedUser) {
       return Collection.populate(updatedUser._collections, { path: '_mon' });
-      // .exec((err2, collections) => {
-      //   updatedUser._collections = collections; // eslint-disable-line
-      //   console.log('updatedUser', updatedUser);
-      //   res.json({ user: updatedUser });
-      // });
     }
     res.json({ user: updatedUser });
   })
@@ -306,63 +262,6 @@ router.put('/api/users/:id', (req, res) => {
     console.log('updatedUser', resultUser);
     res.json({ user: resultUser });
   });
-  // User
-  // .findByIdAndUpdate(req.params._id, user, { upsert: true })
-  // .exec((err) => {
-  //   console.log('1');
-  //   if (err) return res.status(500).send(err);
-  //   if (addedCollections) {
-  //     console.log('4');
-  //     return User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true }).exec();
-  //   }
-  //   console.log('5');
-  //   return new Promise;
-  // })
-  // .then(() => {
-  //   return User.findById(req.params._id).populate('_collections');
-  // })
-  // .exec((err, updatedUser) => {
-  //   console.log('3');
-  //   if (err) return res.status(500).send(err);
-  //   if (updatedUser) {
-  //     Collection.populate(updatedUser._collections, { path: '_mon' })
-  //     .exec((err2, collections) => {
-  //       updatedUser._collections = collections; // eslint-disable-line
-  //       res.json({ user: updatedUser });
-  //     });
-  //   } else {
-  //     res.json({ user: updatedUser });
-  //   }
-  // })
-  // .catch(err => {
-  //   console.log('err', err);
-  // });
-  // .exec((err) => {
-  //   console.log('1');
-  //   if (err) return res.status(500).send(err);
-  //   User.findByIdAndUpdate(req.params._id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true })
-  //   .exec(err4 => {
-  //     console.log('2');
-  //     if (err4) return res.status(500).send(err4);
-  //     User
-  //     .findById(req.params._id)
-  //     .populate('_collections')
-  //     .exec((err2, updatedUser) => {
-  //       console.log('3');
-  //       if (err2) return res.status(500).send(err2);
-  //       if (updatedUser) {
-  //         Collection.populate(updatedUser._collections, { path: '_mon' }, (err3, collections) => {
-  //           updatedUser._collections = collections; // eslint-disable-line
-  //           if (err3) return res.status(500).send(err3);
-  //           console.log('updatedUser: ' + updatedUser);
-  //           res.json({ user: updatedUser });
-  //         });
-  //       } else {
-  //         res.json({ user: updatedUser });
-  //       }
-  //     });
-  //   });
-  // });
 });
 
 export default router;

@@ -272,6 +272,13 @@ export function fetchDesigners() {
   };
 }
 
+export function getAddedAbility(addedAbility) {
+  return {
+    type: ActionTypes.GET_ADDED_ABILITY,
+    addedAbility,
+  };
+}
+
 export function fetchOneMonWhenGet(user) {
   return (dispatch) => {
     // return axios.get(`${baseURL}/api/collections/get-mon`)
@@ -299,7 +306,7 @@ export function fetchOneMonWhenGet(user) {
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
-      const updatedUser = user;
+      const updatedUser = {};
       for (const collection of userCollections) {
         if (pickedMon.monNo === collection._mon.monNo) {
           collectionId = collection._id;
@@ -309,8 +316,8 @@ export function fetchOneMonWhenGet(user) {
       // 유저의 마지막 채집시간 기록 및 크레딧 차감
       const interval = Date.now() - user.lastGetTime;
       const credit = Math.floor(interval / user.getInterval);
-      updatedUser.getCredit += credit;
-      if (user.getCredit > user.maxGetCredit) updatedUser.getCredit = updatedUser.maxGetCredit;
+      updatedUser.getCredit = user.getCredit + credit;
+      if (updatedUser.getCredit > user.maxGetCredit) updatedUser.getCredit = user.maxGetCredit;
       updatedUser.getCredit--;
       updatedUser.lastGetTime = Date.now();
       // 가지고 있는 포켓몬일 경우 레벨 업
@@ -333,8 +340,10 @@ export function fetchOneMonWhenGet(user) {
             addedDex++;
           }
         }
+        console.log('dispatch getAddedAbility()');
+        dispatch(getAddedAbility({ addedHp, addedPower, addedArmor, addedSpecialPower, addedSpecialArmor, addedDex }));
       } else {
-        updatedUser.colPoint++;
+        updatedUser.colPoint = user.colPoint + 1;
       }
       return { collectionId, updatedUser };
     })
@@ -344,8 +353,8 @@ export function fetchOneMonWhenGet(user) {
       // user 업데이트
       return axios({
         method: 'put',
-        url: `${baseURL}/api/users/${updatedUser._id}`,
-        data: { user: updatedUser },
+        url: `${baseURL}/api/users/${user._id}`,
+        data: { user: Object.assign({ lastLogin: Date.now() }, updatedUser) },
       })
       .then(() => {
         console.log('updatedUser', updatedUser);
@@ -390,7 +399,7 @@ export function fetchOneMonWhenGet(user) {
         .then(postCollectionRes => {
           return axios({
             method: 'put',
-            url: `${baseURL}/api/users/${updatedUser._id}`,
+            url: `${baseURL}/api/users/${user._id}`,
             data: { user: null, addedCollections: [postCollectionRes.data.collection._id] },
           })
           .then(putUserRes => {
@@ -401,19 +410,6 @@ export function fetchOneMonWhenGet(user) {
         });
       });
     });
-    // return $.ajax({
-    //   url: `${baseURL}/api/collections/get-mon`,
-    //   method: 'get',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   success: (response) => {
-    //     dispatch(getOneMon(response.mon));
-    //   },
-    // });
-    // return fetch(`${baseURL}/api/collections/get-mon`)
-    // .then((response) => response.json())
-    // .then((response) => dispatch(getOneMon(response.mon)));
   };
 }
 
@@ -423,16 +419,6 @@ export function minusGetCredit() {
     .then(res => {
       dispatch(getUserSession(res.user));
     });
-    // return $.ajax({
-    //   url: `${baseURL}/api/minus-get-credit`,
-    //   method: 'get',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   success: (response) => {
-    //     dispatch(getUserSession(response.user));
-    //   },
-    // });
   };
 }
 
@@ -445,10 +431,10 @@ export function login(email, password, remember) {
     })
     .then(res => {
       if (remember) localStorage.setItem('token', res.data.token);
-      return new Promise(resolve => {
-        dispatch(fetchUserSession(res.data.user));
-        resolve();
-      });
+      const decodedJwt = jwt.decode(res.data.token, Config.secret);
+      return fetch(`${baseURL}/api/users/${decodedJwt.sub}`)
+      .then(response => response.json())
+      .then(response => dispatch(getUserSession(response.user)));
     });
   };
 }
@@ -459,5 +445,17 @@ export function logout() {
       dispatch(getUserSession(null));
       resolve();
     });
+  };
+}
+
+export function showMonInfoFront() {
+  return {
+    type: ActionTypes.SHOW_MON_INFO_FRONT,
+  };
+}
+
+export function showMonInfoBack() {
+  return {
+    type: ActionTypes.SHOW_MON_INFO_BACK,
   };
 }

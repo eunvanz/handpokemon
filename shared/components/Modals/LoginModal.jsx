@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
 import { browserHistory } from 'react-router';
-import $ from 'jquery';
 import * as Actions from '../../redux/actions/actions';
 import { connect } from 'react-redux';
 
