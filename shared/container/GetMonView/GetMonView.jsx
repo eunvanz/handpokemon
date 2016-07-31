@@ -5,6 +5,9 @@ import LoadingView from '../../components/Common/LoadingView';
 import ErrorView from '../../components/Common/ErrorView';
 import { Link } from 'react-router';
 import MonsterInfoView from '../../components/Common/MonsterInfoView';
+import * as CollectionService from '../../service/CollectionService';
+import * as UserService from '../../service/UserService';
+import $ from 'jquery';
 
 const scratchStyle = {
   width: '200px',
@@ -13,38 +16,34 @@ const scratchStyle = {
   margin: '0 auto',
 };
 
+let action = null;
+let collectionId = null;
+
 class GetMonView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'GetMonView';
     this._handleFlipClick = this._handleFlipClick.bind(this);
+    this._handleContinueClick = this._handleContinueClick.bind(this);
+    this._getMonProcess = this._getMonProcess.bind(this);
+    this._removeInlineScripts = this._removeInlineScripts.bind(this);
+    this.state = { refreshFlag: true, mounted: false };
+    action = location.pathname.split('/')[1];
+    collectionId = location.pathname.split('/')[2];
   }
   componentWillMount() {
-    console.log('GetMonView will mount');
-    this.props.dispatch(Actions.fetchUserSession())
+    this._getMonProcess()
     .then(() => {
-      const user = this.props.user;
-      if (user.getCredit > 0) {
-        return this.props.dispatch(Actions.fetchOneMonWhenGet(user))
-        .then(() => {
-          return this.props.dispatch(Actions.fetchUserSession());
-        })
-        .then(() => {
-          const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
-          for (const src of scriptSrcs) {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = false;
-            document.body.appendChild(script);
-          }
-        });
-      }
+      this.setState({ mounted: true });
     });
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.resetMon());
     this.props.dispatch(Actions.showMonInfoFront());
     this.props.dispatch(Actions.getAddedAbility(null));
+    this._removeInlineScripts();
+  }
+  _removeInlineScripts() {
     while (document.body.childElementCount !== 2) {
       document.body.removeChild(document.body.lastChild);
     }
@@ -57,7 +56,98 @@ class GetMonView extends React.Component {
       this.props.dispatch(Actions.showMonInfoBack());
     }
   }
+  _handleContinueClick(e) {
+    e.preventDefault();
+    this._getMonProcess()
+    .then(() => {
+      this.setState({ refreshFlag: !this.state.refreshFlag });
+    });
+  }
+  _getMonProcess() {
+    $('.monster-info').hide();
+    this._removeInlineScripts();
+    if (action === 'get-mon') {
+      return this.props.dispatch(Actions.fetchUserSession())
+      .then(() => {
+        const user = this.props.user;
+        if (user.getCredit > 0) {
+          return this.props.dispatch(Actions.fetchOneMonWhenGet(user, 'get', null))
+          .then(() => {
+            return this.props.dispatch(Actions.fetchUserSession());
+          })
+          .then(() => {
+            const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
+            for (const src of scriptSrcs) {
+              const script = document.createElement('script');
+              script.src = src;
+              script.async = false;
+              document.body.appendChild(script);
+            }
+          });
+        }
+      });
+    } else if (action === 'evolution') {
+      return this.props.dispatch(Actions.fetchUserSession())
+      .then(() => {
+        const user = this.props.user;
+        if (user && user._collections.some(e => e._id === collectionId)) {
+          let beforeId = null;
+          // 포켓몬의 레벨 감소 및 사라지는 경우 처리
+          return CollectionService.selectById(collectionId)
+          .then(response => {
+            const collection = response.data.collection;
+            beforeId = collection._mon._id;
+            // 콜렉션 레벨과 포켓몬 진화레벨 비교
+            if (collection.level > collection._mon.evolutePiece) {
+              // 레벨하락 및 능력치 하락
+              return CollectionService.updateLevelWithStat(collection, collection._mon.evolutePiece * -1);
+            } else if (collection.level === collection._mon.evolutePiece) {
+              // 콜렉션 레벨이 진화레벨과 같을 경우 유저의 콜렉션점수 하락, 콜렉션 삭제
+              user.colPoint -= collection._mon.point; // Actions.fetchOneMonWhenGet(user, 'evolute', beforeId) 를 위한 업데이트
+              return UserService.updateColPoint(user, collection._mon.point * -1)
+              .then(() => {
+                return CollectionService.deleteById(collectionId);
+              });
+            }
+            // TODO: 진화를 못하는 경우 (잘못된 접근)
+          })
+          .then(() => {
+            // 선택된 포켓몬의 진화형 포켓몬 하나를 가지고 온다.
+            return this.props.dispatch(Actions.fetchOneMonWhenGet(user, 'evolute', beforeId));
+          })
+          .then(() => {
+            return this.props.dispatch(Actions.fetchUserSession());
+          })
+          .then(() => {
+            const scriptSrcs = ['/js/wScratchpad.min.js', '/js/get-mon-view-inline.js'];
+            for (const src of scriptSrcs) {
+              const script = document.createElement('script');
+              script.src = src;
+              script.async = false;
+              document.body.appendChild(script);
+            }
+          });
+        }
+      });
+    }
+  }
   render() {
+    const renderEvolutionButton = () => {
+      const evolutePiece = this.props.mon._mon.evolutePiece;
+      const thisMonPiece = this.props.mon.piece;
+      if (evolutePiece <= thisMonPiece) {
+        return (
+          <Link to={`/evolution/${this.props.mon._id}`} refresh>
+            <button
+              className="btn btn-primary btn-minier ev-btn"
+              id="ev-btn" style={{ marginLeft: '4px' }}
+            >
+              <i className="ace-icon fa fa-flash"></i> 진화하기
+            </button>
+          </Link>
+        );
+      }
+    };
     const renderLevelInfo = () => {
       let returnComponent = null;
       const isNewMon = this.props.mon.level === 1;
@@ -82,18 +172,29 @@ class GetMonView extends React.Component {
             </p>
             <h5>
               <span className="label label-info arrowed-in-right">{`LV. ${this.props.mon.level}`}</span> 이(가) 되었다!
-              <button className="btn btn-primary btn-minier ev-btn" id="ev-btn" style={{ marginLeft: '4px' }}>
-                <i className="ace-icon fa fa-flash"></i> 진화하기
-              </button>
+              {renderEvolutionButton()}
             </h5>
           </div>
         );
       }
       return returnComponent;
     };
+    const renderContinueBtn = () => {
+      let returnComponent = null;
+      if (this.props.user.getCredit > 0 && action === 'get-mon') {
+        returnComponent = (
+          <p>
+            <Link to="/get-mon" refresh>
+              <button className="btn btn-primary" onClick={this._handleContinueClick}>계속 채집하기</button>
+            </Link>
+          </p>
+        );
+      }
+      return returnComponent;
+    };
     const renderGetResult = () => {
       let returnComponent = null;
-      if (this.props.user.getCredit <= 0) {
+      if (this.props.user.getCredit <= 0 && action === 'get-mon') {
         returnComponent = (
           <div>
             <ErrorView
@@ -144,6 +245,7 @@ class GetMonView extends React.Component {
                           <i className="fa fa-refresh"></i> 뒤집기
                         </button>
                       </p>
+                      {renderContinueBtn()}
                     </div>
                   </div>
                 </div>
@@ -158,7 +260,7 @@ class GetMonView extends React.Component {
       return returnComponent;
     };
     return (
-      <div>{renderGetResult()}</div>
+      <div key={this.state.refreshFlag}>{renderGetResult()}</div>
     );
   }
 }

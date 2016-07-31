@@ -37,7 +37,7 @@ router.post('/api/monsters', upload.single('img'), (req, res) => {
       skillName: req.body.skillName,
       grade: req.body.grade,
       cost: req.body.cost,
-      _beforeId: req.body._beforeId,
+      _before: req.body._beforeId,
       desc: req.body.desc,
       designer: req.body.designer,
       requiredPiece: req.body.requiredPiece,
@@ -52,7 +52,8 @@ router.post('/api/monsters', upload.single('img'), (req, res) => {
 
 router.put('/api/monsters', upload.single('img'), (req, res) => {
   let fileName = null;
-  _updateEvolutePiece(req.body._beforeId, req.body.requiredPiece).then(() => {
+  console.log('req.body', req.body);
+  _updateEvolutePiece(req.body._before, req.body.requiredPiece).then(() => {
     if (req.file) {
       fileName = req.file.filename;
     }
@@ -72,7 +73,7 @@ router.put('/api/monsters', upload.single('img'), (req, res) => {
       skillName: req.body.skillName,
       grade: req.body.grade,
       cost: req.body.cost,
-      _beforeId: req.body._beforeId,
+      _before: req.body._before,
       desc: req.body.desc,
       designer: req.body.designer,
       requiredPiece: req.body.requiredPiece,
@@ -197,6 +198,14 @@ router.get('/api/monsters/:param', (req, res) => {
       res.json({ mon });
     });
   }
+});
+
+router.get('/api/monsters/:beforeId/evolution', (req, res) => {
+  const beforeId = req.params.beforeId;
+  Monster.find({ _before: beforeId }).exec((err, mons) => {
+    if (err) return res.status(500).send(err);
+    res.json({ mons });
+  });
 });
 
 router.delete('/api/monsters/:_id', (req, res) => {

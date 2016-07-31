@@ -13,16 +13,18 @@ export const showLoginModal = (state = false, action) => {
   }
 };
 
-export const showMessageModal = (state = { status: false, message: '' }, action) => {
+export const showMessageModal = (state = { status: false, message: '', confirmAction: null }, action) => {
   switch (action.type) {
     case ActionTypes.GET_MESSAGE_MODAL_STATUS :
       return state;
     case ActionTypes.SHOW_MESSAGE_MODAL :
-      return { status: true, message: state.message };
+      return Object.assign({}, state, { status: true });
     case ActionTypes.HIDE_MESSAGE_MODAL :
-      return { status: false, message: '' };
+      return Object.assign({}, state, { status: false, message: '', confirmAction: null });
     case ActionTypes.PREPARE_MESSAGE_MODAL :
-      return { status: false, message: action.message };
+      return Object.assign({}, state, { message: action.message });
+    case ActionTypes.PREPARE_MESSAGE_MODAL_CONFIRM_ACTION :
+      return Object.assign({}, state, { confirmAction: action.confirmAction });
     default :
       return state;
   }

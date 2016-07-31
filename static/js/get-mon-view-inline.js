@@ -1,8 +1,8 @@
 $('#demo2').wScratchPad({
 		size : 25,
-		bg : 'img/monsters/' + $('#monImg').val(),
-		fg : 'img/common/scratch-to-win.png',
-		'cursor' : 'url("img/common/Question-Coin-icon.png") 5 5, default',
+		bg : '/img/monsters/' + $('#monImg').val(),
+		fg : '/img/common/scratch-to-win.png',
+		'cursor' : 'url("/img/common/Question-Coin-icon.png") 5 5, default',
 		scratchMove : function(e, percent) {
 			if (percent > 68) {
 				this.clear();

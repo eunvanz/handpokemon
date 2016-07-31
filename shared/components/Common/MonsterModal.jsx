@@ -46,15 +46,15 @@ class MonsterModal extends React.Component {
       }
       if (evolutePiece) {
         returnComponent.push(<p key="evolutePiece"><span className="label label-default arrowed-in-right">{`LV. ${evolutePiece}`}</span> 에 진화</p>);
-      }
-      if (level > evolutePiece) {
-        returnComponent.push(
-          <Link to="/evolution">
-            <button className="btn btn-primary btn-minier ev-btn" id="ev-btn">
-              <i className="ace-icon fa fa-flash"></i> 진화하기
-            </button>
-          </Link>
-        );
+        if (evolutePiece && level >= evolutePiece) {
+          returnComponent.push(
+            <Link to={`/evolution/${this.props.monster._id}`}>
+              <button className="btn btn-primary btn-minier ev-btn" id="ev-btn">
+                <i className="ace-icon fa fa-flash"></i> 진화하기
+              </button>
+            </Link>
+          );
+        }
       }
       return returnComponent;
     };

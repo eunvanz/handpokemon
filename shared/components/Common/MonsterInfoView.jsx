@@ -464,7 +464,7 @@ class MonsterInfoView extends React.Component {
                     (isNaN(honorSpecialPower) ? 0 : honorSpecialPower) +
                     (isNaN(honorSpecialArmor) ? 0 : honorSpecialArmor)}
                 </span>
-                <strong className="text-primary">+{monInfo.point}</strong>
+                <strong className="text-primary">{this.props.addedAbility ? `+${monInfo.point}` : ''}</strong>
               </div>
             </div>
           </div>

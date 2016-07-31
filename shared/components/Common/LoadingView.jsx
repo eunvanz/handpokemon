@@ -13,14 +13,14 @@ class LoadingView extends React.Component {
       textAlign: 'center',
       opacity: '0.5',
       position: 'relative',
-      height: $(window).height() - $('#navbar').height(),
+      height: ($(window).height() || 0) - $('#navbar').height(),
       top: $('.main-content-inner').height() * -1,
     };
     const innerStyle = {
       position: 'relative',
       width: '64px',
       left: $('.main-content-inner').width() / 2 - 32,
-      top: $(window).height() / 2 - 32,
+      top: ($(window).height() || 0) / 2 - 32,
     };
     const renderLoadingView = () => {
       let returnComponent = null;

@@ -7,6 +7,7 @@ class CollectionView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'CollectionView';
+    this._removeInlineScripts = this._removeInlineScripts.bind(this);
     this.state = {
       collectionCountInfo: {},
       collections: [],
@@ -14,6 +15,7 @@ class CollectionView extends React.Component {
     };
   }
   componentDidMount() {
+    this._removeInlineScripts();
     const collectionUserId = this.props.params.collectionUserId;
     this.props.dispatch(Actions.showLoading());
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
@@ -66,10 +68,12 @@ class CollectionView extends React.Component {
     }
   }
   componentWillUnmount() {
+    this.props.dispatch(Actions.getCollectionUser(null));
+  }
+  _removeInlineScripts() {
     while (document.body.childElementCount !== 2) {
       document.body.removeChild(document.body.lastChild);
     }
-    this.props.dispatch(Actions.getCollectionUser(null));
   }
   render() {
     const collectionUser = this.props.collectionUser;
@@ -211,6 +215,8 @@ class CollectionView extends React.Component {
                 mon.honorSpecialPower = col.honorSpecialPower;
                 mon.honorSpecialArmor = col.honorSpecialArmor;
                 mon.honorDex = col.honorDex;
+                mon.evolutePiece = mon2.evolutePiece;
+                mon._id = col._id;
                 const filterData = { 'data-have': '보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
                 'data-grade': mon.grade, 'data-designer': mon.designer };
                 returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);

@@ -4,6 +4,8 @@ import fetch from 'isomorphic-fetch';
 // import $ from 'jquery';
 import axios from 'axios';
 import jwt from 'jwt-simple';
+import * as UserService from '../../service/UserService';
+import * as CollectionService from '../../service/CollectionService';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
@@ -134,6 +136,13 @@ export function prepareMessageModal(message) {
   };
 }
 
+export function prepareMessageModalConfirmAction(confirmAction) {
+  return {
+    type: ActionTypes.PREPARE_MESSAGE_MODAL_CONFIRM_ACTION,
+    confirmAction,
+  };
+}
+
 // appMounted
 export function checkAppMounted() {
   return {
@@ -149,7 +158,6 @@ export function getAppMounted() {
 
 // user session
 export function getUserSession(user) {
-  console.log('getUserSession', user);
   return {
     type: ActionTypes.GET_USER_SESSION,
     user,
@@ -172,37 +180,6 @@ export function fetchUserSession() {
       dispatch(getUserSession(null));
       resolve();
     });
-    // return axios.get(`${baseURL}/api/cookie-user`)
-    // .then(res => {
-    //   // 쿠키에 유저가 존재할 경우 자동 로그인
-    //   if (!res.data.nouser) {
-    //     axios({
-    //       method: 'post',
-    //       url: `${baseURL}/api/login`,
-    //       data: { email: res.data.email, password: res.data.password },
-    //     })
-    //     .then(() => {
-    //       axios.get(`${baseURL}/api/session-user`)
-    //       .then(res2 => {
-    //         dispatch(getUserSession(res2.data.user));
-    //       });
-    //     });
-    //   } else {
-    //     console.log('user not exist');
-    //     dispatch(getUserSession(null));
-    //   }
-    // });
-    // return $.ajax({
-    //   url: `${baseURL}/api/session-user`,
-    //   method: 'get',
-    //   headers: new Headers({
-    //     'Content-Type': 'application/json',
-    //   }),
-    //   success: (response) => {
-    //     // console.log('user: ' + response.user);
-    //     dispatch(getUserSession(response.user));
-    //   },
-    // });
   };
 }
 
@@ -279,12 +256,8 @@ export function getAddedAbility(addedAbility) {
   };
 }
 
-export function fetchOneMonWhenGet(user) {
+export function fetchOneMonWhenGet(user, mode, beforeId) {
   return (dispatch) => {
-    // return axios.get(`${baseURL}/api/collections/get-mon`)
-    // .then(res => {
-    //   dispatch(getOneMon(res.mon));
-    // });
     let addedHp = 0;
     let addedPower = 0;
     let addedArmor = 0;
@@ -292,17 +265,22 @@ export function fetchOneMonWhenGet(user) {
     let addedSpecialArmor = 0;
     let addedDex = 0;
     let pickedMon = null;
-    // 베이직 포켓몬 리스트를 가져옴
-    return fetch(`${baseURL}/api/monsters/b`)
-    // 베이직 리스트 중에서 하나 선택
+    let url = null;
+    if (mode === 'get') {
+      // 채집의 경우 베이직 포켓몬 리스트를 가져옴
+      url = `${baseURL}/api/monsters/b`;
+    } else if (mode === 'evolute') {
+      // 진화의 경우 진화형 포켓몬 리스트를 가져옴
+      url = `${baseURL}/api/monsters/${beforeId}/evolution`;
+    }
+    return fetch(url)
+    // 리스트 중에서 하나 선택
     .then(response => response.json())
     .then(response => {
       const basicMons = response.mons;
       const size = basicMons.length;
       const index = Math.floor(Math.random() * size);
-      console.log('basicMons', basicMons);
       pickedMon = basicMons[index];
-      console.log('pickedMon', pickedMon);
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
@@ -314,15 +292,17 @@ export function fetchOneMonWhenGet(user) {
         }
       }
       // 유저의 마지막 채집시간 기록 및 크레딧 차감
-      const interval = Date.now() - user.lastGetTime;
-      const credit = Math.floor(interval / user.getInterval);
-      updatedUser.getCredit = user.getCredit + credit;
-      if (updatedUser.getCredit > user.maxGetCredit) updatedUser.getCredit = user.maxGetCredit;
-      updatedUser.getCredit--;
-      updatedUser.lastGetTime = Date.now();
+      if (mode === 'get') {
+        const interval = Date.now() - user.lastGetTime;
+        const credit = Math.floor(interval / user.getInterval);
+        updatedUser.getCredit = user.getCredit + credit;
+        if (updatedUser.getCredit > user.maxGetCredit) updatedUser.getCredit = user.maxGetCredit;
+        updatedUser.getCredit--;
+        updatedUser.lastGetTime = Date.now();
+        // return UserService.updateGetCreditAndLastGetTime(user);
+      }
       // 가지고 있는 포켓몬일 경우 레벨 업
       if (collectionId) {
-        console.log('collectionId', collectionId);
         let abilityIdx = 1;
         for (let i = 0; i < pickedMon.point; i++) {
           abilityIdx = Math.floor((Math.random() * 6));
@@ -340,10 +320,9 @@ export function fetchOneMonWhenGet(user) {
             addedDex++;
           }
         }
-        console.log('dispatch getAddedAbility()');
         dispatch(getAddedAbility({ addedHp, addedPower, addedArmor, addedSpecialPower, addedSpecialArmor, addedDex }));
       } else {
-        updatedUser.colPoint = user.colPoint + 1;
+        updatedUser.colPoint = user.colPoint + pickedMon.point;
       }
       return { collectionId, updatedUser };
     })
@@ -357,15 +336,12 @@ export function fetchOneMonWhenGet(user) {
         data: { user: Object.assign({ lastLogin: Date.now() }, updatedUser) },
       })
       .then(() => {
-        console.log('updatedUser', updatedUser);
         // 이미 가지고 있는 포켓몬일 경우 스탯 상승
         if (collectionId) {
           return fetch(`${baseURL}/api/collections/${collectionId}`)
           .then(res => res.json())
           .then(res => {
             const collection = res.collection;
-            console.log('collection', collection);
-            // TODO : collection 객체에 immutable 적용
             collection.addedHp = collection.addedHp + addedHp;
             collection.addedPower = collection.addedPower + addedPower;
             collection.addedArmor = collection.addedArmor + addedArmor;
@@ -374,18 +350,15 @@ export function fetchOneMonWhenGet(user) {
             collection.addedDex = collection.addedDex + addedDex;
             collection.level = collection.level + 1;
             collection.piece = collection.piece + 1;
-            console.log('collection3', collection);
             return collection;
           })
           .then(collection => {
-            console.log('collection2', collection);
             return axios({
               method: 'put',
               url: `${baseURL}/api/collections/${collection._id}`,
               data: { collection },
             })
             .then(res => {
-              console.log('레벨업한 포켓몬', res.data.collection);
               dispatch(getOneMon(res.data.collection));
             });
           });
@@ -404,7 +377,6 @@ export function fetchOneMonWhenGet(user) {
           })
           .then(putUserRes => {
             const mon = putUserRes.data.user._collections[putUserRes.data.user._collections.length - 1];
-            console.log('새로운 포켓몬', mon);
             dispatch(getOneMon(mon));
           });
         });

@@ -206,9 +206,6 @@ app.use((req, res, next) => {
 
     return fetchComponentData(store, renderProps.components, renderProps.params)
       .then(() => {
-        console.log('Component data fetched.');
-        console.log('store: ' + JSON.stringify(store));
-        console.log('renderProps: ' + JSON.stringify(renderProps));
         const initialView = renderToString(
           <div>
             <Provider store={store}>
@@ -216,9 +213,7 @@ app.use((req, res, next) => {
             </Provider>
           </div>
         );
-        console.log('initialView: ' + initialView);
         const finalState = store.getState();
-        console.log('finalState: ' + JSON.stringify(finalState));
 
         res.status(200).end(renderFullPage(initialView, finalState));
       });

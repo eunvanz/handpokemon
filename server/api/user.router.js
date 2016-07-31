@@ -223,6 +223,8 @@ router.get('/api/users/:id', (req, res) => {
 });
 
 router.put('/api/users/:id', (req, res) => {
+  console.log('req.body.user', req.body.user);
+  console.log('req.body', req.body);
   const user = req.body.user || {}; // user object
   const addedCollections = req.body.addedCollections; // should be an array
   console.log('user in put', user);

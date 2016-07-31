@@ -21,7 +21,7 @@ class Header extends React.Component {
     this.displayName = 'Header';
     this._showLoginModal = this._showLoginModal.bind(this);
     this._hideLoginModal = this._hideLoginModal.bind(this);
-    this._hideMessageModal = this._hideMessageModal.bind(this);
+    this._handleConfirmClick = this._handleConfirmClick.bind(this);
     this._handleLogoutClick = this._handleLogoutClick.bind(this);
   }
   _showLoginModal(e) {
@@ -31,8 +31,9 @@ class Header extends React.Component {
   _hideLoginModal() {
     this.props.dispatch(Actions.hideLoginModal());
   }
-  _hideMessageModal() {
+  _handleConfirmClick() {
     this.props.dispatch(Actions.hideMessageModal());
+    this.props.showMessageModal.confirmAction();
   }
   _handleLogoutClick() {
     localStorage.removeItem('token');
@@ -122,7 +123,7 @@ class Header extends React.Component {
           show={this.props.showMessageModal.status}
           message={this.props.showMessageModal.message}
           confirmBtnTxt="확인"
-          onConfirmClick={this._hideMessageModal}
+          onConfirmClick={this._handleConfirmClick}
           close={this._hideMessageModal}
         />
         </div>

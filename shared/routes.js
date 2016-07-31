@@ -20,6 +20,7 @@ const routes = (
     <Route path="/collection/:collectionUserId" component={CollectionView}/>
     <Route path="/get-mon-ready" component={requireAuth(SelectDungeonView)}/>
     <Route path="/get-mon" component={requireAuth(GetMonView)}/>
+    <Route path="/evolution/:collectionId" component={requireAuth(GetMonView)}/>
   </Route>
 );
 

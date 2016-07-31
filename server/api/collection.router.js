@@ -189,6 +189,14 @@ router.put('/api/collections/:collectionId', (req, res) => {
   });
 });
 
+router.delete('/api/collections/:collectionId', (req, res) => {
+  const collectionId = req.params.collectionId;
+  Collection.findByIdAndRemove(collectionId).exec(err => {
+    if (err) res.status(500).send(err);
+    res.json({ success: true });
+  });
+});
+
 router.post('/api/collections', (req, res) => {
   const userId = req.body.userId;
   const monId = req.body.monId;
