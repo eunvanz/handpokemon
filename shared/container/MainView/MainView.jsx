@@ -8,6 +8,7 @@ class MainView extends React.Component {
     this.displayName = 'MainView';
   }
   componentWillMount() {
+    this.props.dispatch(Actions.showLoading());
     if (this.props.showMessageModal.message !== '') {
       this.props.dispatch(Actions.showMessageModal());
     }

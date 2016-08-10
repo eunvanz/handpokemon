@@ -8,6 +8,7 @@ import MonsterListView from './container/MonsterListView/MonsterListView';
 import CollectionView from './container/CollectionView/CollectionView';
 import GetMonView from './container/GetMonView/GetMonView';
 import SelectDungeonView from './components/SelectDungeonView';
+import GetMonImpossibleView from './components/GetMonImpossibleView';
 import requireAuth from './container/Authentication/Authentication';
 
 const routes = (
@@ -20,7 +21,10 @@ const routes = (
     <Route path="/collection/:collectionUserId" component={CollectionView}/>
     <Route path="/get-mon-ready" component={requireAuth(SelectDungeonView)}/>
     <Route path="/get-mon" component={requireAuth(GetMonView)}/>
+    <Route path="/get-mon-impossible" component={requireAuth(GetMonImpossibleView)}/>
+    <Route path="/get-mon-multi" component={requireAuth(GetMonView)}/>
     <Route path="/evolution/:collectionId" component={requireAuth(GetMonView)}/>
+    <Route path="/evolution2/:collectionId" component={requireAuth(GetMonView)}/>
   </Route>
 );
 

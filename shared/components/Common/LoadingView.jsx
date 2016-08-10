@@ -8,28 +8,43 @@ class LoadingView extends React.Component {
     super(props);
     this.displayName = 'LoadingView';
   }
+  componentDidMount() {
+    const scriptSrcs = ['/js/inline/loading-view.js'];
+    for (const src of scriptSrcs) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      document.body.appendChild(script);
+    }
+  }
   render() {
+    const getWindowHeight = () => {
+      if ($(window)) {
+        return $(window).height();
+      }
+      return 0;
+    };
+    const windowHeight = getWindowHeight();
     const style = {
       textAlign: 'center',
       opacity: '0.5',
       position: 'relative',
-      height: ($(window).height() || 0) - $('#navbar').height(),
-      top: $('.main-content-inner').height() * -1,
+      height: windowHeight - $('#navbar').height(),
+      top: $('#navbar-container').height() * -1,
     };
     const innerStyle = {
       position: 'relative',
       width: '64px',
       left: $('.main-content-inner').width() / 2 - 32,
-      top: ($(window).height() || 0) / 2 - 32,
+      top: windowHeight / 2 - 32,
     };
     const renderLoadingView = () => {
       let returnComponent = null;
-      console.log('this.props.loading', this.props.loading);
       if (this.props.loading) {
         returnComponent = (
           <div id="loading" style={style}>
             <div id="loading-inside" style={innerStyle}>
-              <Loading type="bubbles" color="#585858"/>
+              <Loading type="spin" color="#585858"/>
             </div>
           </div>
         );

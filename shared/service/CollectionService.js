@@ -9,41 +9,75 @@ export function updateLevelWithStat(collection, levelToUpdate) {
   resultCollection.level += levelToUpdate;
   resultCollection.piece += levelToUpdate;
 
-  let addedHp = 0;
-  let addedPower = 0;
-  let addedArmor = 0;
-  let addedSpecialPower = 0;
-  let addedSpecialArmor = 0;
-  let addedDex = 0;
   let abilityIdx = 0;
 
   const isPlus = levelToUpdate > 0 ? true : false;
 
   let totalPointToUpadateAbility = collection._mon.point * levelToUpdate;
-  if (isPlus) totalPointToUpadateAbility *= -1;
+  if (!isPlus) totalPointToUpadateAbility *= -1;
 
   for (let i = 0; i < totalPointToUpadateAbility; i++) {
     abilityIdx = Math.floor((Math.random() * 6));
-    if (abilityIdx === 0) {
-      isPlus ? addedHp++ : addedHp--;
-    } else if (abilityIdx === 1) {
-      isPlus ? addedPower++ : addedPower--;
-    } else if (abilityIdx === 2) {
-      isPlus ? addedArmor++ : addedArmor--;
-    } else if (abilityIdx === 3) {
-      isPlus ? addedSpecialPower++ : addedSpecialPower--;
-    } else if (abilityIdx === 4) {
-      isPlus ? addedSpecialArmor++ : addedSpecialArmor--;
-    } else if (abilityIdx === 5) {
-      isPlus ? addedDex++ : addedDex--;
+    if (isPlus) {
+      if (abilityIdx === 0) {
+        resultCollection.addedHp++;
+      } else if (abilityIdx === 1) {
+        resultCollection.addedPower++;
+      } else if (abilityIdx === 2) {
+        resultCollection.addedArmor++;
+      } else if (abilityIdx === 3) {
+        resultCollection.addedSpecialPower++;
+      } else if (abilityIdx === 4) {
+        resultCollection.addedSpecialArmor++;
+      } else if (abilityIdx === 5) {
+        resultCollection.addedDex++;
+      }
+    } else {
+      if (abilityIdx === 0) {
+        if (resultCollection.addedHp === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedHp--;
+        }
+      } else if (abilityIdx === 1) {
+        if (resultCollection.addedPower === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedPower--;
+        }
+      } else if (abilityIdx === 2) {
+        if (resultCollection.addedArmor === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedArmor--;
+        }
+      } else if (abilityIdx === 3) {
+        if (resultCollection.addedSpecialPower === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedSpecialPower--;
+        }
+      } else if (abilityIdx === 4) {
+        if (resultCollection.addedSpecialArmor === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedSpecialArmor--;
+        }
+      } else if (abilityIdx === 5) {
+        if (resultCollection.addedDex === 0) {
+          i--;
+          continue;
+        } else {
+          resultCollection.addedDex--;
+        }
+      }
     }
   }
-  resultCollection.addedHp += addedHp;
-  resultCollection.addedPower += addedPower;
-  resultCollection.addedArmor += addedArmor;
-  resultCollection.addedSpecialPower += addedSpecialPower;
-  resultCollection.addedSpecialArmor += addedSpecialArmor;
-  resultCollection.addedDex += addedDex;
 
   return axios({
     method: 'put',

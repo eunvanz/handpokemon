@@ -119,6 +119,9 @@ const renderFullPage = (html, initialState) => {
         <link rel="stylesheet" type="text/css" href="/css/jquery.realperson.css">
         <link rel="shortcut icon" href="http://res.cloudinary.com/hashnode/image/upload/v1455629445/static_imgs/mern/mern-favicon-circle-fill.png" type="image/png" />
 
+        <!-- pace -->
+        <link rel="stylesheet" type="text/css" href="/css/pace.css">
+
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
@@ -166,7 +169,7 @@ const renderFullPage = (html, initialState) => {
 
         <!-- 공통 -->
         <script src="/js/view-collection.js"></script>
-        <script src="/js/loading.js"></script>
+        <script src="/js/pace.min.js"></script>
 
       </head>
       <body class="no-skin">

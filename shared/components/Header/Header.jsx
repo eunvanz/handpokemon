@@ -118,14 +118,14 @@ class Header extends React.Component {
           <div className="navbar-buttons navbar-header pull-right" role="navigation">
             {renderLoginComponent()}
           </div>
-        <LoginModal show={this.props.showLoginModal} close={this._hideLoginModal}/>
-        <MessageModal
-          show={this.props.showMessageModal.status}
-          message={this.props.showMessageModal.message}
-          confirmBtnTxt="확인"
-          onConfirmClick={this._handleConfirmClick}
-          close={this._hideMessageModal}
-        />
+          <LoginModal show={this.props.showLoginModal} close={this._hideLoginModal}/>
+          <MessageModal
+            show={this.props.showMessageModal.status}
+            message={this.props.showMessageModal.message}
+            confirmBtnTxt="확인"
+            onConfirmClick={this._handleConfirmClick}
+            close={this._hideMessageModal}
+          />
         </div>
       </div>
     );

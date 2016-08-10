@@ -39,16 +39,17 @@ router.get('/api/user-nickname-check', (req, res) => {
 });
 
 const _getColRank = (colPoint) => {
-  return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } });
+  console.log('_getColRank', User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }).exec());
+  return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }).exec();
 };
 
 const _getBattleRank = (battlePoint) => {
-  return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } });
+  console.log('_getBattleRank', User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }));
+  return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }).exec();
 };
 
 const _updateCredits = (user) => {
   console.log('updating credits');
-  console.log('user', user);
   const updateQuery = {};
   let modified = false;
   return new Promise((resolve) => {
@@ -201,7 +202,6 @@ router.get('/api/session-user', (req, res) => {
 
 router.get('/api/users/:id', (req, res) => {
   const _id = req.params.id;
-  console.log('_id: ' + _id);
   User.findById(_id).exec((err, user) => {
     if (err) return res.status(500).send(err);
     return _updateCredits(user);
@@ -210,10 +210,10 @@ router.get('/api/users/:id', (req, res) => {
     return User.findById(_id).populate('_collections');
   })
   .then((populatedUser) => {
-    console.log('user: ' + populatedUser);
     if (populatedUser) {
       Collection.populate(populatedUser._collections, { path: '_mon' }, (err2, collections) => {
         populatedUser._collections = collections; // eslint-disable-line
+        console.log('get한 유저의 크레딧: ' + populatedUser.getCredit);
         res.json({ user: populatedUser });
       });
     } else {
@@ -223,12 +223,8 @@ router.get('/api/users/:id', (req, res) => {
 });
 
 router.put('/api/users/:id', (req, res) => {
-  console.log('req.body.user', req.body.user);
-  console.log('req.body', req.body);
   const user = req.body.user || {}; // user object
   const addedCollections = req.body.addedCollections; // should be an array
-  console.log('user in put', user);
-  console.log('addedCollections', addedCollections);
   let resultUser = null;
   const ranksPromise = [];
   if (user.colPoint) ranksPromise.push(_getColRank(user.colPoint));
@@ -261,7 +257,6 @@ router.put('/api/users/:id', (req, res) => {
   })
   .then(collections => {
     resultUser._collections = collections;
-    console.log('updatedUser', resultUser);
     res.json({ user: resultUser });
   });
 });

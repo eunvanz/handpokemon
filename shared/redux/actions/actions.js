@@ -284,7 +284,7 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
-      const updatedUser = {};
+      let updatedUser = {};
       for (const collection of userCollections) {
         if (pickedMon.monNo === collection._mon.monNo) {
           collectionId = collection._id;
@@ -294,12 +294,9 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       // 유저의 마지막 채집시간 기록 및 크레딧 차감
       if (mode === 'get') {
         const interval = Date.now() - user.lastGetTime;
-        const credit = Math.floor(interval / user.getInterval);
-        updatedUser.getCredit = user.getCredit + credit;
-        if (updatedUser.getCredit > user.maxGetCredit) updatedUser.getCredit = user.maxGetCredit;
+        updatedUser = Object.assign(updatedUser, { getCredit: user.getCredit });
         updatedUser.getCredit--;
-        updatedUser.lastGetTime = Date.now();
-        // return UserService.updateGetCreditAndLastGetTime(user);
+        if (interval > user.getInterval) updatedUser.lastGetTime = Date.now();
       }
       // 가지고 있는 포켓몬일 경우 레벨 업
       if (collectionId) {

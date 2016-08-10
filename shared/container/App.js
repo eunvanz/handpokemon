@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Header from '../components/Header/Header';
 import SideBar from '../components/SideBar/SideBar';
-import LoadingView from '../components/Common/LoadingView';
 import * as Actions from '../redux/actions/actions';
 
 class App extends Component {
@@ -13,8 +12,6 @@ class App extends Component {
     this.props.dispatch(Actions.showLoading());
     this.props.dispatch(Actions.fetchUserSession())
     .then(this.props.dispatch(Actions.hideLoading()));
-    // this.props.dispatch(Actions.fetchUserSession());
-    // this.props.dispatch(Actions.hideLoading());
   }
   render() {
     return (
@@ -26,7 +23,6 @@ class App extends Component {
             <div className="main-content-inner">
               {this.props.children}
             </div>
-            {/*<LoadingView />*/}
           </div>
         </div>
       </div>

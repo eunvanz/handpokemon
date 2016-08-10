@@ -12390,9 +12390,9 @@ td .lbl:only-child {
     padding-right: 0 !important;
     margin-left: -1px;
   }
-  .pricing-box:nth-child(odd) {
+  /*.pricing-box:nth-child(odd) {
     padding-left: 12px !important;
-  }
+  }*/
   .pricing-box:nth-child(even) {
     padding-right: 12px !important;
   }

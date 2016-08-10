@@ -1,8 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import LoadingView from '../../components/Common/LoadingView';
-import ErrorView from '../../components/Common/ErrorView';
 import { Link } from 'react-router';
 import MonsterInfoView from '../../components/Common/MonsterInfoView';
 import * as CollectionService from '../../service/CollectionService';
@@ -28,10 +26,8 @@ class GetMonView extends React.Component {
     this._getMonProcess = this._getMonProcess.bind(this);
     this._removeInlineScripts = this._removeInlineScripts.bind(this);
     this.state = { refreshFlag: true, mounted: false };
-    action = location.pathname.split('/')[1];
-    collectionId = location.pathname.split('/')[2];
   }
-  componentWillMount() {
+  componentDidMount() {
     this._getMonProcess()
     .then(() => {
       this.setState({ mounted: true });
@@ -56,8 +52,7 @@ class GetMonView extends React.Component {
       this.props.dispatch(Actions.showMonInfoBack());
     }
   }
-  _handleContinueClick(e) {
-    e.preventDefault();
+  _handleContinueClick() {
     this._getMonProcess()
     .then(() => {
       this.setState({ refreshFlag: !this.state.refreshFlag });
@@ -66,6 +61,8 @@ class GetMonView extends React.Component {
   _getMonProcess() {
     $('.monster-info').hide();
     this._removeInlineScripts();
+    action = location.pathname.split('/')[1];
+    collectionId = location.pathname.split('/')[2];
     if (action === 'get-mon') {
       return this.props.dispatch(Actions.fetchUserSession())
       .then(() => {
@@ -86,7 +83,9 @@ class GetMonView extends React.Component {
           });
         }
       });
-    } else if (action === 'evolution') {
+    } else if (action === 'get-mon-multi') {
+      // TODO
+    } else if (action === 'evolution' || 'evolution2') {
       return this.props.dispatch(Actions.fetchUserSession())
       .then(() => {
         const user = this.props.user;
@@ -133,11 +132,12 @@ class GetMonView extends React.Component {
   }
   render() {
     const renderEvolutionButton = () => {
+      const routeName = action === 'evolution' ? 'evolution2' : 'evolution';
       const evolutePiece = this.props.mon._mon.evolutePiece;
       const thisMonPiece = this.props.mon.piece;
-      if (evolutePiece <= thisMonPiece) {
+      if (evolutePiece && evolutePiece <= thisMonPiece) {
         return (
-          <Link to={`/evolution/${this.props.mon._id}`} refresh>
+          <Link to={`/${routeName}/${this.props.mon._id}`} refresh>
             <button
               className="btn btn-primary btn-minier ev-btn"
               id="ev-btn" style={{ marginLeft: '4px' }}
@@ -181,7 +181,7 @@ class GetMonView extends React.Component {
     };
     const renderContinueBtn = () => {
       let returnComponent = null;
-      if (this.props.user.getCredit > 0 && action === 'get-mon') {
+      if (this.props.user.getCredit > 0) {
         returnComponent = (
           <p>
             <Link to="/get-mon" refresh>
@@ -194,23 +194,7 @@ class GetMonView extends React.Component {
     };
     const renderGetResult = () => {
       let returnComponent = null;
-      if (this.props.user.getCredit <= 0 && action === 'get-mon') {
-        returnComponent = (
-          <div>
-            <ErrorView
-              title="아직 채집을 할 수 없어."
-              msg="그 동안 교배나 진화를 시켜보는 건 어때?"
-              buttons={
-                <Link to={`/collection/${this.props.user._id}`}>
-                  <button className="btn btn-primary">
-                    <i className="ace-icon fa fa-github-alt"></i> 내 콜렉션
-                  </button>
-                </Link>
-              }
-            />
-          </div>
-        );
-      } else if (this.props.mon) {
+      if (this.props.mon) {
         returnComponent = (
           <div id="get-mon-view">
             <div className="page-content">
@@ -251,11 +235,8 @@ class GetMonView extends React.Component {
                 </div>
               </div>
             </div>
-            <LoadingView />
           </div>
         );
-      } else {
-        returnComponent = <LoadingView />;
       }
       return returnComponent;
     };

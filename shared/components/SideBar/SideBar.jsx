@@ -1,50 +1,12 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+import TimerBadge from '../Common/TimerBadge';
 
-let timer = null;
-let restTime = 0;
 class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'SideBar';
-    this.state = {
-      user: null,
-      getCredit: null,
-      restTime: null,
-    };
-  }
-  componentWillReceiveProps(nextProps) {
-    clearInterval(timer);
-    if (nextProps.user) {
-      this.setState({
-        user: nextProps.user,
-        getCredit: nextProps.user.getCredit,
-      });
-      const user = nextProps.user;
-      timer = setInterval(() => {
-        const toMinSec = (time) => {
-          const min = parseInt((time / 60000), 10);
-          let sec = parseInt(((time - (min * 60000)) / 1000), 10);
-          if (sec < 10) sec = `0${sec}`;
-          return `${min}:${sec}`;
-        };
-        const interval = Date.now() - user.lastGetTime;
-        // console.log('interval', interval);
-        const credit = Math.floor(interval / user.getInterval);
-        // console.log('credit', credit);
-        if (restTime > user.getInterval || restTime <= 0) {
-          // restTime을 초기화 시킴
-          restTime = user.getInterval - (interval - credit * user.getInterval);
-        } else {
-          // 초기화가 이미 되어있다면 감소만 시킴
-          restTime = restTime - 1000;
-        }
-        this.setState({ restTime: toMinSec(restTime), getCredit: user.getCredit + credit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + credit });
-        // console.log('this.state.restTime: ' + this.state.restTime);
-        // console.log('this.state.getCredit: ' + this.state.getCredit);
-      }, 1000);
-    }
   }
   render() {
     const renderMyCollection = () => {
@@ -88,16 +50,16 @@ class SideBar extends React.Component {
       );
     };
     const renderGetMonTimeBadge = () => {
-      let returnComponent = null;
-      const getCredit = this.state.getCredit;
-      if (getCredit !== (null || undefined)) {
-        if (getCredit > 0) {
-          returnComponent = (<span className="badge badge-info" id="credit">{this.state.getCredit}</span>);
-        } else {
-          returnComponent = (<span className="badge badge-danger" id="credit">{this.state.restTime}</span>);
-        }
+      if (this.props.user) {
+        return (
+          <TimerBadge
+            userCredit={this.props.user.getCredit}
+            userInterval={this.props.user.getInterval}
+            maxCredit={this.props.user.maxGetCredit}
+            lastActionTime={this.props.user.lastGetTime}
+          />
+        );
       }
-      return returnComponent;
     };
     return (
       <div id="sidebar" className="sidebar responsive sidebar-fixed">
@@ -119,7 +81,7 @@ class SideBar extends React.Component {
           {renderMyCollection()}
           {renderHonor()}
           <li>
-            <Link to={ this.state.getCredit > 0 ? '/get-mon-ready' : '/get-mon'}>
+            <Link to={ this.props.user && this.props.user.getCredit > 0 ? '/get-mon-ready' : '/get-mon-impossible'}>
               <i className="menu-icon fa fa-paw"></i>
               <span className="menu-text"> 포켓몬 채집
                 {renderGetMonTimeBadge()}

@@ -223,7 +223,7 @@ class MonsterInfoView extends React.Component {
           >
           </div>
         );
-      } else if (stat - initStat > 0) {
+      } else if (stat - initStat >= 0) {
         statPct = _.toString(initStat / 200 * 100);
         addStatPct = _.toString((stat - initStat) / 200 * 100);
         upStatPct = _.toString(upStat / 200 * 100);
