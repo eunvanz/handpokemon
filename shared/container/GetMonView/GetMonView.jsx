@@ -25,13 +25,10 @@ class GetMonView extends React.Component {
     this._handleContinueClick = this._handleContinueClick.bind(this);
     this._getMonProcess = this._getMonProcess.bind(this);
     this._removeInlineScripts = this._removeInlineScripts.bind(this);
-    this.state = { refreshFlag: true, mounted: false };
+    this.state = { refreshFlag: true };
   }
   componentDidMount() {
-    this._getMonProcess()
-    .then(() => {
-      this.setState({ mounted: true });
-    });
+    this._getMonProcess();
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.resetMon());
@@ -55,7 +52,7 @@ class GetMonView extends React.Component {
   _handleContinueClick() {
     this._getMonProcess()
     .then(() => {
-      this.setState({ refreshFlag: !this.state.refreshFlag });
+      if (action === 'get-mon') this.setState({ refreshFlag: !this.state.refreshFlag });
     });
   }
   _getMonProcess() {
@@ -184,7 +181,7 @@ class GetMonView extends React.Component {
       if (this.props.user.getCredit > 0) {
         returnComponent = (
           <p>
-            <Link to="/get-mon" refresh>
+            <Link to="/get-mon">
               <button className="btn btn-primary" onClick={this._handleContinueClick}>계속 채집하기</button>
             </Link>
           </p>

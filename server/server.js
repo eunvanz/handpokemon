@@ -7,7 +7,6 @@ import logger from 'morgan';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import User from './models/user.model';
 import connectMongo from 'connect-mongo';
 
 // Webpack Requirements

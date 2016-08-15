@@ -2,11 +2,13 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import TimerBadge from '../Common/TimerBadge';
+import * as Actions from '../../redux/actions/actions';
 
 class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'SideBar';
+    this._handleCreditClick = this._handleCreditClick.bind(this);
   }
   render() {
     const renderMyCollection = () => {
@@ -111,6 +113,7 @@ const mapStateToProps = (store) => ({
 
 SideBar.propTypes = {
   user: PropTypes.object,
+  dispatch: PropTypes.func,
 };
 
 export default connect(mapStateToProps)(SideBar);

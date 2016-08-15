@@ -6,9 +6,9 @@ import gm from 'gm';
 import multer from 'multer';
 import jwt from 'jwt-simple';
 import config from '../config';
-import passportService from '../passport';
+// import passportService from '../passport';
 
-const requireAuth = passport.authenticate('jwt', { session: false });
+// const requireAuth = passport.authenticate('jwt', { session: false });
 const requireSignin = passport.authenticate('local', { session: false });
 
 const router = new Router();
@@ -39,13 +39,11 @@ router.get('/api/user-nickname-check', (req, res) => {
 });
 
 const _getColRank = (colPoint) => {
-  console.log('_getColRank', User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }).exec());
-  return User.$where('this.email !== "admin@admin"').count({ colPoint: { $gt: colPoint } }).exec();
+  return User.where({ email: { $ne: 'admin@admin' } }).count({ colPoint: { $gt: colPoint } }).exec();
 };
 
 const _getBattleRank = (battlePoint) => {
-  console.log('_getBattleRank', User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }));
-  return User.$where('this.email !== "admin@admin"').count({ battlePoint: { $gt: battlePoint } }).exec();
+  return User.where({ email: { $ne: 'admin@admin' } }).count({ battlePoint: { $gt: battlePoint } }).exec();
 };
 
 const _updateCredits = (user) => {
@@ -124,8 +122,6 @@ router.post('/api/users', upload.single('img'), (req, res) => {
   const battleRank = _getBattleRank(1000);
   Promise.all([colRank, battleRank]).then((ranks) => {
     // console.log('promise.all 완료');
-    console.log('ranks[0]', ranks[0]);
-    console.log('ranks[1]', ranks[1]);
     const user = new User({
       email: req.body.email,
       nickname: req.body.nickname,
@@ -206,6 +202,12 @@ router.get('/api/users/:id', (req, res) => {
     if (err) return res.status(500).send(err);
     return _updateCredits(user);
   })
+  .then((user) => {
+    return Promise.all([_getColRank(user.colPoint), _getBattleRank(user.battlePoint)]);
+  })
+  .then(ranks => {
+    User.findByIdAndUpdate(_id, { colRank: ranks[0] + 1, battleRank: ranks[1] + 1 }, { upsert: true }).exec();
+  })
   .then(() => {
     return User.findById(_id).populate('_collections');
   })
@@ -213,7 +215,6 @@ router.get('/api/users/:id', (req, res) => {
     if (populatedUser) {
       Collection.populate(populatedUser._collections, { path: '_mon' }, (err2, collections) => {
         populatedUser._collections = collections; // eslint-disable-line
-        console.log('get한 유저의 크레딧: ' + populatedUser.getCredit);
         res.json({ user: populatedUser });
       });
     } else {
@@ -231,9 +232,9 @@ router.put('/api/users/:id', (req, res) => {
   if (user.battlePoint) ranksPromise.push(_getBattleRank(user.battlePoint));
   Promise.all(ranksPromise)
   .then(ranks => {
-    if (user.colPoint) user.colRank = ranks[0];
-    if (user.colPoint && user.battlePoint) user.battleRank = ranks[1];
-    else if (!user.colPoint && user.battlePoint) user.battleRank = ranks[0];
+    if (user.colPoint) user.colRank = ranks[0] + 1;
+    if (user.colPoint && user.battlePoint) user.battleRank = ranks[1] + 1;
+    else if (!user.colPoint && user.battlePoint) user.battleRank = ranks[0] + 1;
     return User.findByIdAndUpdate(req.params.id, user, { upsert: true });
   })
   .then(() => {

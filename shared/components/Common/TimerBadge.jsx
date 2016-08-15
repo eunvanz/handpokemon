@@ -1,4 +1,6 @@
 import React from 'react';
+import * as Actions from '../../redux/actions/actions';
+import { connect } from 'react-redux';
 
 let timer = null;
 let restTime = 0;
@@ -74,7 +76,11 @@ TimerBadge.propTypes = {
   userInterval: React.PropTypes.number,
   maxCredit: React.PropTypes.number,
   lastActionTime: React.PropTypes.number,
+  dispatch: React.PropTypes.func,
 };
 
+const mapStateToProps = (store) => ({
+  user: store.user,
+});
 
-export default TimerBadge;
+export default connect(mapStateToProps)(TimerBadge);
