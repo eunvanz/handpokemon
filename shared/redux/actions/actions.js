@@ -4,8 +4,6 @@ import fetch from 'isomorphic-fetch';
 // import $ from 'jquery';
 import axios from 'axios';
 import jwt from 'jwt-simple';
-import * as UserService from '../../service/UserService';
-import * as CollectionService from '../../service/CollectionService';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
@@ -272,6 +270,8 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
     } else if (mode === 'evolute') {
       // 진화의 경우 진화형 포켓몬 리스트를 가져옴
       url = `${baseURL}/api/monsters/${beforeId}/evolution`;
+    } else if (mode === 'mix') {
+      
     }
     return fetch(url)
     // 리스트 중에서 하나 선택
@@ -426,5 +426,25 @@ export function showMonInfoFront() {
 export function showMonInfoBack() {
   return {
     type: ActionTypes.SHOW_MON_INFO_BACK,
+  };
+}
+
+export function addSelectedMon(mon) {
+  return {
+    type: ActionTypes.ADD_SELECTED_MON,
+    mon,
+  };
+}
+
+export function removeSelectedMon(mon) {
+  return {
+    type: ActionTypes.REMOVE_SELECTED_MON,
+    mon,
+  };
+}
+
+export function clearSelectedMons() {
+  return {
+    type: ActionTypes.CLEAR_SELECTED_MONS,
   };
 }

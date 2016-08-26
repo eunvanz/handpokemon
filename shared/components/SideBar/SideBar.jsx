@@ -2,24 +2,45 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import TimerBadge from '../Common/TimerBadge';
-import * as Actions from '../../redux/actions/actions';
 
 class SideBar extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'SideBar';
-    this._handleCreditClick = this._handleCreditClick.bind(this);
   }
   render() {
     const renderMyCollection = () => {
       if (this.props.user) {
         return (
           <li>
-            <Link to={`/collection/${this.props.user._id}`}>
+            <Link to="" className="dropdown-toggle">
               <i className="menu-icon fa fa-github-alt"></i>
-              <span className="menu-text"> 내 콜렉션 </span>
+              <span className="menu-text"> 콜렉션 </span>
+              <b className="arrow fa fa-angle-down"></b>
             </Link>
-            <b className="arrow"></b>
+            <ul className="submenu">
+              <li>
+                <Link to={`/collection/${this.props.user._id}`}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 내 콜렉션 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li>
+                <Link to="/mix-mon">
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 교배하기 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li>
+                <Link to="/">
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 진화하기 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+            </ul>
           </li>
         );
       }
@@ -83,7 +104,7 @@ class SideBar extends React.Component {
           {renderMyCollection()}
           {renderHonor()}
           <li>
-            <Link to={ this.props.user && this.props.user.getCredit > 0 ? '/get-mon-ready' : '/get-mon-impossible'}>
+            <Link to="/get-mon-ready">
               <i className="menu-icon fa fa-paw"></i>
               <span className="menu-text"> 포켓몬 채집
                 {renderGetMonTimeBadge()}

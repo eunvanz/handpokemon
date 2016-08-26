@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { baseMons, allMons, mon, pickedMons, monsterCountInfo, designers } from './reducer_mon';
+import { baseMons, allMons, mon, pickedMons, monsterCountInfo, designers, selectedMons } from './reducer_mon';
 import { showLoginModal, showMessageModal } from './reducer_modal';
 import { appMounted, loading, monInfoFlip } from './reducer_common';
 import { user, collectionUser } from './reducer_user';
@@ -21,4 +21,5 @@ export default combineReducers({
   loading,
   monInfoFlip,
   addedAbility,
+  selectedMons,
 });

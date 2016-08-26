@@ -1,9 +1,8 @@
 import React from 'react';
-import * as Actions from '../../redux/actions/actions';
 import { connect } from 'react-redux';
 
 let timer = null;
-let restTime = 0;
+let initRestTime = 0;
 class TimerBadge extends React.Component {
   constructor(props) {
     super(props);
@@ -18,6 +17,7 @@ class TimerBadge extends React.Component {
     this._setStates(this.props);
   }
   componentWillReceiveProps(nextProps) {
+    console.log('nextProps', nextProps);
     this._setStates(nextProps);
   }
   _setStates(srcProps) {
@@ -38,25 +38,25 @@ class TimerBadge extends React.Component {
       };
       const interval = Date.now() - lastActionTime;
       const credit = Math.floor(interval / userInterval);
-      if (restTime > userInterval || restTime <= 0) {
+      if (initRestTime > userInterval || initRestTime <= 0) {
         // restTime을 초기화 시킴
-        restTime = userInterval - (interval - credit * userInterval);
+        initRestTime = userInterval - (interval - credit * userInterval);
       } else {
         // 초기화가 이미 되어있다면 감소만 시킴
-        restTime = restTime - 1000;
+        initRestTime = initRestTime - 1000;
       }
-      this.setState({ restTime: toMinSec(restTime), credit: userCredit + credit > maxCredit ? maxCredit : userCredit + credit });
+      this.setState({ restTime: toMinSec(initRestTime), credit: userCredit + credit > maxCredit ? maxCredit : userCredit + credit });
     }, 1000);
   }
   render() {
     const renderBadge = () => {
       let returnComponent = null;
-      const credit = this.state.credit;
+      const { credit, restTime } = this.state;
       if (credit !== (null || undefined)) {
         if (credit > 0) {
-          returnComponent = (<span className="badge badge-info" id="credit">{this.state.credit}</span>);
+          returnComponent = (<span className="badge badge-info" id="credit">{credit}</span>);
         } else {
-          returnComponent = (<span className="badge badge-danger" id="credit">{this.state.restTime}</span>);
+          returnComponent = (<span className="badge badge-danger" id="credit">{restTime}</span>);
         }
       }
       return returnComponent;
@@ -76,7 +76,7 @@ TimerBadge.propTypes = {
   userInterval: React.PropTypes.number,
   maxCredit: React.PropTypes.number,
   lastActionTime: React.PropTypes.number,
-  dispatch: React.PropTypes.func,
+  // dispatch: React.PropTypes.func,
 };
 
 const mapStateToProps = (store) => ({
@@ -84,3 +84,4 @@ const mapStateToProps = (store) => ({
 });
 
 export default connect(mapStateToProps)(TimerBadge);
+// export default TimerBadge;

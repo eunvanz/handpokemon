@@ -246,7 +246,7 @@ class MonsterInfoView extends React.Component {
         returnComponent.push(
           <div
             key="9"
-            className="progress-bar progress-bar-info monster-skill1-bar"
+            className="progress-bar progress-bar-pink monster-skill1-bar"
             style={{ width: `${upStatPct}%` }}
           >
           </div>
@@ -309,7 +309,7 @@ class MonsterInfoView extends React.Component {
       } else if (stat - initStat < 0) {
         returnComponent.push(<span key="3" className="badge badge-danger">{stat - initStat}</span>);
       }
-      if (upStat > 0) returnComponent.push(<strong key="4" className="text-info">+{upStat}</strong>);
+      if (upStat > 0) returnComponent.push(<strong key="4" className="badge badge-pink">+{upStat}</strong>);
       return returnComponent;
     };
     const renderStatComponent = () => {
@@ -464,7 +464,7 @@ class MonsterInfoView extends React.Component {
                     (isNaN(honorSpecialPower) ? 0 : honorSpecialPower) +
                     (isNaN(honorSpecialArmor) ? 0 : honorSpecialArmor)}
                 </span>
-                <strong className="text-primary">{this.props.addedAbility ? `+${monInfo.point}` : ''}</strong>
+                <strong className="badge badge-pink">{this.props.addedAbility ? `+${monInfo.point}` : ''}</strong>
               </div>
             </div>
           </div>

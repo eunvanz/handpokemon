@@ -10,6 +10,7 @@ import GetMonView from './container/GetMonView/GetMonView';
 import SelectDungeonView from './components/SelectDungeonView';
 import GetMonImpossibleView from './components/GetMonImpossibleView';
 import requireAuth from './container/Authentication/Authentication';
+import MixMonView from './container/CollectionView/MixMonView';
 
 const routes = (
   <Route path="/" component={App} >
@@ -25,6 +26,7 @@ const routes = (
     <Route path="/get-mon-multi" component={requireAuth(GetMonView)}/>
     <Route path="/evolution/:collectionId" component={requireAuth(GetMonView)}/>
     <Route path="/evolution2/:collectionId" component={requireAuth(GetMonView)}/>
+    <Route path="/mix-mon" component={requireAuth(MixMonView)}/>
   </Route>
 );
 

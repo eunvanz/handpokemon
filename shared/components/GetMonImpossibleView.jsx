@@ -2,20 +2,16 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ErrorView from './Common/ErrorView';
 import { Link, browserHistory } from 'react-router';
-import * as Actions from '../redux/actions/actions';
 
 class GetMonImpossibleView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'GetMonImpossibleView';
   }
-  componentWillMount() {
-    this.props.dispatch(Actions.fetchUserSession())
-    .then(() => {
-      if (this.props.user.getCredit > 0) {
-        browserHistory.push('/get-mon-ready');
-      }
-    });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.user.getCredit > 0) {
+      browserHistory.push('/get-mon-ready');
+    }
   }
   render() {
     return (

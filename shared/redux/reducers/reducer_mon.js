@@ -38,6 +38,22 @@ export const pickedMons = (state = null, action) => {
   }
 };
 
+export const selectedMons = (state = [], action) => {
+  switch (action.type) {
+    case ActionTypes.ADD_SELECTED_MON :
+      return [...state, action.mon];
+    case ActionTypes.REMOVE_SELECTED_MON :
+      const collectionIdIdx = state.indexOf(action.mon);
+      const updatedSelectedMons = state;
+      updatedSelectedMons.splice(collectionIdIdx, 1);
+      return updatedSelectedMons;
+    case ActionTypes.CLEAR_SELECTED_MONS :
+      return [];
+    default :
+      return state;
+  }
+};
+
 export const monsterCountInfo = (state = {}, action) => {
   switch (action.type) {
     case ActionTypes.GET_MONSTER_COUNT_INFO :

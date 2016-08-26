@@ -17,7 +17,6 @@ class CollectionView extends React.Component {
   componentDidMount() {
     this._removeInlineScripts();
     const collectionUserId = this.props.params.collectionUserId;
-    this.props.dispatch(Actions.showLoading());
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
     .then(() => { return this.props.dispatch(Actions.fetchMonsterCountInfo()); })
     .then(() => { return this.props.dispatch(Actions.fetchAllMons()); })
@@ -30,7 +29,6 @@ class CollectionView extends React.Component {
         script.async = false;
         document.body.appendChild(script);
       }
-      this.props.dispatch(Actions.hideLoading());
     });
   }
   componentWillReceiveProps(nextProps) {
@@ -630,7 +628,7 @@ class CollectionView extends React.Component {
                         </span>
                         <span
                           className="badge badge-default check-badge" id="filter-grade-l"
-                        ><i className="fa fa-check"></i> 리미티드
+                        ><i className="fa fa-check"></i> 레전드
                         </span>
                       </div>
                       <div id="designer" className="tab-pane">
@@ -673,7 +671,6 @@ CollectionView.contextTypes = {
 };
 
 const mapStateToProps = (store) => ({
-  collections: store.collections,
   collectionUser: store.collectionUser,
   monsterCountInfo: store.monsterCountInfo,
   user: store.user,

@@ -6,7 +6,7 @@ import gm from 'gm';
 import multer from 'multer';
 import jwt from 'jwt-simple';
 import config from '../config';
-// import passportService from '../passport';
+import passportService from '../passport'; // eslint-disable-line
 
 // const requireAuth = passport.authenticate('jwt', { session: false });
 const requireSignin = passport.authenticate('local', { session: false });
@@ -51,20 +51,25 @@ const _updateCredits = (user) => {
   const updateQuery = {};
   let modified = false;
   return new Promise((resolve) => {
+    const currentTime = Date.now();
     if (user.getCredit < user.maxGetCredit) {
-      const getInterval = Date.now() - user.lastGetTime;
+      const getInterval = currentTime - user.lastGetTime;
       const addGetCredit = Math.floor(getInterval / user.getInterval);
+      const restTime = getInterval - (user.getInterval * addGetCredit);
       console.log('getInterval', getInterval);
       console.log('addGetCredit', addGetCredit);
       const finalGetCredit = (user.getCredit + addGetCredit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + addGetCredit);
       updateQuery.getCredit = finalGetCredit;
+      updateQuery.lastGetTime = currentTime - restTime;
       modified = true;
     }
     if (user.battleCredit < user.maxBattleCredit) {
-      const battleInterval = Date.now() - user.lastGameTime;
+      const battleInterval = currentTime - user.lastGameTime;
       const addBattleCredit = Math.floor(battleInterval / user.battleInterval);
+      const restTime = battleInterval - (user.battleInterval * addBattleCredit);
       const finalBattleCredit = (user.battleCredit + addBattleCredit > user.maxBattleCredit ? user.maxBattleCredit : user.battleCredit + addBattleCredit);
       updateQuery.battleCredit = finalBattleCredit;
+      updateQuery.lastGameTime = currentTime - restTime;
       modified = true;
     }
     console.log('updateQuery', updateQuery);

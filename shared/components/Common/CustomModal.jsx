@@ -51,7 +51,7 @@ CustomModal.propTypes = {
   footerComponent: PropTypes.element.isRequired,
   width: PropTypes.string,
   show: PropTypes.bool.isRequired,
-  close: PropTypes.func.isRequired,
+  close: PropTypes.func,
   backdrop: PropTypes.any,
 };
 

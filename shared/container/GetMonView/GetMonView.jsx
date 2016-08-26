@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import MonsterInfoView from '../../components/Common/MonsterInfoView';
 import * as CollectionService from '../../service/CollectionService';
 import * as UserService from '../../service/UserService';
@@ -27,7 +27,7 @@ class GetMonView extends React.Component {
     this._removeInlineScripts = this._removeInlineScripts.bind(this);
     this.state = { refreshFlag: true };
   }
-  componentDidMount() {
+  componentWillMount() {
     this._getMonProcess();
   }
   componentWillUnmount() {
@@ -79,6 +79,7 @@ class GetMonView extends React.Component {
             }
           });
         }
+        browserHistory.push('/get-mon-impossible');
       });
     } else if (action === 'get-mon-multi') {
       // TODO

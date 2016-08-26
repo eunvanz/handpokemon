@@ -64,7 +64,7 @@ MessageModal.propTypes = {
   cancelBtnTxt: PropTypes.string,
   confirmBtnTxt: PropTypes.string.isRequired,
   onConfirmClick: PropTypes.func.isRequired,
-  close: PropTypes.func.isRequired,
+  close: PropTypes.func,
 };
 
 export default MessageModal;

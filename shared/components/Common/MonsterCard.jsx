@@ -1,5 +1,8 @@
 import React, { PropTypes } from 'react';
 import MonsterModal from './MonsterModal';
+import { connect } from 'react-redux';
+import $ from 'jquery';
+import * as Actions from '../../redux/actions/actions';
 
 class MonsterCard extends React.Component {
   constructor(props) {
@@ -7,9 +10,12 @@ class MonsterCard extends React.Component {
     this.displayName = 'MonsterCard';
     this.state = {
       showMonsterModal: false,
+      selected: false,
     };
     this._showMonsterModal = this._showMonsterModal.bind(this);
     this._hideMonsterModal = this._hideMonsterModal.bind(this);
+    this._checkItem = this._checkItem.bind(this);
+    this._uncheckItem = this._uncheckItem.bind(this);
   }
   _showMonsterModal(e) {
     e.preventDefault();
@@ -17,6 +23,18 @@ class MonsterCard extends React.Component {
   }
   _hideMonsterModal() {
     this.setState({ showMonsterModal: false });
+  }
+  _checkItem() {
+    if (this.props.selectedMons.length >= this.props.maxSelectable) {
+      alert(`이미 ${this.props.maxSelectable}마리를 선택했습니다.`);
+    } else {
+      this.setState({ selected: true });
+      this.props.dispatch(Actions.addSelectedMon(this.props.monster));
+    }
+  }
+  _uncheckItem() {
+    this.setState({ selected: false });
+    this.props.dispatch(Actions.removeSelectedMon(this.props.monster));
   }
   render() {
     const renderLevelLabelComponent = () => {
@@ -183,6 +201,20 @@ class MonsterCard extends React.Component {
       itemDom.push(gradeLabel, mainAttrLabel, subAttrLabel);
       return itemDom;
     };
+    const renderCheckComponent = () => {
+      if (this.state.selected) {
+        return (
+          <div className="check-container" style={{ height: '0px' }}>
+            <div className="check"
+              style={{ position: 'relative', cursor: 'pointer', top: $('.picks').height() * -1 - 10 }}
+              onClick={this._uncheckItem}
+            >
+              <img className="check" src="/img/common/check.png" width="100%"/>
+            </div>
+          </div>
+        );
+      }
+    };
     return (
       <div>
         <div className="col-xs-6 col-sm-3 collection-item text-center" {...this.props.filterData}>
@@ -191,10 +223,11 @@ class MonsterCard extends React.Component {
               <p>
                 <img className="picks" src={`/img/monsters/${this.props.monster.img}`}
                   width="100%"
-                  onClick={this._showMonsterModal}
+                  onClick={this.props.selectable ? this._checkItem : this._showMonsterModal}
                 />
               </p>
             </div>
+            {renderCheckComponent()}
             {renderLevelLabelComponent()}
             {renderRecentLabelComponent()}
             <p className="cost">
@@ -220,6 +253,14 @@ MonsterCard.propTypes = {
   monster: PropTypes.object.isRequired,
   recentMon: PropTypes.bool,
   filterData: PropTypes.object,
+  selectable: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired,
+  selectedMons: PropTypes.array,
+  maxSelectable: PropTypes.number,
 };
 
-export default MonsterCard;
+const mapStateToProps = (store) => ({
+  selectedMons: store.selectedMons,
+});
+
+export default connect(mapStateToProps)(MonsterCard);

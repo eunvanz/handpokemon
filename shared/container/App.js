@@ -9,9 +9,7 @@ class App extends Component {
     super(props, context);
   }
   componentDidMount() {
-    this.props.dispatch(Actions.showLoading());
-    this.props.dispatch(Actions.fetchUserSession())
-    .then(this.props.dispatch(Actions.hideLoading()));
+    this.props.dispatch(Actions.fetchUserSession());
   }
   render() {
     return (
