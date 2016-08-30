@@ -17,7 +17,6 @@ class TimerBadge extends React.Component {
     this._setStates(this.props);
   }
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps', nextProps);
     this._setStates(nextProps);
   }
   _setStates(srcProps) {

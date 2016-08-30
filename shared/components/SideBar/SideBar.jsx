@@ -9,32 +9,40 @@ class SideBar extends React.Component {
     this.displayName = 'SideBar';
   }
   render() {
+    const menu = this.props.menu;
     const renderMyCollection = () => {
       if (this.props.user) {
         return (
-          <li>
+          <li className={menu.indexOf('collection') > -1 ? 'active open' : null}>
             <Link to="" className="dropdown-toggle">
               <i className="menu-icon fa fa-github-alt"></i>
               <span className="menu-text"> 콜렉션 </span>
               <b className="arrow fa fa-angle-down"></b>
             </Link>
             <ul className="submenu">
-              <li>
+              <li className={menu === 'collection-my' ? 'active' : null}>
                 <Link to={`/collection/${this.props.user._id}`}>
                   <i className="menu-icon fa fa-caret-right"></i>
                   <span className="menu-text"> 내 콜렉션 </span>
                 </Link>
                 <b className="arrow"></b>
               </li>
-              <li>
-                <Link to="/mix-mon">
+              <li className={menu === 'collection-entry' ? 'active' : null}>
+                <Link to={`/entry/${this.props.user._id}`}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 엔트리 설정 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li className={menu === 'collection-mix' ? 'active' : null}>
+                <Link to="/mix-mon-ready">
                   <i className="menu-icon fa fa-caret-right"></i>
                   <span className="menu-text"> 교배하기 </span>
                 </Link>
                 <b className="arrow"></b>
               </li>
-              <li>
-                <Link to="/">
+              <li className={menu === 'collection-evolute' ? 'active' : null}>
+                <Link to="/evolute-mon-ready">
                   <i className="menu-icon fa fa-caret-right"></i>
                   <span className="menu-text"> 진화하기 </span>
                 </Link>
@@ -87,7 +95,7 @@ class SideBar extends React.Component {
     return (
       <div id="sidebar" className="sidebar responsive sidebar-fixed">
         <ul className="nav nav-list">
-          <li>
+          <li className={menu === 'home' ? 'active' : null}>
             <Link to="/">
               <i className="menu-icon fa fa-home"></i>
               <span className="menu-text"> 홈 </span>
@@ -103,7 +111,7 @@ class SideBar extends React.Component {
           </li>
           {renderMyCollection()}
           {renderHonor()}
-          <li>
+          <li className={menu === 'get-mon' ? 'active' : null}>
             <Link to="/get-mon-ready">
               <i className="menu-icon fa fa-paw"></i>
               <span className="menu-text"> 포켓몬 채집
@@ -130,11 +138,13 @@ SideBar.contextTypes = {
 
 const mapStateToProps = (store) => ({
   user: store.user,
+  menu: store.menu,
 });
 
 SideBar.propTypes = {
   user: PropTypes.object,
   dispatch: PropTypes.func,
+  menu: PropTypes.string,
 };
 
 export default connect(mapStateToProps)(SideBar);

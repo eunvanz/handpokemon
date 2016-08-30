@@ -17,3 +17,27 @@ export const addedAbility = (state = null, action) => {
       return state;
   }
 };
+
+export const entryAsIs = (state = [], action) => {
+  switch (action.type) {
+    case ActionTypes.ADD_ENTRY_AS_IS :
+      const newState = state.push(action.info);
+      return newState;
+    case ActionTypes.CLEAR_ENTRY_AS_IS :
+      return [];
+    default :
+      return state;
+  }
+};
+
+export const entryToBe = (state = [], action) => {
+  switch (action.type) {
+    case ActionTypes.ADD_ENTRY_TO_BE :
+      const newState = state.push(action.info);
+      return newState;
+    case ActionTypes.CLEAR_ENTRY_TO_BE :
+      return [];
+    default :
+      return state;
+  }
+};

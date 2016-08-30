@@ -99,7 +99,7 @@ class RegisterMonsterView extends React.Component {
     formData.append('specialPower', $('#specialPower').val());
     formData.append('specialArmor', $('#specialArmor').val());
     formData.append('dex', $('#dex').val());
-    formData.append('skillName', $('#skillName').val());
+    formData.append('skillName', $('#skillName').val() ? $('#skillName').val() : '몸통박치기');
     formData.append('grade', $('#grade').val());
     formData.append('cost', $('#cost').val());
     formData.append('_before', $('#_before').val() === 0 ? null : $('#_before').val());

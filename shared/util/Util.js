@@ -34,6 +34,9 @@ export const convertCollectionToMonsterForMonsterCard = (col) => {
   mon.skillName = baseMon.skillName;
   mon.designer = baseMon.designer[col.imgIdx];
   mon.point = baseMon.point;
+  mon.condition = col.condition;
+  mon.status = col.status;
+  mon.entry = col.entry;
 
   return mon;
 };

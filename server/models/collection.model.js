@@ -21,7 +21,9 @@ const collectionSchema = new Schema({
   imgIdx: { type: Number, default: 0, required: true },
   piece: { type: Number, default: 1 },
   potentialLevel: { type: Number, default: 0 },
-  condition: { type: Number, required: true },
+  condition: { type: Number, required: true }, // 1: 매우나쁨, 2: 나쁨, 3: 보통, 4: 좋음, 5: 매우좋음
+  status: { type: Number, default: 2, required: true }, // 0: 방전, 1: 회복중, 2: 정상
+  entry: { type: Number, default: 0, required: true }, // 0: 엔트리없음
 });
 
 export default mongoose.model('Collection', collectionSchema);

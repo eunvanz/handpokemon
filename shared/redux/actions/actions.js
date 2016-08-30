@@ -1,9 +1,9 @@
 import * as ActionTypes from '../constants/constants';
 import Config from '../../../server/config';
 import fetch from 'isomorphic-fetch';
-// import $ from 'jquery';
 import axios from 'axios';
 import jwt from 'jwt-simple';
+import * as MixService from '../../service/MixService';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
@@ -271,16 +271,48 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       // 진화의 경우 진화형 포켓몬 리스트를 가져옴
       url = `${baseURL}/api/monsters/${beforeId}/evolution`;
     } else if (mode === 'mix') {
-      
+      // 교배의 경우 교배 제약에 따라 포켓몬 리스트를 가져옴
+      const mixLimit = beforeId;
+      url = `${baseURL}/api/monsters/b`;
+      const point = Math.floor(Math.random() * 100);
+      if (mixLimit === 'r') {
+        // 레어의 확률 40%
+        if (point < MixService.rateLimitRare[0]) {
+          url = `${baseURL}/api/monsters/r`;
+        }
+      } else if (mixLimit === 'e') {
+        // 엘리트 확률 10%, 레어 확률 50%
+        if (point < MixService.rateLimitElite[0]) {
+          url = `${baseURL}/api/monsters/e`;
+        } else if (point < MixService.rateLimitElite[1]) {
+          url = `${baseURL}/api/monsters/r`;
+        }
+      } else if (mixLimit === 'l') {
+        // 레전드 확률 10%, 엘리트 확률 50%, 레어 확률 20%
+        if (point < MixService.rateLimitLegend[0]) {
+          url = `${baseURL}/api/monsters/l`;
+        } else if (point < MixService.rateLimitLegend[1]) {
+          url = `${baseURL}/api/monsters/e`;
+        } else if (point < MixService.rateLimitLegend[2]) {
+          url = `${baseURL}/api/monsters/r`;
+        }
+      }
+    } else if (mode === 'specialMix') {
+      const specialMixMonNo = beforeId;
+      url = `${baseURL}/api/monsters/${specialMixMonNo}`;
     }
     return fetch(url)
     // 리스트 중에서 하나 선택
     .then(response => response.json())
     .then(response => {
+      if (response.mon) pickedMon = response.mon;
       const basicMons = response.mons;
-      const size = basicMons.length;
-      const index = Math.floor(Math.random() * size);
-      pickedMon = basicMons[index];
+      if (typeof basicMons === 'object') {
+        const size = basicMons.length;
+        const index = Math.floor(Math.random() * size);
+        pickedMon = basicMons[index];
+      }
+      console.log('pickedMon', pickedMon);
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
@@ -288,6 +320,7 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       for (const collection of userCollections) {
         if (pickedMon.monNo === collection._mon.monNo) {
           collectionId = collection._id;
+          console.log('이미 있는 포켓몬', collectionId);
           break;
         }
       }
@@ -335,10 +368,12 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       .then(() => {
         // 이미 가지고 있는 포켓몬일 경우 스탯 상승
         if (collectionId) {
+          console.log('collectionId', collectionId);
           return fetch(`${baseURL}/api/collections/${collectionId}`)
           .then(res => res.json())
           .then(res => {
             const collection = res.collection;
+            console.log('collection', collection);
             collection.addedHp = collection.addedHp + addedHp;
             collection.addedPower = collection.addedPower + addedPower;
             collection.addedArmor = collection.addedArmor + addedArmor;
@@ -446,5 +481,45 @@ export function removeSelectedMon(mon) {
 export function clearSelectedMons() {
   return {
     type: ActionTypes.CLEAR_SELECTED_MONS,
+  };
+}
+
+export function setBeforeAction(action) {
+  return {
+    type: ActionTypes.SET_BEFORE_ACTION,
+    action,
+  };
+}
+
+export function setMenu(menu) {
+  return {
+    type: ActionTypes.SET_MENU,
+    menu,
+  };
+}
+
+export function addEntryAsIs(entryNo, monster) {
+  return {
+    type: ActionTypes.ADD_ENTRY_AS_IS,
+    info: { entryNo, monster },
+  };
+}
+
+export function addEntryToBe(entryNo, monster) {
+  return {
+    type: ActionTypes.ADD_ENTRY_TO_BE,
+    info: { entryNo, monster },
+  };
+}
+
+export function clearEntryAsIs() {
+  return {
+    type: ActionTypes.CLEAR_ENTRY_AS_IS,
+  };
+}
+
+export function clearEntryToBe() {
+  return {
+    type: ActionTypes.CLEAR_ENTRY_TO_BE,
   };
 }

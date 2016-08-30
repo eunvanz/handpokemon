@@ -52,8 +52,8 @@ router.post('/api/monsters', upload.single('img'), (req, res) => {
 
 router.put('/api/monsters', upload.single('img'), (req, res) => {
   let fileName = null;
-  console.log('req.body', req.body);
-  _updateEvolutePiece(req.body._before, req.body.requiredPiece).then(() => {
+  _updateEvolutePiece(req.body._before, req.body.requiredPiece)
+  .then(() => {
     if (req.file) {
       fileName = req.file.filename;
     }
@@ -184,7 +184,7 @@ router.get('/api/monsters/get-mon', (req, res) => {
 router.get('/api/monsters/:param', (req, res) => {
   const param = req.params.param;
   let query = {};
-  const grades = ['b', 'a', 's', 'ar', 'e', 'l'];
+  const grades = ['b', 'r', 's', 'ar', 'e', 'l'];
   if (grades.includes(param)) {
     query = { grade: param };
     Monster.find(query).exec((err, mons) => {
@@ -230,5 +230,19 @@ router.get('/api/designers', (req, res) => {
   });
 });
 
+router.get('/api/monsters/mix/:mixLimit', (req, res) => {
+  const mixLimit = req.params.mixLimit;
+  const findCondition = [{ grade: 'b' }, { grade: 'r' }];
+  if (mixLimit === 'e') {
+    findCondition.push({ grade: 'e' });
+  } else if (mixLimit === 'l') {
+    findCondition.push({ grade: 'e' });
+    findCondition.push({ grade: 'l' });
+  }
+  Monster.find({ $or: findCondition }).exec((err, mons) => {
+    if (err) return res.status(500).send(err);
+    res.json({ mons });
+  });
+});
 
 export default router;

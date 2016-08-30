@@ -5,7 +5,7 @@ jQuery(function($) {
     $(".back").toggle();
   });
 
-  $('#register-member-view #id-input-file-3').ace_file_input({
+  $('#register-member-view #img').ace_file_input({
     no_file:'프로필 이미지가 없습니다.',
     btn_choose:'이미지선택',
     btn_change:'이미지교체',

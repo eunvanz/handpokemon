@@ -11,6 +11,7 @@ class SelectDungeonView extends React.Component {
     this._handleClickGetBtn = this._handleClickGetBtn.bind(this);
   }
   componentWillMount() {
+    this.props.dispatch(Actions.setMenu('get-mon'));
     this.props.dispatch(Actions.fetchUserSession());
   }
   _handleClickGetBtn() {

@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import MonsterCard from '../../components/Common/MonsterCard';
+import { Link } from 'react-router';
 
 class CollectionView extends React.Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class CollectionView extends React.Component {
   componentDidMount() {
     this._removeInlineScripts();
     const collectionUserId = this.props.params.collectionUserId;
+    this.props.dispatch(Actions.setMenu('collection-my'));
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
     .then(() => { return this.props.dispatch(Actions.fetchMonsterCountInfo()); })
     .then(() => { return this.props.dispatch(Actions.fetchAllMons()); })
@@ -139,7 +141,7 @@ class CollectionView extends React.Component {
                       <div
                         className="col-sm-6 text-right visible-xs-inline-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block"
                       >
-                        <a href="">
+                        <Link to="/mix-mon-ready">
                           <button className="btn btn-primary hidden-xs">
                             <i className="ace-icon fa fa-flask"></i> 교배하기
                           </button>
@@ -148,9 +150,9 @@ class CollectionView extends React.Component {
                           >
                             교배하기
                           </button>
-                        </a>
-                        <a href="" style={{ marginLeft: '4px' }}>
-                          <button className="btn btn-primary hidden-xs">
+                        </Link>
+                        <Link to="/evolute-mon-ready">
+                          <button className="btn btn-primary hidden-xs" style={{ marginLeft: '4px' }}>
                             <i className="ace-icon fa fa-flash"></i> 진화하기
                           </button>
                           <button
@@ -158,7 +160,7 @@ class CollectionView extends React.Component {
                           >
                             진화하기
                           </button>
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -215,6 +217,9 @@ class CollectionView extends React.Component {
                 mon.honorDex = col.honorDex;
                 mon.evolutePiece = mon2.evolutePiece;
                 mon._id = col._id;
+                mon.condition = col.condition;
+                mon.status = col.status;
+                mon.entry = col.entry;
                 const filterData = { 'data-have': '보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
                 'data-grade': mon.grade, 'data-designer': mon.designer };
                 returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
@@ -354,7 +359,7 @@ class CollectionView extends React.Component {
                           <div className="col-xs-6 col-sm-2 center">
                             <h4>레어</h4>
                             <div className="easy-pie-chart percentage"
-                              data-percent={monsterCountInfo.rare !== 0 ? collectionCountInfo.rare * 100 / monsterCountInfo.rare * 100 : 0}
+                              data-percent={monsterCountInfo.rare !== 0 ? collectionCountInfo.rare * 100 / monsterCountInfo.rare : 0}
                               data-color="#8ae68a"
                             >
                               <span className="percent">{collectionCountInfo.rare}/{monsterCountInfo.rare}</span>

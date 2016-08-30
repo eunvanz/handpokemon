@@ -32,3 +32,21 @@ export const monInfoFlip = (state = true, action) => {
       return state;
   }
 };
+
+export const beforeAction = (state = null, action) => {
+  switch (action.type) {
+    case ActionTypes.SET_BEFORE_ACTION :
+      return action.action;
+    default :
+      return state;
+  }
+};
+
+export const menu = (state = 'home', action) => {
+  switch (action.type) {
+    case ActionTypes.SET_MENU :
+      return action.menu;
+    default :
+      return state;
+  }
+};

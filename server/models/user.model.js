@@ -15,7 +15,7 @@ const userSchema = new Schema({
   colRank: { type: Number, required: true },
   battleRank: { type: Number, requried: true },
   lastGetTime: { type: Number, default: 0, required: true },
-  lastGameTime: { type: Number, default: 0, required: true },
+  lastBattleTime: { type: Number, default: 0, required: true },
   getInterval: { type: Number, default: (10 * 60 * 1000), required: true },
   battleInterval: { type: Number, default: (10 * 60 * 1000), required: true },
   lastLogin: { type: Number, default: Date.now, required: true },
@@ -40,6 +40,7 @@ const userSchema = new Schema({
   recommenderFlag: { type: Boolean, default: null },
   _collections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
   online: { type: Boolean, default: true, required: true },
+  entrySeq: { type: Number, default: 0, required: true }, // 1, 2, 3
 });
 
 // userSchema.plugin(passportLocalMongoose, {

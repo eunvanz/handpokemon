@@ -526,7 +526,7 @@ class MonsterInfoView extends React.Component {
               </div>
               <div className="row">
 								<div className="col-xs-12 align-left">
-									<p className="monster-description">{monInfo.desc} (designed by <span className="badge badge-grey">{monInfo.designer[0]}</span>)</p>
+									<p className="monster-description">{monInfo.desc} (designed by <span className="badge badge-pink">{monInfo.designer[0]}</span>)</p>
 								</div>
 							</div>
             </div>

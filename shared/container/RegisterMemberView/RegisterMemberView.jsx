@@ -227,7 +227,6 @@ class RegisterMemberView extends React.Component {
                     <input multiple type="file" id="img"
                       name="img"
                     />
-
                   </div>
                 </div>
 

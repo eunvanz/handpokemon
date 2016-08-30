@@ -25,6 +25,7 @@ class GetMonView extends React.Component {
     this._handleContinueClick = this._handleContinueClick.bind(this);
     this._getMonProcess = this._getMonProcess.bind(this);
     this._removeInlineScripts = this._removeInlineScripts.bind(this);
+    this._appendScripts = this._appendScripts.bind(this);
     this.state = { refreshFlag: true };
   }
   componentWillMount() {
@@ -55,12 +56,23 @@ class GetMonView extends React.Component {
       if (action === 'get-mon') this.setState({ refreshFlag: !this.state.refreshFlag });
     });
   }
+  _appendScripts() {
+    const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
+    for (const src of scriptSrcs) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      document.body.appendChild(script);
+    }
+  }
   _getMonProcess() {
     $('.monster-info').hide();
     this._removeInlineScripts();
     action = location.pathname.split('/')[1];
     collectionId = location.pathname.split('/')[2];
-    if (action === 'get-mon') {
+    if (action === 'mix-mon') {
+      this._appendScripts();
+    } else if (action === 'get-mon') {
       return this.props.dispatch(Actions.fetchUserSession())
       .then(() => {
         const user = this.props.user;
@@ -70,13 +82,8 @@ class GetMonView extends React.Component {
             return this.props.dispatch(Actions.fetchUserSession());
           })
           .then(() => {
-            const scriptSrcs = ['/js/wScratchpad.min.js', '/js/common-getmon.js', '/js/getmon-ev.js', '/js/get-mon-view-inline.js'];
-            for (const src of scriptSrcs) {
-              const script = document.createElement('script');
-              script.src = src;
-              script.async = false;
-              document.body.appendChild(script);
-            }
+            this.props.dispatch(Actions.setBeforeAction('get'));
+            this._appendScripts();
           });
         }
         browserHistory.push('/get-mon-impossible');
@@ -116,13 +123,7 @@ class GetMonView extends React.Component {
             return this.props.dispatch(Actions.fetchUserSession());
           })
           .then(() => {
-            const scriptSrcs = ['/js/wScratchpad.min.js', '/js/get-mon-view-inline.js'];
-            for (const src of scriptSrcs) {
-              const script = document.createElement('script');
-              script.src = src;
-              script.async = false;
-              document.body.appendChild(script);
-            }
+            this._appendScripts();
           });
         }
       });
@@ -179,11 +180,23 @@ class GetMonView extends React.Component {
     };
     const renderContinueBtn = () => {
       let returnComponent = null;
+      let btnTxt = '계속 채집하기';
+      let link = '/get-mon';
+      let onClickFunc = this._handleContinueClick;
+      if (this.props.beforeAction === 'mix') {
+        btnTxt = '계속 교배하기';
+        link = '/mix-mon-ready';
+        onClickFunc = null;
+      } else if (this.props.beforeAction === 'evolute') {
+        btnTxt = '계속 진화하기';
+        link = '/evolute-mon-ready';
+        onClickFunc = null;
+      }
       if (this.props.user.getCredit > 0) {
         returnComponent = (
           <p>
-            <Link to="/get-mon">
-              <button className="btn btn-primary" onClick={this._handleContinueClick}>계속 채집하기</button>
+            <Link to={link}>
+              <button className="btn btn-primary" onClick={onClickFunc}>{btnTxt}</button>
             </Link>
           </p>
         );
@@ -253,6 +266,7 @@ const mapStateToProps = (store) => ({
   user: store.user,
   monInfoFlip: store.monInfoFlip,
   addedAbility: store.addedAbility,
+  beforeAction: store.beforeAction,
 });
 
 GetMonView.propTypes = {
@@ -261,6 +275,7 @@ GetMonView.propTypes = {
   user: PropTypes.object,
   monInfoFlip: PropTypes.bool,
   addedAbility: PropTypes.object,
+  beforeAction: PropTypes.string,
 };
 
 export default connect(mapStateToProps)(GetMonView);

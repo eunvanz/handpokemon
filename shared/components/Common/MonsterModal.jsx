@@ -463,6 +463,81 @@ class MonsterModal extends React.Component {
         );
       return returnComponent;
     };
+    const renderConditionComponent = () => {
+      if (this.props.monster.condition) {
+        const condition = this.props.monster.condition;
+        let rotateClass = null;
+        let colorClass = 'text-danger';
+        let text = '매우좋음';
+        if (condition === 4) {
+          rotateClass = 'rotate-45';
+          colorClass = 'text-warning';
+          text = '좋음';
+        } else if (condition === 3) {
+          rotateClass = 'rotate-90';
+          colorClass = 'text-success';
+          text = '보통';
+        } else if (condition === 2) {
+          rotateClass = 'rotate-135';
+          colorClass = 'text-info';
+          text = '나쁨';
+        } else if (condition === 1) {
+          rotateClass = 'rotate-180';
+          colorClass = 'text-muted';
+          text = '매우나쁨';
+        }
+        return (
+          <div className="row">
+            <div className="col-xs-3">
+              <p>
+                <big className="text-primary"><b>컨디션</b></big>
+              </p>
+            </div>
+            <div className="col-xs-9">
+              <p className="monster-condition">
+                <i className={`ace-icon fa fa-arrow-circle-up fa-2 ${colorClass} ${rotateClass}`}
+                  style={{ fontSize: '20px' }}
+                ></i> <span className="badge badge-grey">{text}</span>
+              </p>
+            </div>
+          </div>
+        );
+      }
+    };
+    const renderStatusComponent = () => {
+      const status = this.props.monster.status;
+      if (status) {
+        let iconClass = 'fa-battery-full';
+        let colorClass = 'text-primary';
+        let text = '출전가능';
+        if (status === 1) {
+          iconClass = 'fa-battery-half';
+          colorClass = 'text-warining';
+          text = '회복중';
+        } else if (status === 0) {
+          iconClass = 'fa-battery-empty';
+          colorClass = 'text-danger';
+          text = '휴식필요';
+        }
+        return (
+          <div className="row">
+            <div className="col-xs-3">
+              <p>
+                <big className="text-primary"><b>상태</b></big>
+              </p>
+            </div>
+            <div className="col-xs-9">
+              <p className="monster-condition">
+                <i
+                  className={`ace-icon fa ${iconClass} ${colorClass}`}
+                  style={{ fontSize: '20px' }}
+                ></i> <span className="badge badge-grey">{text}</span>
+              </p>
+            </div>
+          </div>
+        );
+      }
+    };
     const renderBodyComponent = () => {
       return (
         <div>
@@ -522,10 +597,12 @@ class MonsterModal extends React.Component {
                     </p>
                   </div>
                 </div>
+                {renderConditionComponent()}
+                {renderStatusComponent()}
                 <div className="row">
                   <div className="col-xs-12">
                     <p className="monster-description">{this.props.monster.desc}
-                      (designed by <span className="badge badge-grey" id={`designer-mon-${this.props.monster.monNo}`}>{this.props.monster.designer}</span>)
+                      (designed by <span className="badge badge-pink" id={`designer-mon-${this.props.monster.monNo}`}>{this.props.monster.designer}</span>)
                     </p>
                   </div>
                 </div>

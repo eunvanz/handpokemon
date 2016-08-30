@@ -64,12 +64,12 @@ const _updateCredits = (user) => {
       modified = true;
     }
     if (user.battleCredit < user.maxBattleCredit) {
-      const battleInterval = currentTime - user.lastGameTime;
+      const battleInterval = currentTime - user.lastBattleTime;
       const addBattleCredit = Math.floor(battleInterval / user.battleInterval);
       const restTime = battleInterval - (user.battleInterval * addBattleCredit);
       const finalBattleCredit = (user.battleCredit + addBattleCredit > user.maxBattleCredit ? user.maxBattleCredit : user.battleCredit + addBattleCredit);
       updateQuery.battleCredit = finalBattleCredit;
-      updateQuery.lastGameTime = currentTime - restTime;
+      updateQuery.lastBattleTime = currentTime - restTime;
       modified = true;
     }
     console.log('updateQuery', updateQuery);
