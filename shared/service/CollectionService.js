@@ -3,6 +3,34 @@ import axios from 'axios';
 
 const baseURL = typeof window === 'undefined' ? process.env.BASE_URL || (`http://localhost:${Config.port}`) : '';
 
+export function removeMonsterFromEntry(collection) {
+  if (collection) {
+    const collectionId = collection._id;
+    const now = new Date();
+    const date = new Date();
+    date.setFullYear(now.getYear(), now.getMonth(), now.getDate());
+    const condition = { entry: 0, status: 0, lastStatusUpdate: date };
+
+    return axios({
+      method: 'put',
+      url: `${baseURL}/api/collections/${collectionId}`,
+      data: { collection: condition },
+    });
+  }
+  return new Promise(resolve => resolve());
+}
+
+export function addMonsterToEntry(entryNo, collection) {
+  const collectionId = collection._id;
+  const condition = { entry: entryNo };
+
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/collections/${collectionId}`,
+    data: { collection: condition },
+  });
+}
+
 export function updateLevelWithStat(collection, levelToUpdate) {
   const resultCollection = Object.assign({}, collection);
 

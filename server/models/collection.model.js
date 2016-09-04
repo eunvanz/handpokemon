@@ -24,6 +24,7 @@ const collectionSchema = new Schema({
   condition: { type: Number, required: true }, // 1: 매우나쁨, 2: 나쁨, 3: 보통, 4: 좋음, 5: 매우좋음
   status: { type: Number, default: 2, required: true }, // 0: 방전, 1: 회복중, 2: 정상
   entry: { type: Number, default: 0, required: true }, // 0: 엔트리없음
+  lastStatusUpdate: { type: Date, default: Date.now, required: true },
 });
 
 export default mongoose.model('Collection', collectionSchema);

@@ -46,7 +46,8 @@ class MonsterModal extends React.Component {
       }
       if (evolutePiece) {
         returnComponent.push(<p key="evolutePiece"><span className="label label-default arrowed-in-right">{`LV. ${evolutePiece}`}</span> 에 진화</p>);
-        if (evolutePiece && level >= evolutePiece) {
+        if (evolutePiece && level >= evolutePiece &&
+          (this.props.monster.entry !== 0 ? this.props.monster.piece > evolutePiece : true)) {
           returnComponent.push(
             <Link to={`/evolution/${this.props.monster._id}`}>
               <button className="btn btn-primary btn-minier ev-btn" id="ev-btn">
@@ -506,7 +507,8 @@ class MonsterModal extends React.Component {
     };
     const renderStatusComponent = () => {
       const status = this.props.monster.status;
-      if (status) {
+      const entry = this.props.monster.entry;
+      if (status !== undefined) {
         let iconClass = 'fa-battery-full';
         let colorClass = 'text-primary';
         let text = '출전가능';
@@ -518,6 +520,10 @@ class MonsterModal extends React.Component {
           iconClass = 'fa-battery-empty';
           colorClass = 'text-danger';
           text = '휴식필요';
+        } else if (entry !== 0) {
+          iconClass = 'fa-paw';
+          colorClass = 'text-success';
+          text = `엔트리 ${entry}`;
         }
         return (
           <div className="row">

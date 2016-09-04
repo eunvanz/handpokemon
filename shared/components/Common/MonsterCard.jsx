@@ -265,7 +265,8 @@ class MonsterCard extends React.Component {
     };
     const renderStatusComponent = () => {
       const status = this.props.monster.status;
-      if (status) {
+      const entry = this.props.monster.entry;
+      if (status !== undefined) {
         let iconClass = 'fa-battery-full';
         let colorClass = 'text-primary';
         if (status === 1) {
@@ -274,12 +275,15 @@ class MonsterCard extends React.Component {
         } else if (status === 0) {
           iconClass = 'fa-battery-empty';
           colorClass = 'text-danger';
+        } else if (entry !== 0) {
+          iconClass = 'fa-paw';
+          colorClass = 'text-success';
         }
         return (
           <div className="status-container" style={{ height: '0px' }}>
-            <div style={{ position: 'relative', top: '-34px', textAlign: 'left', fontSize: '20px', left: '4px' }}>
-              <i className={`ace-icon fa ${iconClass} ${colorClass}`}></i>
-            </div>
+          <div style={{ position: 'relative', top: '-34px', textAlign: 'left', fontSize: '20px', left: '4px' }}>
+          <i className={`ace-icon fa ${iconClass} ${colorClass}`}></i>
+          </div>
           </div>
         );
       }
@@ -331,11 +335,15 @@ class MonsterCard extends React.Component {
       if (this.props.entryMode) {
         if (this.props.monster) {
           return (
+            <div>
             <p><button onClick={this._changeEntry} className="btn btn-sm btn-warning"><i className="ace-icon fa fa-refresh"></i> 교체하기</button></p>
+            </div>
           );
         }
         return (
+          <div>
           <p><button onClick={this._changeEntry} className="btn btn-sm btn-info"><i className="ace-icon fa fa-paw"></i> 투입하기</button></p>
+          </div>
         );
       }
     };
@@ -367,7 +375,7 @@ class MonsterCard extends React.Component {
 }
 
 MonsterCard.propTypes = {
-  monster: PropTypes.object.isRequired,
+  monster: PropTypes.object,
   recentMon: PropTypes.bool,
   filterData: PropTypes.object,
   selectable: PropTypes.bool,

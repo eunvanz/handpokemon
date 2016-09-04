@@ -54,3 +54,5 @@ export const ADD_ENTRY_AS_IS = 'ADD_ENTRY_AS_IS';
 export const ADD_ENTRY_TO_BE = 'ADD_ENTRY_TO_BE';
 export const CLEAR_ENTRY_AS_IS = 'CLEAR_ENTRY_AS_IS';
 export const CLEAR_ENTRY_TO_BE = 'CLEAR_ENTRY_TO_BE';
+
+export const GET_ENTRY_STATE = 'GET_ENTRY_STATE';

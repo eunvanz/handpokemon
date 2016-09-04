@@ -26,6 +26,7 @@ class SelectableMonView extends React.Component {
       this.props.dispatch(Actions.setMenu('collection-evolute'));
     } else if (action === 'entry-ready') {
       this.props.dispatch(Actions.setMenu('collection-entry'));
+      this.props.dispatch(Actions.fetchEntryState(this.props.user._id));
     }
     this._removeInlineScripts();
     this.props.dispatch(Actions.fetchUserSession())
@@ -97,8 +98,16 @@ class SelectableMonView extends React.Component {
   }
   _processChangeEntry() {
     const entryAsIs = this.props.entryAsIs[0];
-    // TODO: asis 포켓몬의 콜렉션을 찾아 entry 속성을 0으로 만들고, this.props.monster의 콜렉션을 찾아 entry속성을 this.props.entryNo 로 만든다.
-    // TODO: 그 이후 다시 entry 설정 화면으로 넘어감.
+    CollectionService.removeMonsterFromEntry(entryAsIs.monster)
+    .then(() => {
+      return CollectionService.addMonsterToEntry(entryAsIs.entryNo, this.props.selectedMons[0]);
+    })
+    .then(() => {
+      return UserService.updateLastStatusUpdate(this.props.user);
+    })
+    .then(() => {
+      browserHistory.push(`/entry/${this.props.user._id}`);
+    });
   }
   _clickDoAction() {
     if (action === 'mix-mon-ready') {
@@ -116,13 +125,30 @@ class SelectableMonView extends React.Component {
   }
   render() {
     let collections = this.props.user._collections;
-    if (action === 'evolute-mon-ready') {
-      collections = collections.filter((collection) => {
-        return collection._mon.evolutePiece && collection.piece >= collection._mon.evolutePiece;
+    const _willDisapearAfterMix = collection => {
+      if (collection.piece === 1) {
+        return true;
+      }
+      return false;
+    };
+    const _willDisapearAfterEvolute = collection => {
+      if (collection.piece === collection._mon.evolutePiece) {
+        return true;
+      }
+      return false;
+    };
+    if (action === 'mix-mon-ready') {
+      collections = collections.filter(collection => {
+        return (collection.entry !== 0 ? !_willDisapearAfterMix(collection) : true);
+      });
+    } else if (action === 'evolute-mon-ready') {
+      collections = collections.filter(collection => {
+        return collection._mon.evolutePiece && collection.piece >= collection._mon.evolutePiece
+          && (collection.entry !== 0 ? !_willDisapearAfterEvolute(collection) : true);
       });
     } else if (action === 'entry-ready') {
-      collections = collections.filter((collection) => {
-        return collection.entry === 0;
+      collections = collections.filter(collection => {
+        return collection.entry === 0 && collection.status === 2;
       });
     }
     const renderGuideComment = () => {

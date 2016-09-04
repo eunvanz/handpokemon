@@ -172,16 +172,19 @@ router.get('/api/collections/:collectionId', (req, res) => {
 router.put('/api/collections/:collectionId', (req, res) => {
   const collectionId = req.params.collectionId;
   const updatedCollection = req.body.collection;
-  Collection.findByIdAndUpdate(collectionId, {
-    level: updatedCollection.level,
-    piece: updatedCollection.piece,
-    addedHp: updatedCollection.addedHp,
-    addedPower: updatedCollection.addedPower,
-    addedArmor: updatedCollection.addedArmor,
-    addedSpecialPower: updatedCollection.addedSpecialPower,
-    addedSpecialArmor: updatedCollection.addedSpecialArmor,
-    addedDex: updatedCollection.addedDex,
-  })
+  // Collection.findByIdAndUpdate(collectionId, {
+  //   level: updatedCollection.level,
+  //   piece: updatedCollection.piece,
+  //   addedHp: updatedCollection.addedHp,
+  //   addedPower: updatedCollection.addedPower,
+  //   addedArmor: updatedCollection.addedArmor,
+  //   addedSpecialPower: updatedCollection.addedSpecialPower,
+  //   addedSpecialArmor: updatedCollection.addedSpecialArmor,
+  //   addedDex: updatedCollection.addedDex,
+  //   condition: updatedCollection.condition,
+  //   entry: updatedCollection.entry,
+  // })
+  Collection.findByIdAndUpdate(collectionId, updatedCollection)
   .exec((err, collection) => {
     Collection.findById(collection._id).populate('_mon').exec((err2, col2) => {
       res.json({ collection: col2 });

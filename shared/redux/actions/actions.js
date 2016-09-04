@@ -523,3 +523,24 @@ export function clearEntryToBe() {
     type: ActionTypes.CLEAR_ENTRY_TO_BE,
   };
 }
+
+export function getEntryState(entryState) {
+  return {
+    type: ActionTypes.GET_ENTRY_STATE,
+    entryState,
+  };
+}
+
+export function fetchEntryState(userId) {
+  return (dispatch) => {
+    return axios.get(`${baseURL}/api/users/${userId}`)
+    .then(res => {
+      const allCollection = res.data.user._collections;
+      const entry1 = allCollection.filter(collection => { return collection.entry === 1; });
+      const entry2 = allCollection.filter(collection => { return collection.entry === 2; });
+      const entry3 = allCollection.filter(collection => { return collection.entry === 3; });
+      const entryState = { entry1, entry2, entry3 };
+      dispatch(getEntryState(entryState));
+    });
+  };
+}

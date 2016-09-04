@@ -21,7 +21,7 @@ export const addedAbility = (state = null, action) => {
 export const entryAsIs = (state = [], action) => {
   switch (action.type) {
     case ActionTypes.ADD_ENTRY_AS_IS :
-      const newState = state.push(action.info);
+      const newState = [...state, action.info];
       return newState;
     case ActionTypes.CLEAR_ENTRY_AS_IS :
       return [];
@@ -33,10 +33,19 @@ export const entryAsIs = (state = [], action) => {
 export const entryToBe = (state = [], action) => {
   switch (action.type) {
     case ActionTypes.ADD_ENTRY_TO_BE :
-      const newState = state.push(action.info);
+      const newState = [...state, action.info];
       return newState;
     case ActionTypes.CLEAR_ENTRY_TO_BE :
       return [];
+    default :
+      return state;
+  }
+};
+
+export const entryState = (state = { entry1: [], entry2: [], entry3: [] }, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_ENTRY_STATE :
+      return action.entryState;
     default :
       return state;
   }

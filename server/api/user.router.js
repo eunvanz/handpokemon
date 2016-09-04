@@ -211,7 +211,30 @@ router.get('/api/users/:id', (req, res) => {
     return Promise.all([_getColRank(user.colPoint), _getBattleRank(user.battlePoint)]);
   })
   .then(ranks => {
-    User.findByIdAndUpdate(_id, { colRank: ranks[0] + 1, battleRank: ranks[1] + 1 }, { upsert: true }).exec();
+    return User.findByIdAndUpdate(_id, { colRank: ranks[0] + 1, battleRank: ranks[1] + 1 }, { upsert: true }).exec();
+  })
+  .then(user => {
+    // user의 collection에서 status가 0과 1인 콜렉션의 lastStatusUpdate를 오늘 날짜와 비교하여 갱신
+    // 하루 한번만 갱신하면 되기 때문에 user의 lastStatusUpdate 필드가 오늘 날짜가 아닐경우만 수행
+    const today = new Date();
+    const lastStatueUpdate = user.lastStatusUpdate;
+    const betweenDay = Math.floor((today.getTime() - lastStatueUpdate.getTime()) / 1000 / 60 / 60 / 24);
+    if (betweenDay > 0) {
+      return Collection.find({ _user: _id }).or([{ status: 0 }, { status: 1 }]).exec()
+      .then(collections => {
+        const promiseArr = [];
+        for (const collection of collections) {
+          let status = collection.status + betweenDay;
+          if (status > 2) status = 2;
+          promiseArr.push(Collection.findByIdAndUpdate(collection._id, { status }).exec());
+        }
+        const now = new Date();
+        const date = new Date();
+        date.setFullYear(now.getYear(), now.getMonth(), now.getDate());
+        promiseArr.push(User.findByIdAndUpdate(user._id, { lastStatusUpdate: date }));
+        return Promise.all(promiseArr);
+      });
+    }
   })
   .then(() => {
     return User.findById(_id).populate('_collections');

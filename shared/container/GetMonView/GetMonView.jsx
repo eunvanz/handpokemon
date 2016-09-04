@@ -134,7 +134,8 @@ class GetMonView extends React.Component {
       const routeName = action === 'evolution' ? 'evolution2' : 'evolution';
       const evolutePiece = this.props.mon._mon.evolutePiece;
       const thisMonPiece = this.props.mon.piece;
-      if (evolutePiece && evolutePiece <= thisMonPiece) {
+      if (evolutePiece && evolutePiece <= thisMonPiece &&
+        (this.props.mon.entry !== 0 ? thisMonPiece > evolutePiece : true)) {
         return (
           <Link to={`/${routeName}/${this.props.mon._id}`} refresh>
             <button

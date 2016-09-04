@@ -41,6 +41,7 @@ const userSchema = new Schema({
   _collections: [{ type: Schema.Types.ObjectId, ref: 'Collection' }],
   online: { type: Boolean, default: true, required: true },
   entrySeq: { type: Number, default: 0, required: true }, // 1, 2, 3
+  lastStatusUpdate: { type: Date, default: Date.now, required: true },
 });
 
 // userSchema.plugin(passportLocalMongoose, {

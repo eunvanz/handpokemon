@@ -24,10 +24,20 @@ export function updateGetCreditAndLastGetTime(user) {
 export function updateColPoint(user, pointToUpdate) {
   const resultUser = Object.assign({}, user);
   resultUser.colPoint += pointToUpdate;
-  console.log('콜점 변화', pointToUpdate);
   return axios({
     method: 'put',
     url: `${baseURL}/api/users/${user._id}`,
     data: { user: { colPoint: resultUser.colPoint } },
+  });
+}
+
+export function updateLastStatusUpdate(user) {
+  const now = new Date();
+  const date = new Date();
+  date.setFullYear(now.getYear(), now.getMonth(), now.getDate());
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: Object.assign({ lastStatusUpdate: date }, user) },
   });
 }

@@ -40,3 +40,12 @@ export const convertCollectionToMonsterForMonsterCard = (col) => {
 
   return mon;
 };
+
+export const getBattlePowerFromCollection = (col) => {
+  let battlePower = 0;
+  const baseMon = col._mon;
+  battlePower += baseMon.hp + baseMon.power + baseMon.armor + baseMon.specialPower + baseMon.specialArmor + baseMon.dex;
+  battlePower += col.honorHp + col.honorPower + col.honorArmor + col.honorSpecialPower + col.honorSpecialArmor + col.honorDex;
+  battlePower += col.addedHp + col.addedPower + col.addedArmor + col.addedSpecialPower + col.addedSpecialArmor + col.addedDex;
+  return battlePower;
+};
