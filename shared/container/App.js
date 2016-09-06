@@ -39,7 +39,6 @@ App.contextTypes = {
 function mapStateToProps(store) {
   return {
     user: store.user,
-    loading: store.loading,
   };
 }
 

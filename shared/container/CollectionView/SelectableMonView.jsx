@@ -8,6 +8,7 @@ import * as CollectionService from '../../service/CollectionService';
 import * as UserService from '../../service/UserService';
 import ContentView from '../../components/Common/ContentView';
 import * as MixService from '../../service/MixService';
+import * as constants from '../../util/constants';
 
 let action = null;
 
@@ -26,7 +27,6 @@ class SelectableMonView extends React.Component {
       this.props.dispatch(Actions.setMenu('collection-evolute'));
     } else if (action === 'entry-ready') {
       this.props.dispatch(Actions.setMenu('collection-entry'));
-      this.props.dispatch(Actions.fetchEntryState(this.props.user._id));
     }
     this._removeInlineScripts();
     this.props.dispatch(Actions.fetchUserSession())
@@ -137,6 +137,18 @@ class SelectableMonView extends React.Component {
       }
       return false;
     };
+    const _changableEntry = collection => {
+      let entry = null;
+      if (this.props.entryAsIs[0].entryNo === 1) entry = this.props.entryState.entry1;
+      else if (this.props.entryAsIs[0].entryNo === 2) entry = this.props.entryState.entry2;
+      else if (this.props.entryAsIs[0].entryNo === 3) entry = this.props.entryState.entry3;
+      const currentCost = entry[0]._mon.cost + entry[1]._mon.cost + entry[2]._mon.cost;
+      const restCost = constants.leagues[this.props.user.league].maxCost - currentCost;
+      const beforeMonCost = this.props.entryAsIs[0].monster.cost;
+      if (collection._mon.cost <= beforeMonCost + restCost) return true;
+      return false;
+    };
+    // 화면에 보여줄 콜렉션 filter
     if (action === 'mix-mon-ready') {
       collections = collections.filter(collection => {
         return (collection.entry !== 0 ? !_willDisapearAfterMix(collection) : true);
@@ -148,7 +160,8 @@ class SelectableMonView extends React.Component {
       });
     } else if (action === 'entry-ready') {
       collections = collections.filter(collection => {
-        return collection.entry === 0 && collection.status === 2;
+        return collection.entry === 0 && collection.status === 2
+          && _changableEntry(collection);
       });
     }
     const renderGuideComment = () => {
@@ -494,10 +507,6 @@ class SelectableMonView extends React.Component {
   }
 }
 
-SelectableMonView.need = [
-  () => { return Actions.fetchUserSession(); },
-];
-
 SelectableMonView.contextTypes = {
   router: React.PropTypes.object,
 };
@@ -507,6 +516,7 @@ const mapStateToProps = (store) => ({
   selectedMons: store.selectedMons,
   collectionsToShow: store.collectionsToShow,
   entryAsIs: store.entryAsIs,
+  entryState: store.entryState,
 });
 
 SelectableMonView.propTypes = {
@@ -515,6 +525,7 @@ SelectableMonView.propTypes = {
   selectedMons: PropTypes.array,
   collectionsToShow: PropTypes.array,
   entryAsIs: PropTypes.array,
+  entryState: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(SelectableMonView);

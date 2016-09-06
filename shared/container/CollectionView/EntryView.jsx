@@ -11,36 +11,23 @@ class EntryView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'EntryView';
-    this.state = {
-      entry1: [],
-      entry2: [],
-      entry3: [],
-    };
   }
   componentWillMount() {
     this.props.dispatch(Actions.setMenu('collection-entry'));
     this.props.dispatch(Actions.clearEntryAsIs());
-    this.props.dispatch(Actions.fetchCollectionUser(this.props.params.collectionUserId))
+    this.props.dispatch(Actions.fetchEntryState(this.props.user._id))
     .then(() => {
-      const collections = this.props.collectionUser._collections;
-      const isInEntry = (collection) => {
-        return collection.entry > 0;
-      };
-      const collectionsInEntry = collections.filter(isInEntry);
-      for (const collection of collectionsInEntry) {
-        if (collection.entry === 1) this.setState({ entry1: [...this.state.entry1, collection] });
-        else if (collection.entry === 2) this.setState({ entry2: [...this.state.entry2, collection] });
-        else if (collection.entry === 3) this.setState({ entry3: [...this.state.entry3, collection] });
-      }
+      return this.props.dispatch(Actions.fetchCollectionUser(this.props.user._id));
     });
   }
   render() {
+    const entryState = this.props.entryState;
     const renderMonsterCardComponent = (entryNo) => {
       const returnComponent = [];
       let collectionsInEntry = null;
-      if (entryNo === 1) collectionsInEntry = this.state.entry1;
-      else if (entryNo === 2) collectionsInEntry = this.state.entry2;
-      else if (entryNo === 3) collectionsInEntry = this.state.entry3;
+      if (entryNo === 1) collectionsInEntry = entryState.entry1;
+      else if (entryNo === 2) collectionsInEntry = entryState.entry2;
+      else if (entryNo === 3) collectionsInEntry = entryState.entry3;
       let collection = {};
       let monster = {};
       for (let i = 0; i < collectionsInEntry.length; i++) {
@@ -83,13 +70,13 @@ class EntryView extends React.Component {
           containerClass = 'widget-color-blue';
           title = (<div className="widget-header"><h5 className="widget-title">다음 시합 출전</h5></div>);
         }
-        if (i === 1) entry = this.state.entry1;
-        else if (i === 2) entry = this.state.entry2;
-        else if (i === 3) entry = this.state.entry3;
+        if (i === 1) entry = entryState.entry1;
+        else if (i === 2) entry = entryState.entry2;
+        else if (i === 3) entry = entryState.entry3;
         cost = 0;
         battlePower = 0;
         for (const collection of entry) {
-          cost += collection._mon.point;
+          cost += collection._mon.cost;
           battlePower += Util.getBattlePowerFromCollection(collection);
         }
         const entryComponent = (
@@ -158,6 +145,7 @@ EntryView.contextTypes = {
 const mapStateToProps = (store) => ({
   user: store.user,
   collectionUser: store.collectionUser,
+  entryState: store.entryState,
 });
 
 EntryView.propTypes = {
@@ -165,6 +153,7 @@ EntryView.propTypes = {
   user: PropTypes.object.isRequired,
   collectionUser: PropTypes.object,
   params: PropTypes.object,
+  entryState: PropTypes.object,
 };
 
 export default connect(mapStateToProps)(EntryView);
