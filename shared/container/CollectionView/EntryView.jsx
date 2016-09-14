@@ -6,11 +6,13 @@ import MonsterCard from '../../components/Common/MonsterCard';
 import * as Util from '../../util/Util';
 import keygen from 'keygenerator';
 import * as constants from '../../util/constants';
+import { browserHistory } from 'react-router';
 
 class EntryView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'EntryView';
+    this._clickChangeBtn = this._clickChangeBtn.bind(this);
   }
   componentWillMount() {
     this.props.dispatch(Actions.setMenu('collection-entry'));
@@ -18,7 +20,19 @@ class EntryView extends React.Component {
     this.props.dispatch(Actions.fetchEntryState(this.props.user._id))
     .then(() => {
       return this.props.dispatch(Actions.fetchCollectionUser(this.props.user._id));
+    })
+    .then(() => {
+      const scriptSrcs = ['/js/collection-view-inline.js'];
+      for (const src of scriptSrcs) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = false;
+        document.body.appendChild(script);
+      }
     });
+  }
+  _clickChangeBtn() {
+    browserHistory.push('/entry-ready');
   }
   render() {
     const entryState = this.props.entryState;
@@ -37,8 +51,9 @@ class EntryView extends React.Component {
           <div key={monster._id}>
             <MonsterCard
               monster={monster}
+              selectable
               entryMode
-              entryNo={entryNo}
+              entryNo={monster.entry}
             />
           </div>
         );
@@ -48,8 +63,9 @@ class EntryView extends React.Component {
           <div key={keygen._()}>
             <MonsterCard
               monster={null}
-              entryMode
-              entryNo={entryNo}
+              selectable
+              entry
+              entryNo={monster.entry}
             />
           </div>
         );
@@ -121,9 +137,46 @@ class EntryView extends React.Component {
       }
       return returnComponent;
     };
+    const renderFunctionBar = () => {
+      return (
+        <div className="row function-section">
+          <div className="col-xs-12 widget-container-col function-bar"
+            style={{ zIndex: '999' }}
+          >
+            <div className="widget-box widget-box-function">
+              <div className="widget-body">
+                <div className="widget-main">
+                  <div className="row">
+                    <div className="col-sm-8 hidden-xs">
+                      <h5>교체를 원하는 포켓몬을 선택 후 교체하기 버튼을 눌러주세요.</h5>
+                    </div>
+                    <div
+                      className="col-sm-4 text-right visible-xs-inline-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block"
+                    >
+                      <button className="btn btn-primary hidden-xs"
+                        onClick={this._clickChangeBtn}
+                      >
+                        <i className="ace-icon fa fa-refresh"></i> 교체하기
+                      </button>
+                      <button
+                        className="btn btn-primary btn-xs visible-xs-inline-block"
+                        onClick={this._clickChangeBtn}
+                      >
+                        교체하기
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
     const renderContent = () => {
       return (
         <div>
+          {renderFunctionBar()}
           {renderEntryComponents()}
         </div>
       );

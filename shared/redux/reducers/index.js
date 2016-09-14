@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { baseMons, allMons, mon, pickedMons, monsterCountInfo, designers, selectedMons } from './reducer_mon';
 import { showLoginModal, showMessageModal } from './reducer_modal';
 import { appMounted, monInfoFlip, beforeAction, menu } from './reducer_common';
-import { user, collectionUser } from './reducer_user';
+import { user, collectionUser, users } from './reducer_user';
 import { collectionCountInfo, addedAbility, entryAsIs, entryToBe, entryState } from './reducer_collection';
 
 export default combineReducers({
@@ -26,4 +26,5 @@ export default combineReducers({
   entryAsIs,
   entryToBe,
   entryState,
+  users,
 });

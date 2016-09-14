@@ -17,3 +17,16 @@ export const collectionUser = (state = null, action) => {
       return state;
   }
 };
+
+export const users = (state = {}, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_USERS :
+      return action.users;
+    case ActionTypes.CLEAR_USERS :
+      return {};
+    case ActionTypes.ADD_USERS :
+      return state.concat(action.users);
+    default :
+      return state;
+  }
+};

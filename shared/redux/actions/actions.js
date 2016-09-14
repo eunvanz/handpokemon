@@ -544,3 +544,47 @@ export function fetchEntryState(userId) {
     });
   };
 }
+
+export function getUsers(users) {
+  return {
+    type: ActionTypes.GET_USERS,
+    users,
+  };
+}
+
+export function addUsers(users) {
+  return {
+    type: ActionTypes.ADD_USERS,
+    users,
+  };
+}
+
+export function clearUsers() {
+  return {
+    type: ActionTypes.CLEAR_USERS,
+  };
+}
+
+export function fetchUsersForRank(category, page) {
+  let url = '';
+  if (category === 'collection') url = `${baseURL}/api/users/order-by-col-point/${page}`;
+  else if (category === 'battle') url = `${baseURL}/api/users/order-by-battle-point/${page}`;
+  return (dispatch) => {
+    return axios.get(url)
+    .then(res => {
+      dispatch(getUsers(res.data.users));
+    });
+  };
+}
+
+export function attachUsersForRank(category, page) {
+  let url = '';
+  if (category === 'collection') url = `${baseURL}/api/users/order-by-col-point/${page}`;
+  else if (category === 'battle') url = `${baseURL}/api/users/order-by-battle-point/${page}`;
+  return (dispatch) => {
+    return axios.get(url)
+    .then(res => {
+      dispatch(addUsers(res.data.users));
+    });
+  };
+}

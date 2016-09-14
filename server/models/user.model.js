@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 // import passportLocalMongoose from 'passport-local-mongoose';
 import bcrypt from 'bcrypt-nodejs';
+import mongoosePaginate from 'mongoose-paginate';
 
 const Schema = mongoose.Schema;
 
@@ -76,5 +77,7 @@ userSchema.methods.comparePassword = function(candidatePassword, callback) { // 
     callback(null, isMatch);
   });
 };
+
+userSchema.plugin(mongoosePaginate);
 
 export default mongoose.model('User', userSchema);

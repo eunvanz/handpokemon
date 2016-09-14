@@ -3,7 +3,8 @@ import MonsterModal from './MonsterModal';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import * as Actions from '../../redux/actions/actions';
-import { browserHistory } from 'react-router';
+import CostComponent from '../../components/Common/CostComponent';
+import AttrComponent from '../../components/Common/AttrComponent';
 
 class MonsterCard extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class MonsterCard extends React.Component {
     this._hideMonsterModal = this._hideMonsterModal.bind(this);
     this._checkItem = this._checkItem.bind(this);
     this._uncheckItem = this._uncheckItem.bind(this);
-    this._changeEntry = this._changeEntry.bind(this);
+    // this._changeEntry = this._changeEntry.bind(this);
   }
   _showMonsterModal(e) {
     e.preventDefault();
@@ -28,21 +29,34 @@ class MonsterCard extends React.Component {
   }
   _checkItem() {
     if (this.props.selectedMons.length >= this.props.maxSelectable) {
-      alert(`이미 ${this.props.maxSelectable}마리를 선택했습니다.`);
-    } else {
-      this.setState({ selected: true });
-      this.props.dispatch(Actions.addSelectedMon(this.props.monster));
+      this.props.dispatch(Actions.prepareMessageModal(`이미 ${this.props.maxSelectable}마리를 선택했습니다.`));
+      this.props.dispatch(Actions.showMessageModal());
+      return;
+    } else if (this.props.entryMode) {
+      if (this.props.selectedMons.length > 0
+        && this.props.selectedMons[0].entry !== this.props.monster.entry) {
+        this.props.dispatch(Actions.prepareMessageModal('먼저 선택한 포켓몬과 같은 엔트리의 포켓몬을 선택해주세요.'));
+        this.props.dispatch(Actions.showMessageModal());
+        return;
+      }
+    } else if (this.props.selectedMons.reduce((preElement, curElement) => { return preElement.cost + curElement.cost; }, 0)
+                + this.props.monster.cost > this.props.maxSelectableCost) {
+      this.props.dispatch(Actions.prepareMessageModal(`현재 선택 가능한 최대 코스트 ${this.props.maxSelectableCost}를 초과했습니다.`));
+      this.props.dispatch(Actions.showMessageModal());
+      return;
     }
+    this.setState({ selected: true });
+    this.props.dispatch(Actions.addSelectedMon(this.props.monster));
   }
   _uncheckItem() {
     this.setState({ selected: false });
     this.props.dispatch(Actions.removeSelectedMon(this.props.monster));
   }
-  _changeEntry() {
-    // 교체하고자 하는 포켓몬 저장
-    this.props.dispatch(Actions.addEntryAsIs(this.props.entryNo, this.props.monster));
-    browserHistory.push('/entry-ready');
-  }
+  // _changeEntry() {
+  //   // 교체하고자 하는 포켓몬 저장
+  //   this.props.dispatch(Actions.addEntryAsIs(this.props.entryNo, this.props.monster));
+  //   browserHistory.push('/entry-ready');
+  // }
   render() {
     const renderLevelLabelComponent = () => {
       if (this.props.monster.level) {
@@ -62,163 +76,22 @@ class MonsterCard extends React.Component {
     };
     const renderCostComponent = () => {
       if (this.props.monster) {
-        const itemDom = [];
-        const cost = this.props.monster.cost;
-        let fullStar = null;
-        let emptyStar = null;
-        let key = 0;
-        for (let i = 0; i < 5; i++) {
-          if (cost <= 5) {
-            fullStar = <i key={key++} className="fa fa-star fa-2"></i>;
-            emptyStar = <i key={key++} className="fa fa-star-o fa-2"></i>;
-          } else {
-            fullStar = <i key={key++} className="fa fa-star fa-2 text-gold"></i>;
-            emptyStar = <i key={key++} className="fa fa-star fa-2"></i>;
-          }
-          if (cost === 5 || cost === 10) {
-            itemDom.push(fullStar);
-          } else if (i < cost % 5) {
-            itemDom.push(fullStar);
-          } else {
-            itemDom.push(emptyStar);
-          }
-        }
-        return itemDom;
+        return (
+          <CostComponent
+            cost={this.props.monster.cost}
+          />
+        );
       }
-      return (
-        <div>
-          <i className="fa fa-star-o fa2"></i>
-          <i className="fa fa-star-o fa2"></i>
-          <i className="fa fa-star-o fa2"></i>
-          <i className="fa fa-star-o fa2"></i>
-          <i className="fa fa-star-o fa2"></i>
-        </div>
-      );
     };
     const renderAttrComponent = () => {
       if (this.props.monster) {
-        const itemDom = [];
-        const grade = this.props.monster.grade;
-        const mainAttr = this.props.monster.mainAttr;
-        const subAttr = this.props.monster.subAttr;
-        let gradeLabel = null;
-        let mainAttrLabel = null;
-        let subAttrLabel = null;
-        const endLabel = 'arrowed-in';
-        const continueLabel = 'arrowed-in arrowed-right';
-        if (grade === 'b') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BA</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BASIC</span>;
-          }
-        } else if (grade === 'a') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SP</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SPECIAL</span>;
-          }
-        } else if (grade === 'r') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RA</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RARE</span>;
-          }
-        } else if (grade === 'ar') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>SR</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>S.RARE</span>;
-          }
-        } else if (grade === 'e') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>EL</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>ELITE</span>;
-          }
-        } else if (grade === 'l') {
-          if (subAttr !== '없음') {
-            gradeLabel = <span key="1" className="label label-sm label-limited arrowed-right" style={{ marginRight: '1px' }}>LE</span>;
-          } else {
-            gradeLabel = <span key="1" className="label label-sm label-limited arrowed-right" style={{ marginRight: '1px' }}>LEGEND</span>;
-          }
-        }
-        if (mainAttr === '노말') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-grey ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '불꽃') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-danger ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '물') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-primary ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '전기') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-warning ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '풀') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-success ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '얼음') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-info ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '비행') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-light ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '요정') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-pink ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '땅') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-inverse ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '독') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-purple ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '격투') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-fighter ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '염력') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-esper ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '벌레') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-bug ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '바위') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-rock ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '유령') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-ghost ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '용') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-dragon ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '악') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-evil ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        } else if (mainAttr === '강철') {
-          mainAttrLabel = <span key="2" className={`label label-sm label-iron ${subAttr !== '없음' ? continueLabel : endLabel}`} style={{ marginLeft: '1px', marginRight: '1px' }}>{mainAttr}</span>; // eslint-disable-line
-        }
-        if (subAttr === '노말') {
-          subAttrLabel = <span key="3" className="label label-sm label-grey arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '불꽃') {
-          subAttrLabel = <span key="3" className="label label-sm label-danger arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '물') {
-          subAttrLabel = <span key="3" className="label label-sm label-primary arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '전기') {
-          subAttrLabel = <span key="3" className="label label-sm label-warning arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '풀') {
-          subAttrLabel = <span key="3" className="label label-sm label-success arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '얼음') {
-          subAttrLabel = <span key="3" className="label label-sm label-info arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '비행') {
-          subAttrLabel = <span key="3" className="label label-sm label-light arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '요정') {
-          subAttrLabel = <span key="3" className="label label-sm label-pink arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '땅') {
-          subAttrLabel = <span key="3" className="label label-sm label-inverse arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '독') {
-          subAttrLabel = <span key="3" className="label label-sm label-purple arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '격투') {
-          subAttrLabel = <span key="3" className="label label-sm label-fighter arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '염력') {
-          subAttrLabel = <span key="3" className="label label-sm label-esper arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '벌레') {
-          subAttrLabel = <span key="3" className="label label-sm label-bug arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '바위') {
-          subAttrLabel = <span key="3" className="label label-sm label-rock arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '유령') {
-          subAttrLabel = <span key="3" className="label label-sm label-ghost arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '용') {
-          subAttrLabel = <span key="3" className="label label-sm label-dragon arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '악') {
-          subAttrLabel = <span key="3" className="label label-sm label-evil arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        } else if (subAttr === '강철') {
-          subAttrLabel = <span key="3" className="label label-sm label-iron arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
-        }
-        itemDom.push(gradeLabel, mainAttrLabel, subAttrLabel);
-        return itemDom;
+        return (
+          <AttrComponent
+            grade={this.props.monster.grade}
+            mainAttr={this.props.monster.mainAttr}
+            subAttr={this.props.monster.subAttr}
+          />
+        );
       }
       return (<span className="label label-sm label-default">엔트리없음</span>);
     };
@@ -281,9 +154,9 @@ class MonsterCard extends React.Component {
         }
         return (
           <div className="status-container" style={{ height: '0px' }}>
-          <div style={{ position: 'relative', top: '-34px', textAlign: 'left', fontSize: '20px', left: '4px' }}>
-          <i className={`ace-icon fa ${iconClass} ${colorClass}`}></i>
-          </div>
+            <div style={{ position: 'relative', top: '-34px', textAlign: 'left', fontSize: '20px', left: '4px' }}>
+              <i className={`ace-icon fa ${iconClass} ${colorClass}`}></i>
+            </div>
           </div>
         );
       }
@@ -331,22 +204,6 @@ class MonsterCard extends React.Component {
         />
       );
     };
-    const renderEntryBtnComponent = () => {
-      if (this.props.entryMode) {
-        if (this.props.monster) {
-          return (
-            <div>
-            <p><button onClick={this._changeEntry} className="btn btn-sm btn-warning"><i className="ace-icon fa fa-refresh"></i> 교체하기</button></p>
-            </div>
-          );
-        }
-        return (
-          <div>
-          <p><button onClick={this._changeEntry} className="btn btn-sm btn-info"><i className="ace-icon fa fa-paw"></i> 투입하기</button></p>
-          </div>
-        );
-      }
-    };
     return (
       <div>
         <div className="col-xs-6 col-sm-3 collection-item text-center" {...this.props.filterData}>
@@ -357,14 +214,13 @@ class MonsterCard extends React.Component {
             {this.props.monster ? renderRecentLabelComponent() : null}
             {this.props.monster ? renderConditionComponent() : null}
             {this.props.monster ? renderStatusComponent() : null}
-            <p>
+            <div style={{ marginBottom: '10px' }}>
               {renderCostComponent()}
-            </p>
-            <p>
+            </div>
+            <div style={{ marginBottom: '10px' }}>
               {renderAttrComponent()}
-            </p>
+            </div>
             {renderSelectBtnComponent()}
-            {renderEntryBtnComponent()}
           </div>
           <div className="space"></div>
         </div>
@@ -384,6 +240,7 @@ MonsterCard.propTypes = {
   maxSelectable: PropTypes.number,
   entryMode: PropTypes.bool,
   entryNo: PropTypes.number,
+  maxSelectableCost: PropTypes.number,
 };
 
 const mapStateToProps = (store) => ({

@@ -184,7 +184,6 @@ router.get('/api/session-user', (req, res) => {
       .findById(req.user._id)
       .populate('_collections')
       .exec((err, user) => {
-        console.log('session-user: ' + user);
         if (user) {
           Collection.populate(user._collections, { path: '_mon' }, (err2, collections) => {
             user._collections = collections; // eslint-disable-line
@@ -199,6 +198,20 @@ router.get('/api/session-user', (req, res) => {
   } else {
     res.json({ user: null });
   }
+});
+
+router.get('/api/users/order-by-col-point/:page', (req, res) => {
+  User.paginate({ email: { $ne: 'admin@admin' } }, { sort: { colPoint: -1 }, limit: 20, page: req.params.page })
+  .then(users => {
+    res.json({ users });
+  });
+});
+
+router.get('/api/users/order-by-battle-point/:page', (req, res) => {
+  User.paginate({ email: { $ne: 'admin@admin' } }, { sort: { battlePoint: -1 }, limit: 20, page: req.params.page })
+  .then(users => {
+    res.json({ users });
+  });
 });
 
 router.get('/api/users/:id', (req, res) => {

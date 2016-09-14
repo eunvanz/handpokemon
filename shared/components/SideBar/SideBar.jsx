@@ -13,7 +13,7 @@ class SideBar extends React.Component {
     const renderMyCollection = () => {
       if (this.props.user) {
         return (
-          <li className={menu.indexOf('collection') > -1 ? 'active open' : null}>
+          <li className={menu.startsWith('collection') ? 'active open' : null}>
             <Link to="" className="dropdown-toggle">
               <i className="menu-icon fa fa-github-alt"></i>
               <span className="menu-text"> 콜렉션 </span>
@@ -92,6 +92,71 @@ class SideBar extends React.Component {
         );
       }
     };
+    const renderBattle = () => {
+      if (this.props.user) {
+        return (
+          <li className={menu.indexOf('battle') > -1 ? 'active open' : null}>
+            <Link to="" className="dropdown-toggle">
+              <i className="menu-icon fa fa-gamepad"></i>
+              <span className="menu-text"> 포켓몬 시합 </span>
+              <b className="arrow fa fa-angle-down"></b>
+            </Link>
+            <ul className="submenu">
+              <li className={menu === 'battle-story' ? 'active' : null}>
+                <Link to={`/story/${this.props.user._id}`}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 싱글 플레이 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li className={menu === 'battle-league' ? 'active' : null}>
+                <Link to={`/league/${this.props.user._id}`}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 포켓몬 리그 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+            </ul>
+          </li>
+        );
+      }
+    };
+    const renderRanking = () => {
+      if (this.props.user) {
+        return (
+          <li className={menu.indexOf('ranking') > -1 ? 'active open' : null}>
+            <Link to="" className="dropdown-toggle">
+              <i className="menu-icon fa fa-bookmark"></i>
+              <span className="menu-text"> 랭킹 </span>
+              <b className="arrow fa fa-angle-down"></b>
+            </Link>
+            <ul className="submenu">
+              <li className={menu === 'ranking-collection' ? 'active' : null}>
+                <Link to={'/ranking-collection'}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 콜렉션 랭킹 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li className={menu === 'ranking-battle' ? 'active' : null}>
+                <Link to={'/ranking-battle'}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 시합 랭킹 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+              <li className={menu === 'ranking-pokemon' ? 'active' : null}>
+                <Link to={'/ranking-pokemon'}>
+                  <i className="menu-icon fa fa-caret-right"></i>
+                  <span className="menu-text"> 포켓몬 랭킹 </span>
+                </Link>
+                <b className="arrow"></b>
+              </li>
+            </ul>
+          </li>
+        );
+      }
+    };
     return (
       <div id="sidebar" className="sidebar responsive sidebar-fixed">
         <ul className="nav nav-list">
@@ -111,6 +176,7 @@ class SideBar extends React.Component {
           </li>
           {renderMyCollection()}
           {renderHonor()}
+          {renderRanking()}
           <li className={menu === 'get-mon' ? 'active' : null}>
             <Link to="/get-mon-ready">
               <i className="menu-icon fa fa-paw"></i>
@@ -119,6 +185,7 @@ class SideBar extends React.Component {
               </span>
             </Link>
           </li>
+          {renderBattle()}
           <li>
             <Link to="/mon-list">
               <i className="menu-icon fa fa-github-alt"></i>

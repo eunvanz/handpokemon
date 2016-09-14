@@ -22,11 +22,21 @@ class SelectableMonView extends React.Component {
   }
   componentDidMount() {
     if (action === 'mix-mon-ready') {
+      this.props.dispatch(Actions.clearSelectedMons());
       this.props.dispatch(Actions.setMenu('collection-mix'));
     } else if (action === 'evolute-mon-ready') {
+      this.props.dispatch(Actions.clearSelectedMons());
       this.props.dispatch(Actions.setMenu('collection-evolute'));
     } else if (action === 'entry-ready') {
       this.props.dispatch(Actions.setMenu('collection-entry'));
+      // 선택된 포켓몬을 AS-IS 포켓몬에 저장
+      const convertProms = this.props.selectedMons.map(mon => {
+        return this.props.dispatch(Actions.addEntryAsIs(mon.entry, mon));
+      });
+      Promise.all(convertProms)
+      .then(() => {
+        this.props.dispatch(Actions.clearSelectedMons());
+      });
     }
     this._removeInlineScripts();
     this.props.dispatch(Actions.fetchUserSession())
@@ -48,7 +58,8 @@ class SelectableMonView extends React.Component {
   _processMixMon() {
     const monsToMix = this.props.selectedMons;
     if (monsToMix.length < 2) {
-      alert('2마리의 포켓몬을 선택해주세요.'); // eslint-disable-line
+      this.props.dispatch(Actions.prepareMessageModal('교배할 두 마리의 포켓몬을 선택해주세요.'));
+      this.props.dispatch(Actions.showMessageModal());
     } else {
       // 교배한 포켓몬의 레벨하락 및 삭제 처리
       const mixProcess = (index) => {
@@ -90,24 +101,33 @@ class SelectableMonView extends React.Component {
   _processEvoluteMon() {
     const monsToEvolute = this.props.selectedMons;
     if (monsToEvolute < 1) {
-      alert('포켓몬을 선택해주세요.'); // eslint-disable-line
+      this.props.dispatch(Actions.prepareMessageModal('진화할 포켓몬을 선택해주세요.'));
+      this.props.dispatch(Actions.showMessageModal());
     } else {
       this.props.dispatch(Actions.setBeforeAction('evolute'));
       browserHistory.push(`/evolution/${monsToEvolute[0]._id}`);
     }
   }
   _processChangeEntry() {
-    const entryAsIs = this.props.entryAsIs[0];
-    CollectionService.removeMonsterFromEntry(entryAsIs.monster)
-    .then(() => {
-      return CollectionService.addMonsterToEntry(entryAsIs.entryNo, this.props.selectedMons[0]);
-    })
-    .then(() => {
-      return UserService.updateLastStatusUpdate(this.props.user);
-    })
-    .then(() => {
-      browserHistory.push(`/entry/${this.props.user._id}`);
-    });
+    if (this.props.entryAsIs) {
+      const entryAsIs = this.props.entryAsIs;
+      const removeProms = entryAsIs.map(item => {
+        return CollectionService.removeMonsterFromEntry(item.monster);
+      });
+      const addProms = this.props.selectedMons.map(item => {
+        return CollectionService.addMonsterToEntry(entryAsIs[0].entryNo, item);
+      });
+      Promise.all(removeProms)
+      .then(() => {
+        return Promise.all(addProms);
+      })
+      .then(() => {
+        return UserService.updateLastStatusUpdate(this.props.user);
+      })
+      .then(() => {
+        browserHistory.push(`/entry/${this.props.user._id}`);
+      });
+    }
   }
   _clickDoAction() {
     if (action === 'mix-mon-ready') {
@@ -137,17 +157,6 @@ class SelectableMonView extends React.Component {
       }
       return false;
     };
-    const _changableEntry = collection => {
-      let entry = null;
-      if (this.props.entryAsIs[0].entryNo === 1) entry = this.props.entryState.entry1;
-      else if (this.props.entryAsIs[0].entryNo === 2) entry = this.props.entryState.entry2;
-      else if (this.props.entryAsIs[0].entryNo === 3) entry = this.props.entryState.entry3;
-      const currentCost = entry[0]._mon.cost + entry[1]._mon.cost + entry[2]._mon.cost;
-      const restCost = constants.leagues[this.props.user.league].maxCost - currentCost;
-      const beforeMonCost = this.props.entryAsIs[0].monster.cost;
-      if (collection._mon.cost <= beforeMonCost + restCost) return true;
-      return false;
-    };
     // 화면에 보여줄 콜렉션 filter
     if (action === 'mix-mon-ready') {
       collections = collections.filter(collection => {
@@ -160,8 +169,7 @@ class SelectableMonView extends React.Component {
       });
     } else if (action === 'entry-ready') {
       collections = collections.filter(collection => {
-        return collection.entry === 0 && collection.status === 2
-          && _changableEntry(collection);
+        return collection.entry === 0 && collection.status === 2;
       });
     }
     const renderGuideComment = () => {
@@ -170,7 +178,7 @@ class SelectableMonView extends React.Component {
       } else if (action === 'evolute-mon-ready') {
         return (<h5>하나의 포켓몬을 선택 후 진화하기 버튼을 눌러주세요.</h5>);
       } else if (action === 'entry-ready') {
-        return (<h5>하나의 포켓몬을 선택 후 투입하기 버튼을 눌러주세요.</h5>);
+        return (<h5>{this.props.entryAsIs.length}마리의 포켓몬을 선택 후 투입하기 버튼을 눌러주세요.</h5>);
       }
     };
     const renderActionBtn = () => {
@@ -250,8 +258,26 @@ class SelectableMonView extends React.Component {
       const returnComponent = [];
       let mon = null;
       let maxSelectable = 0;
+      let maxSelectableCost = 999;
       if (action === 'mix-mon-ready') maxSelectable = 2;
-      else if (action === 'evolute-mon-ready' || action === 'entry-ready') maxSelectable = 1;
+      else if (action === 'evolute-mon-ready') maxSelectable = 1;
+      else if (action === 'entry-ready') {
+        maxSelectable = this.props.entryAsIs.length;
+        // 최대 선택 가능한 코스트 = 유저 리그의 최대 코스트 - 현재 엔트리의 코스트 + entryAsIs의 코스트 합
+        let currentEntryCost = 0;
+        let currentEntry = null;
+        let entryAsIsCost = 0;
+        if (this.props.entryAsIs[0].entryNo === 1) currentEntry = this.props.entryState.entry1;
+        else if (this.props.entryAsIs[0].entryNo === 2) currentEntry = this.props.entryState.entry2;
+        else if (this.props.entryAsIs[0].entryNo === 3) currentEntry = this.props.entryState.entry3;
+        currentEntry.forEach((element) => {
+          currentEntryCost += element._mon.cost;
+        });
+        this.props.entryAsIs.forEach(element => {
+          entryAsIsCost += element.monster.cost;
+        });
+        maxSelectableCost = constants.leagues[this.props.user.league].maxCost - currentEntryCost + entryAsIsCost;
+      }
       for (const col of collections) {
         mon = convertCollectionToMonsterForMonsterCard(col);
         const filterData = { 'data-have': '보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
@@ -263,6 +289,7 @@ class SelectableMonView extends React.Component {
             filterData={filterData}
             selectable
             maxSelectable={maxSelectable}
+            maxSelectableCost={maxSelectableCost}
           />
         );
       }

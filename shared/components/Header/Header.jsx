@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import { browserHistory } from 'react-router';
+import { userImgRoute } from '../../util/constants';
 
 const style = {
   navbarBrand: {
@@ -60,7 +61,7 @@ class Header extends React.Component {
                 <div className="nav-user-photo-container">
                   <div className="focuspoint nav-user-photo" data-focus-x="0" data-focus-y="0">
                     <img className="user-photo"
-                      src={`/img/user/${this.props.user.img}_thumb`}
+                      src={`${userImgRoute}/${this.props.user.img}_thumb`}
                     />
                   </div>
                 </div>

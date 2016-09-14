@@ -12,6 +12,8 @@ import GetMonImpossibleView from './components/GetMonImpossibleView';
 import requireAuth from './container/Authentication/Authentication';
 import SelectableMonView from './container/CollectionView/SelectableMonView';
 import EntryView from './container/CollectionView/EntryView';
+import RankingView from './container/RankingView/RankingView';
+import remountable from './components/Common/Remountable';
 
 const routes = (
   <Route path="/" component={App} >
@@ -32,6 +34,8 @@ const routes = (
     <Route path="/evolute-mon-ready" component={requireAuth(SelectableMonView)}/>
     <Route path="/entry-ready" component={requireAuth(SelectableMonView)}/>
     <Route path="/entry/:collectionUserId" component={EntryView}/>
+    <Route path="/ranking-collection" component={remountable(RankingView)}/>
+    <Route path="/ranking-battle" component={remountable(RankingView)}/>
   </Route>
 );
 
