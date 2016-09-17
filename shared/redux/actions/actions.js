@@ -33,6 +33,12 @@ export function getAllMons(allMons) {
   };
 }
 
+export function clearAllMons() {
+  return {
+    type: ActionTypes.CLEAR_ALL_MONS,
+  };
+}
+
 export function getOneMon(mon) {
   return {
     type: ActionTypes.GET_ONE_MON,
@@ -585,6 +591,15 @@ export function attachUsersForRank(category, page) {
     return axios.get(url)
     .then(res => {
       dispatch(addUsers(res.data.users));
+    });
+  };
+}
+
+export function fetchCollectionsForRank(page) {
+  return (dispatch) => {
+    return axios.get(`${baseURL}/api/collections/order-by-total-ability/${page}`)
+    .then(res => {
+      dispatch(getAllMons(res.data));
     });
   };
 }

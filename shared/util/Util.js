@@ -49,3 +49,9 @@ export const getBattlePowerFromCollection = (col) => {
   battlePower += col.addedHp + col.addedPower + col.addedArmor + col.addedSpecialPower + col.addedSpecialArmor + col.addedDex;
   return battlePower;
 };
+
+export const removeInlineScripts = () => {
+  while (document.body.childElementCount !== 2) {
+    document.body.removeChild(document.body.lastChild);
+  }
+};

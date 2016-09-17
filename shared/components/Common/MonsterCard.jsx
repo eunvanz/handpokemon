@@ -5,6 +5,9 @@ import $ from 'jquery';
 import * as Actions from '../../redux/actions/actions';
 import CostComponent from '../../components/Common/CostComponent';
 import AttrComponent from '../../components/Common/AttrComponent';
+import StatusComponent from '../../components/Common/StatusComponent';
+import ConditionComponent from '../../components/Common/ConditionComponent';
+import { monsterImgRoute } from '../../util/constants';
 
 class MonsterCard extends React.Component {
   constructor(props) {
@@ -28,13 +31,14 @@ class MonsterCard extends React.Component {
     this.setState({ showMonsterModal: false });
   }
   _checkItem() {
+    // 선택시 에러 케이스 시작
     if (this.props.selectedMons.length >= this.props.maxSelectable) {
       this.props.dispatch(Actions.prepareMessageModal(`이미 ${this.props.maxSelectable}마리를 선택했습니다.`));
       this.props.dispatch(Actions.showMessageModal());
       return;
     } else if (this.props.entryMode) {
       if (this.props.selectedMons.length > 0
-        && this.props.selectedMons[0].entry !== this.props.monster.entry) {
+        && this.props.selectedMons[0].entry !== (this.props.monster ? this.props.monster.entry : this.props.entryNo)) {
         this.props.dispatch(Actions.prepareMessageModal('먼저 선택한 포켓몬과 같은 엔트리의 포켓몬을 선택해주세요.'));
         this.props.dispatch(Actions.showMessageModal());
         return;
@@ -45,8 +49,9 @@ class MonsterCard extends React.Component {
       this.props.dispatch(Actions.showMessageModal());
       return;
     }
+    // 선택시 에러 케이스 끝
     this.setState({ selected: true });
-    this.props.dispatch(Actions.addSelectedMon(this.props.monster));
+    this.props.dispatch(Actions.addSelectedMon(this.props.monster ? this.props.monster : { cost: 0, entry: this.props.entryNo }));
   }
   _uncheckItem() {
     this.setState({ selected: false });
@@ -100,8 +105,8 @@ class MonsterCard extends React.Component {
         return (
           <div className="check-container" style={{ height: '0px' }}>
             <div className="check"
-              style={{ position: 'relative', cursor: 'pointer', top: $('.picks').height() * -1 - 10 }}
-              onClick={this._uncheckItem}
+              style={{ position: 'relative', cursor: 'pointer', top: $('.picks').height() * -1 - 12 }}
+              onClick={this._showMonsterModal}
             >
               <img className="check" src="/img/common/check.png" width="100%"/>
             </div>
@@ -112,52 +117,22 @@ class MonsterCard extends React.Component {
     const renderConditionComponent = () => {
       const condition = this.props.monster.condition;
       if (condition) {
-        let rotateClass = null;
-        let colorClass = 'text-danger';
-        if (condition === 4) {
-          rotateClass = 'rotate-45';
-          colorClass = 'text-warning';
-        } else if (condition === 3) {
-          rotateClass = 'rotate-90';
-          colorClass = 'text-success';
-        } else if (condition === 2) {
-          rotateClass = 'rotate-135';
-          colorClass = 'text-info';
-        } else if (condition === 1) {
-          rotateClass = 'rotate-180';
-          colorClass = 'text-muted';
-        }
         return (
-          <div className="condition-container" style={{ height: '0px' }}>
-            <div style={{ position: 'relative', top: '-34px', textAlign: 'right', fontSize: '20px', left: '-4px' }}>
-              <i className={`ace-icon fa fa-arrow-circle-up fa-2 ${colorClass} ${rotateClass}`}></i>
-            </div>
-          </div>
+          <ConditionComponent
+            condition={condition}
+          />
         );
       }
     };
     const renderStatusComponent = () => {
       const status = this.props.monster.status;
       const entry = this.props.monster.entry;
-      if (status !== undefined) {
-        let iconClass = 'fa-battery-full';
-        let colorClass = 'text-primary';
-        if (status === 1) {
-          iconClass = 'fa-battery-half';
-          colorClass = 'text-warining';
-        } else if (status === 0) {
-          iconClass = 'fa-battery-empty';
-          colorClass = 'text-danger';
-        } else if (entry !== 0) {
-          iconClass = 'fa-paw';
-          colorClass = 'text-success';
-        }
+      if (status && entry) {
         return (
-          <div className="status-container" style={{ height: '0px' }}>
-            <div style={{ position: 'relative', top: '-34px', textAlign: 'left', fontSize: '20px', left: '4px' }}>
-              <i className={`ace-icon fa ${iconClass} ${colorClass}`}></i>
-            </div>
-          </div>
+          <StatusComponent
+            status={status}
+            entry={entry}
+          />
         );
       }
     };
@@ -167,6 +142,11 @@ class MonsterCard extends React.Component {
           return (
             <p><button onClick={this._uncheckItem} className="btn btn-sm btn-danger"><i className="ace-icon fa fa-times"></i> 선택해제</button></p>
           );
+          // TODO: REMOVE_SELECTED_MON 시 영향을 받지 않는 문제 해결해야 함
+        // } else if (this.props.entryMode) {
+        //   if (this.props.selectedMons[0] && this.props.entryNo !== this.props.selectedMons[0].entry) {
+        //     return <p><button disabled className="btn btn-sm btn-default"><i className="ace-icon fa fa-ban"></i> 선택불가</button></p>;
+        //   }
         }
         return (
           <p><button onClick={this._checkItem} className="btn btn-sm btn-warning"><i className="ace-icon fa fa-check"></i> 선택하기</button></p>
@@ -178,11 +158,11 @@ class MonsterCard extends React.Component {
       let onClickFunc = null;
       let className = null;
       if (this.props.monster) {
-        imgSrc = `/img/monsters/${this.props.monster.img}`;
+        imgSrc = `${monsterImgRoute}/${this.props.monster.img}`;
         onClickFunc = this._showMonsterModal;
         className = 'picks';
       } else {
-        imgSrc = '/img/monsters/nomonster.png';
+        imgSrc = `${monsterImgRoute}/nomonster.png`;
       }
       return (
         <div className="pick-image-container">

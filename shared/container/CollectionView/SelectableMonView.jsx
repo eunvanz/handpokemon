@@ -110,23 +110,27 @@ class SelectableMonView extends React.Component {
   }
   _processChangeEntry() {
     if (this.props.entryAsIs) {
-      const entryAsIs = this.props.entryAsIs;
-      const removeProms = entryAsIs.map(item => {
-        return CollectionService.removeMonsterFromEntry(item.monster);
-      });
-      const addProms = this.props.selectedMons.map(item => {
-        return CollectionService.addMonsterToEntry(entryAsIs[0].entryNo, item);
-      });
-      Promise.all(removeProms)
-      .then(() => {
-        return Promise.all(addProms);
-      })
-      .then(() => {
-        return UserService.updateLastStatusUpdate(this.props.user);
-      })
-      .then(() => {
-        browserHistory.push(`/entry/${this.props.user._id}`);
-      });
+      if (this.props.selectedMons.length !== this.props.entryAsIs.length) {
+        this.props.dispatch(Actions.prepareMessageModal(`${this.props.selectedMons.length}마리의 포켓몬을 선택해주세요.`));
+      } else {
+        const entryAsIs = this.props.entryAsIs;
+        const removeProms = entryAsIs.map(item => {
+          if (item.monster._id) return CollectionService.removeMonsterFromEntry(item.monster);
+        });
+        const addProms = this.props.selectedMons.map(item => {
+          return CollectionService.addMonsterToEntry(entryAsIs[0].entryNo, item);
+        });
+        Promise.all(removeProms)
+        .then(() => {
+          return Promise.all(addProms);
+        })
+        .then(() => {
+          return UserService.updateLastStatusUpdate(this.props.user);
+        })
+        .then(() => {
+          browserHistory.push(`/entry/${this.props.user._id}`);
+        });
+      }
     }
   }
   _clickDoAction() {

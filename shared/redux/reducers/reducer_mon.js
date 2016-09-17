@@ -9,10 +9,12 @@ export const baseMons = (state = [], action) => {
   }
 };
 
-export const allMons = (state = [], action) => {
+export const allMons = (state = null, action) => {
   switch (action.type) {
     case ActionTypes.GET_ALL_MONS :
       return action.allMons;
+    case ActionTypes.CLEAR_ALL_MONS :
+      return null;
     default:
       return state;
   }

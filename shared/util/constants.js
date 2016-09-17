@@ -50,3 +50,4 @@ export const leagueIcons = [
 ];
 
 export const userImgRoute = '/img/user';
+export const monsterImgRoute = '/img/monsters';

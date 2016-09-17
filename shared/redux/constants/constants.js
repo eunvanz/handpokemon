@@ -7,6 +7,7 @@ export const DELETE_POST = 'DELETE_POST';
 
 export const GET_BASE_MONS = 'GET_BASE_MONS';
 export const GET_ALL_MONS = 'GET_ALL_MONS';
+export const CLEAR_ALL_MONS = 'CLEAR_ALL_MONS';
 export const GET_ONE_MON = 'GET_ONE_MON';
 export const RESET_MON = 'RESET_MON';
 export const GET_BASIC_PICK_MONS = 'GET_BASIC_PICK_MONS';

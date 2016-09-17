@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate';
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate';
+
 const Schema = mongoose.Schema;
 
 const collectionSchema = new Schema({
@@ -26,5 +29,8 @@ const collectionSchema = new Schema({
   entry: { type: Number, default: 0, required: true }, // 0: 엔트리없음
   lastStatusUpdate: { type: Date, default: Date.now, required: true },
 });
+
+collectionSchema.plugin(mongoosePaginate);
+collectionSchema.plugin(mongooseAggregatePaginate);
 
 export default mongoose.model('Collection', collectionSchema);

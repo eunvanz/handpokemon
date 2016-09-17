@@ -159,6 +159,76 @@ router.get('/api/collections/get-mon', (req, res) => {
   });
 });
 
+router.get('/api/collections/order-by-total-ability/:page', (req, res) => {
+  const aggregate = Collection.aggregate([
+    {
+      $lookup: {
+        from: 'monsters',
+        localField: '_mon',
+        foreignField: '_id',
+        as: 'monster',
+      },
+    },
+    { $unwind: { path: '$monster' } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_user',
+        foreignField: '_id',
+        as: 'user',
+      },
+    },
+    { $unwind: { path: '$user' } },
+    {
+      $project: {
+        _mon: '$monster',
+        _user: '$user',
+        getDate: 1,
+        level: 1,
+        addedHp: 1,
+        addedPower: 1,
+        addedArmor: 1,
+        addedSpecialPower: 1,
+        addedSpecialArmor: 1,
+        addedDex: 1,
+        honorHp: 1,
+        honorPower: 1,
+        honorArmor: 1,
+        honorSpecialPower: 1,
+        honorSpecialArmor: 1,
+        honorDex: 1,
+        imgIdx: 1,
+        piece: 1,
+        potentialLevel: 1,
+        condition: 1,
+        status: 1,
+        entry: 1,
+        lastStatusUpdate: 1,
+        totalAbility: {
+          $add: [
+            '$addedHp',
+            '$addedPower',
+            '$addedArmor',
+            '$addedSpecialPower',
+            '$addedSpecialArmor',
+            '$addedDex',
+            '$monster.hp',
+            '$monster.power',
+            '$monster.armor',
+            '$monster.specialPower',
+            '$monster.specialArmor',
+            '$monster.dex',
+          ],
+        },
+      },
+    },
+  ]);
+  const options = { sortBy: { totalAbility: -1 }, limit: 40, page: req.params.page };
+  Collection.aggregatePaginate(aggregate, options, (err, mons, pageCount) => {
+    res.json({ mons, pageCount });
+  });
+});
+
 router.get('/api/collections/:collectionId', (req, res) => {
   const collectionId = req.params.collectionId;
   Collection.findById(collectionId)

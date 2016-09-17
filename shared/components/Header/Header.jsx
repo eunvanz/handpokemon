@@ -34,7 +34,7 @@ class Header extends React.Component {
   }
   _handleConfirmClick() {
     this.props.dispatch(Actions.hideMessageModal());
-    this.props.showMessageModal.confirmAction();
+    if (this.props.showMessageModal.confirmAction) this.props.showMessageModal.confirmAction();
   }
   _handleLogoutClick() {
     localStorage.removeItem('token');

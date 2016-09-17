@@ -15,7 +15,9 @@ class EntryView extends React.Component {
     this._clickChangeBtn = this._clickChangeBtn.bind(this);
   }
   componentWillMount() {
+    Util.removeInlineScripts();
     this.props.dispatch(Actions.setMenu('collection-entry'));
+    this.props.dispatch(Actions.clearSelectedMons());
     this.props.dispatch(Actions.clearEntryAsIs());
     this.props.dispatch(Actions.fetchEntryState(this.props.user._id))
     .then(() => {
@@ -64,7 +66,7 @@ class EntryView extends React.Component {
             <MonsterCard
               monster={null}
               selectable
-              entry
+              entryMode
               entryNo={monster.entry}
             />
           </div>

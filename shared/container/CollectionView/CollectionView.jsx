@@ -69,6 +69,7 @@ class CollectionView extends React.Component {
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.getCollectionUser(null));
+    this.props.dispatch(Actions.clearAllMons());
   }
   _removeInlineScripts() {
     while (document.body.childElementCount !== 2) {
@@ -189,7 +190,7 @@ class CollectionView extends React.Component {
       const returnComponent = [];
       const allMons = this.props.allMons;
       let mon = null;
-      if (this.state.collectionsMonNo) {
+      if (this.state.collectionsMonNo && allMons) {
         for (const mon2 of allMons) {
           mon = Object.assign({}, mon2);
           if (this.state.collectionsMonNo.has(mon2.monNo)) {

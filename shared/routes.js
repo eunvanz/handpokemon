@@ -36,6 +36,7 @@ const routes = (
     <Route path="/entry/:collectionUserId" component={EntryView}/>
     <Route path="/ranking-collection" component={remountable(RankingView)}/>
     <Route path="/ranking-battle" component={remountable(RankingView)}/>
+    <Route path="/ranking-pokemon" component={remountable(RankingView)}/>
   </Route>
 );
 
