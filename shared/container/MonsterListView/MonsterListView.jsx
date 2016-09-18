@@ -9,9 +9,7 @@ class MonsterListView extends React.Component {
     this.displayName = 'MonsterListView';
   }
   componentDidMount() {
-    if (this.props.allMons.length === 0) {
-      this.props.dispatch(Actions.fetchAllMons());
-    }
+    this.props.dispatch(Actions.fetchAllMons());
   }
   render() {
     return (

@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import MonsterCard from '../../components/Common/MonsterCard';
 import { Link } from 'react-router';
+import { removeInlineScripts, appendInlineScripts } from '../../util/Util';
 
 class CollectionView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'CollectionView';
-    this._removeInlineScripts = this._removeInlineScripts.bind(this);
     this.state = {
       collectionCountInfo: {},
       collections: [],
@@ -16,7 +16,7 @@ class CollectionView extends React.Component {
     };
   }
   componentDidMount() {
-    this._removeInlineScripts();
+    removeInlineScripts();
     const collectionUserId = this.props.params.collectionUserId;
     this.props.dispatch(Actions.setMenu('collection-my'));
     this.props.dispatch(Actions.fetchCollectionUser(collectionUserId))
@@ -25,16 +25,10 @@ class CollectionView extends React.Component {
     .then(() => { return this.props.dispatch(Actions.fetchDesigners()); })
     .then(() => {
       const scriptSrcs = ['/js/collection-view-inline.js', '/js/pokemon-sort.js'];
-      for (const src of scriptSrcs) {
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        document.body.appendChild(script);
-      }
+      appendInlineScripts(scriptSrcs);
     });
   }
   componentWillReceiveProps(nextProps) {
-    // console.log('nextProps.collectionUser._collections: ' + JSON.stringify(nextProps.collectionUser._collections));
     if (nextProps.collectionUser) {
       const collections = nextProps.collectionUser._collections;
       const collectionCountInfo = {
@@ -63,18 +57,12 @@ class CollectionView extends React.Component {
           collectionCountInfo.legend++;
         }
       }
-      // console.log('collectionCountInfo: ' + JSON.stringify(collectionCountInfo));
       this.setState({ collections, collectionCountInfo, collectionsMonNo });
     }
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.getCollectionUser(null));
     this.props.dispatch(Actions.clearAllMons());
-  }
-  _removeInlineScripts() {
-    while (document.body.childElementCount !== 2) {
-      document.body.removeChild(document.body.lastChild);
-    }
   }
   render() {
     const collectionUser = this.props.collectionUser;

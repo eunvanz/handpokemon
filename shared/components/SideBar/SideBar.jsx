@@ -110,7 +110,7 @@ class SideBar extends React.Component {
                 <b className="arrow"></b>
               </li>
               <li className={menu === 'battle-league' ? 'active' : null}>
-                <Link to={`/league/${this.props.user._id}`}>
+                <Link to={`/league-battle-ready`}>
                   <i className="menu-icon fa fa-caret-right"></i>
                   <span className="menu-text"> 포켓몬 리그 </span>
                 </Link>

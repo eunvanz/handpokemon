@@ -41,3 +41,29 @@ export function updateLastStatusUpdate(user) {
     data: { user: Object.assign({ lastStatusUpdate: date }, user) },
   });
 }
+
+export function updateUserToLose(user) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      loseBattle: user.loseBattle + 1,
+      totalBattle: user.totalBattle + 1,
+      lastBattleTime: Date.now(),
+      battlePoint: user.battlePoint - 5,
+      lastLogin: Date.now(),
+    } },
+  });
+}
+
+export function updateUserToWin(user, missionPoint) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      loseBattle: user.loseBattle - 1,
+      winBattle: user.winBattle + 1,
+      battlePoint: user.battlePoint + 10 + missionPoint,
+    } },
+  });
+}

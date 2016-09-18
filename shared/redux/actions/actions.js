@@ -603,3 +603,22 @@ export function fetchCollectionsForRank(page) {
     });
   };
 }
+
+export function getRival(user) {
+  return {
+    type: ActionTypes.GET_RIVAL,
+    user,
+  };
+}
+
+export function fetchRivalForLeague(user) {
+  return (dispatch) => {
+    return axios.get(`${baseURL}/api/users/league/${user.league}`)
+    .then(res => {
+      const users = res.data.users;
+      const usersSize = users.length;
+      const rival = users[Math.floor(Math.random() * usersSize)];
+      dispatch(getRival(rival));
+    });
+  };
+}

@@ -27,7 +27,7 @@ class RegisterMonsterView extends React.Component {
       skillName: '',
       grade: 'b',
       cost: '1',
-      _before: null,
+      _before: 0,
       desc: '',
       requiredPiece: '',
       designer: '',
@@ -394,7 +394,7 @@ class RegisterMonsterView extends React.Component {
 
                   <div className="col-sm-9">
                     <select className="form-control" id="_before" name="_before"
-                      value={this.state ? this.state._before : null}
+                      value={this.state ? this.state._before : 0}
                       onChange={this._handleInputChange}
                     >
                       { renderBeforeIdOptions() }

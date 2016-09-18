@@ -30,3 +30,12 @@ export const users = (state = {}, action) => {
       return state;
   }
 };
+
+export const rival = (state = null, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_RIVAL :
+      return action.user;
+    default :
+      return state;
+  }
+};

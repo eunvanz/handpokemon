@@ -55,3 +55,23 @@ export const removeInlineScripts = () => {
     document.body.removeChild(document.body.lastChild);
   }
 };
+
+export const appendInlineScripts = sciptSrcsArr => {
+  for (const src of sciptSrcsArr) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    document.body.appendChild(script);
+  }
+};
+
+export const getTotalAbilityFromCollection = collection => {
+  return (
+    collection.honorHp + collection.honorPower + collection.honorArmor + collection.honorSpecialPower
+    + collection.honorSpecialArmor + collection.honorDex
+    + collection.addedHp + collection.addedPower + collection.addedArmor + collection.addedSpecialPower
+    + collection.addedSpecialArmor + collection.addedDex
+    + collection._mon.hp + collection._mon.power + collection._mon.armor + collection._mon.specialPower
+    + collection._mon.specialArmor + collection._mon.dex
+  );
+};

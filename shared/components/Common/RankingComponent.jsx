@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import LeagueIcon from './LeagueIcon';
-import { userImgRoute } from '../../util/constants';
+import UserPhotoComponent from './UserPhotoComponent';
 import { Link } from 'react-router';
 
 class RankingComponent extends React.Component {
@@ -73,12 +73,9 @@ class RankingComponent extends React.Component {
                 <LeagueIcon league={user.league}/>
               </div>
               <div className="col-sm-2 col-xs-4 text-center">
-                <div className="user-photo-container">
-                  <div className="focuspoint user-photo-ranking" data-focus-x="0" data-focus-y="0">
-                    <img className="user-photo-ranking" src={`${userImgRoute}/${user.img}_thumb`}/>
-                  </div>
-                </div>
-                <h5>{user.nickname}</h5>
+                <UserPhotoComponent
+                  user={user}
+                />
               </div>
               <div className="col-sm-9 col-xs-6">
                 <div className="row">

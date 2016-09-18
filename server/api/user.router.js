@@ -214,6 +214,14 @@ router.get('/api/users/order-by-battle-point/:page', (req, res) => {
   });
 });
 
+router.get('/api/users/league/:leagueNo', (req, res) => {
+  User.find({ league: req.params.leagueNo })
+  .exec((err, users) => {
+    if (err) return res.status(500).send(err);
+    res.json({ users });
+  });
+});
+
 router.get('/api/users/:id', (req, res) => {
   const _id = req.params.id;
   User.findById(_id).exec((err, user) => {
@@ -266,6 +274,7 @@ router.get('/api/users/:id', (req, res) => {
 
 router.put('/api/users/:id', (req, res) => {
   const user = req.body.user || {}; // user object
+  console.log('user', user);
   const addedCollections = req.body.addedCollections; // should be an array
   let resultUser = null;
   const ranksPromise = [];

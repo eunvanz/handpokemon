@@ -43,7 +43,7 @@ class MonsterCard extends React.Component {
         this.props.dispatch(Actions.showMessageModal());
         return;
       }
-    } else if (this.props.selectedMons.reduce((preElement, curElement) => { return preElement.cost + curElement.cost; }, 0)
+    } else if (this.props.selectedMons.reduce((preCost, curElement) => { return preCost + curElement.cost; }, 0)
                 + this.props.monster.cost > this.props.maxSelectableCost) {
       this.props.dispatch(Actions.prepareMessageModal(`현재 선택 가능한 최대 코스트 ${this.props.maxSelectableCost}를 초과했습니다.`));
       this.props.dispatch(Actions.showMessageModal());
@@ -127,7 +127,7 @@ class MonsterCard extends React.Component {
     const renderStatusComponent = () => {
       const status = this.props.monster.status;
       const entry = this.props.monster.entry;
-      if (status && entry) {
+      if (status !== undefined && entry !== undefined) {
         return (
           <StatusComponent
             status={status}

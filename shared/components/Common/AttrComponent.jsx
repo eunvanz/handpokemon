@@ -17,37 +17,37 @@ class AttrComponent extends React.Component {
       const endLabel = 'arrowed-in';
       const continueLabel = 'arrowed-in arrowed-right';
       if (grade === 'b') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BA</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-yellow arrowed-right" style={{ marginRight: '1px' }}>BASIC</span>;
         }
       } else if (grade === 'a') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SP</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-adv arrowed-right" style={{ marginRight: '1px' }}>SPECIAL</span>;
         }
       } else if (grade === 'r') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RA</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-rare arrowed-right" style={{ marginRight: '1px' }}>RARE</span>;
         }
       } else if (grade === 'ar') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>SR</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-advr arrowed-right" style={{ marginRight: '1px' }}>S.RARE</span>;
         }
       } else if (grade === 'e') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>EL</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-elite arrowed-right" style={{ marginRight: '1px' }}>ELITE</span>;
         }
       } else if (grade === 'l') {
-        if (!subAttr || subAttr !== '없음') {
+        if ((!mainAttr && !subAttr) || subAttr !== '없음') {
           gradeLabel = <span key="1" className="label label-sm label-limited arrowed-right" style={{ marginRight: '1px' }}>LE</span>;
         } else {
           gradeLabel = <span key="1" className="label label-sm label-limited arrowed-right" style={{ marginRight: '1px' }}>LEGEND</span>;
