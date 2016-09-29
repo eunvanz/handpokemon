@@ -15,6 +15,9 @@ import EntryView from './container/CollectionView/EntryView';
 import RankingView from './container/RankingView/RankingView';
 import BattleReadyView from './container/BattleView/BattleReadyView';
 import BattleRivalView from './container/BattleView/BattleRivalView';
+import BattleView from './container/BattleView/BattleView';
+import FirstAttackView from './container/BattleView/FirstAttackView';
+import BattleResultView from './container/BattleView/BattleResultView';
 import remountable from './components/Common/Remountable';
 
 const routes = (
@@ -41,6 +44,9 @@ const routes = (
     <Route path="/ranking-pokemon" component={remountable(RankingView)}/>
     <Route path="/league-battle-ready" component={requireAuth(BattleReadyView)}/>
     <Route path="/league-battle-check-rival" component={requireAuth(BattleRivalView)}/>
+    <Route path="/battle" component={requireAuth(BattleView)}/>
+    <Route path="/decide-first-attack" component={requireAuth(FirstAttackView)}/>
+    <Route path="/battle-result" component={requireAuth(BattleResultView)}/>
   </Route>
 );
 

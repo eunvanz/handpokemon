@@ -1,3 +1,5 @@
+import * as constants from './constants';
+
 export const convertCollectionToMonsterForMonsterCard = (col) => {
   const mon = {};
   const baseMon = col._mon;
@@ -74,4 +76,85 @@ export const getTotalAbilityFromCollection = collection => {
     + collection._mon.hp + collection._mon.power + collection._mon.armor + collection._mon.specialPower
     + collection._mon.specialArmor + collection._mon.dex
   );
+};
+
+export const getTotalAbilityFromEntry = entry => {
+  return (
+    getTotalAbilityFromCollection(entry[0])
+    + getTotalAbilityFromCollection(entry[1])
+    + getTotalAbilityFromCollection(entry[2])
+  );
+};
+
+export const getEntryForBattleFromUser = user => {
+  const entrySeq = user.entrySeq;
+  const entry = user._collections.filter(collection => {
+    return collection.entry === entrySeq;
+  });
+  return entry;
+};
+
+export const getTotalHpFromCollection = collection => {
+  return collection.honorHp + collection.addedHp + collection._mon.hp;
+};
+
+export const getTotalPowerFromCollection = collection => {
+  return collection.honorPower + collection.addedPower + collection._mon.power;
+};
+
+export const getTotalArmorFromCollection = collection => {
+  return collection.honorArmor + collection.addedArmor + collection._mon.armor;
+};
+
+export const getTotalSpecialPowerFromCollection = collection => {
+  return collection.honorSpecialPower + collection.addedSpecialPower + collection._mon.specialPower;
+};
+
+export const getTotalSpecialArmorFromCollection = collection => {
+  return collection.honorSpecialArmor + collection.addedSpecialArmor + collection._mon.specialArmor;
+};
+
+export const getTotalDexFromCollection = collection => {
+  return collection.honorDex + collection.addedDex + collection._mon.dex;
+};
+
+export const getRealHpFromCollection = collection => {
+  return 360 + Math.floor(getTotalHpFromCollection(collection) * 4 * constants.conditionVar[collection.condition]);
+};
+
+export const getAttrMatchAdjustedVar = (srcCollection, tgtCollection) => {
+  const srcMainAttr = srcCollection._mon.mainAttr;
+  const srcSubAttr = srcCollection._mon.subAttr;
+  const tgtMainAttr = tgtCollection._mon.mainAttr;
+  const tgtSubAttr = tgtCollection._mon.subAttr;
+  const srcMainAttrIdx = constants.attrIdx.indexOf(srcMainAttr);
+  const srcSubAttrIdx = constants.attrIdx.indexOf(srcSubAttr);
+  const tgtMainAttrIdx = constants.attrIdx.indexOf(tgtMainAttr);
+  const tgtSubAttrIdx = constants.attrIdx.indexOf(tgtSubAttr);
+  let result = 1;
+  result = constants.attrMatch[srcMainAttrIdx][tgtMainAttrIdx];
+  if (tgtSubAttrIdx !== -1) result = result * constants.attrMatch[srcMainAttrIdx][tgtSubAttrIdx];
+  if (srcSubAttrIdx !== -1) {
+    result = result * constants.attrMatch[srcSubAttrIdx][tgtMainAttrIdx];
+    if (tgtSubAttrIdx !== -1) result = result * constants.attrMatch[srcSubAttrIdx][tgtSubAttrIdx];
+  }
+  return result;
+};
+
+export const getBasicDamage = (attackMon, defenseMon) => {
+  const attackRange = Math.floor(Math.random() * 10) * 0.1 + 1.5;
+  return (getTotalPowerFromCollection(attackMon) * attackRange
+  + getTotalDexFromCollection(attackMon) * 0.1 * attackRange)
+  * getAttrMatchAdjustedVar(attackMon, defenseMon);
+};
+
+export const getSpecialDamage = (attackMon, defenseMon) => {
+  const specialRange = Math.floor(Math.random() * 20) * 0.1 + 3.5;
+  return (getTotalSpecialPowerFromCollection(attackMon) * specialRange
+  + getTotalDexFromCollection(attackMon) * 0.1 * specialRange)
+  * getAttrMatchAdjustedVar(attackMon, defenseMon);
+};
+
+export const getArmorPct = (armor, dex) => {
+  return (0.001 + armor * 0.003 + dex * 0.0005);
 };

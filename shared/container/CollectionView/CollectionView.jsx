@@ -84,7 +84,7 @@ class CollectionView extends React.Component {
     const renderWinRate = () => {
       let returnComponent = null;
       if (collectionUser.totalBattle !== 0) {
-        returnComponent = (<span>(승률 : {collectionUser.winBattle / collectionUser.totalBattle * 100}%)</span>);
+        returnComponent = (<span>(승률 : {(collectionUser.winBattle / collectionUser.totalBattle * 100).toFixed(1)}%)</span>);
       }
       return returnComponent;
     };

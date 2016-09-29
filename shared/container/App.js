@@ -22,6 +22,16 @@ class App extends Component {
               {this.props.children}
             </div>
           </div>
+          <div className="footer hidden-xs">
+            <div className="footer-inner">
+              <div className="footer-content">
+                <span>크롬 브라우저 최신버전에 최적화 되어있습니다.</span>
+                <span className="bigger-120">
+                  <span className="blue bolder">Hand Pokemon</span> &copy; 2016
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

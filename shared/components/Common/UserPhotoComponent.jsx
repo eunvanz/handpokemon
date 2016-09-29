@@ -15,7 +15,7 @@ class UserPhotoComponent extends React.Component {
           <img className="user-photo-ranking" src={`${userImgRoute}/${user.img}_thumb`}/>
           </div>
         </div>
-        <h5>{user.nickname}</h5>
+        <h5 className={`${this.props.hiddenXs ? 'hidden-xs' : null}`}>{user.nickname}</h5>
       </div>
     );
   }
@@ -23,6 +23,7 @@ class UserPhotoComponent extends React.Component {
 
 UserPhotoComponent.propTypes = {
   user: PropTypes.object.isRequired,
+  hiddenXs: PropTypes.bool,
 };
 
 export default UserPhotoComponent;

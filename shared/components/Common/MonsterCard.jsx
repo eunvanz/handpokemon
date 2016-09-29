@@ -82,9 +82,11 @@ class MonsterCard extends React.Component {
     const renderCostComponent = () => {
       if (this.props.monster) {
         return (
-          <CostComponent
-            cost={this.props.monster.cost}
-          />
+          <div style={{ marginBottom: '10px' }}>
+            <CostComponent
+              cost={this.props.monster.cost}
+            />
+          </div>
         );
       }
     };
@@ -163,6 +165,7 @@ class MonsterCard extends React.Component {
         className = 'picks';
       } else {
         imgSrc = `${monsterImgRoute}/nomonster.png`;
+        className = 'picks';
       }
       return (
         <div className="pick-image-container">
@@ -186,7 +189,7 @@ class MonsterCard extends React.Component {
     };
     return (
       <div>
-        <div className="col-xs-6 col-sm-3 collection-item text-center" {...this.props.filterData}>
+        <div className={`${this.props.fullSize ? null : 'col-xs-6 col-sm-3 collection-item text-center'}`} {...this.props.filterData}>
           <div className="profile-picture" style={{ margin: '10px', width: '80%' }}>
             {renderImgComponent()}
             {renderCheckComponent()}
@@ -194,9 +197,7 @@ class MonsterCard extends React.Component {
             {this.props.monster ? renderRecentLabelComponent() : null}
             {this.props.monster ? renderConditionComponent() : null}
             {this.props.monster ? renderStatusComponent() : null}
-            <div style={{ marginBottom: '10px' }}>
-              {renderCostComponent()}
-            </div>
+            {renderCostComponent()}
             <div style={{ marginBottom: '10px' }}>
               {renderAttrComponent()}
             </div>
@@ -221,6 +222,7 @@ MonsterCard.propTypes = {
   entryMode: PropTypes.bool,
   entryNo: PropTypes.number,
   maxSelectableCost: PropTypes.number,
+  fullSize: PropTypes.bool,
 };
 
 const mapStateToProps = (store) => ({

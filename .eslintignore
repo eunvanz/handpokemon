@@ -1,3 +1,4 @@
 webpack.config.dev.js
 webpack.config.prod.js
-collection-view-inline.js
+static/js/collection-view-inline.js
+static/js/inline/

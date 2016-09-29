@@ -43,6 +43,7 @@ const userSchema = new Schema({
   online: { type: Boolean, default: true, required: true },
   entrySeq: { type: Number, default: 0, required: true }, // 1, 2, 3
   lastStatusUpdate: { type: Date, default: Date.now, required: true },
+  battlePossible: { type: Boolean, default: false, required: true },
 });
 
 // userSchema.plugin(passportLocalMongoose, {

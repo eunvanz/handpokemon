@@ -56,14 +56,72 @@ export function updateUserToLose(user) {
   });
 }
 
-export function updateUserToWin(user, missionPoint) {
+export function updateRivalToLose(user, missionPoint) {
   return axios({
     method: 'put',
     url: `${baseURL}/api/users/${user._id}`,
     data: { user: {
-      loseBattle: user.loseBattle - 1,
+      loseBattle: user.loseBattle + 1,
+      totalBattle: user.totalBattle + 1,
+      battlePoint: user.battlePoint - 2 + missionPoint,
+    } },
+  });
+}
+
+export function updateRivalToWin(user, missionPoint) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      totalBattle: user.totalBattle + 1,
+      winBattle: user.winBattle + 1,
+      battlePoint: user.battlePoint + 2 + missionPoint,
+    } },
+  });
+}
+
+export function updateUserToWin(user, missionPoint, rewardCnt) {
+  // 여기서 param으로 받는 user는 시합 시작시 updateUserToLose를 적용하기 전의 user임
+  let maxWinInRow = user.maxWinInRow;
+  if (user.winInRow + 1 > maxWinInRow) maxWinInRow = user.winInRow + 1;
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      loseBattle: user.loseBattle,
       winBattle: user.winBattle + 1,
       battlePoint: user.battlePoint + 10 + missionPoint,
+      winInRow: user.winInRow + 1,
+      maxWinInRow,
+      reward: user.reward + rewardCnt,
+    } },
+  });
+}
+
+export function updateUserBattlePossible(user, flag) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: { battlePossible: flag, entrySeq: 1 } },
+  });
+}
+
+export function updateUserWhenMvp(user) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      battlePoint: user.battlePoint + 1,
+    } },
+  });
+}
+
+export function updateWinInRow(user, number) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      winInRow: number,
     } },
   });
 }

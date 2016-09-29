@@ -7,6 +7,7 @@ import * as Util from '../../util/Util';
 import keygen from 'keygenerator';
 import * as constants from '../../util/constants';
 import { browserHistory } from 'react-router';
+import { updateUserBattlePossible } from '../../service/UserService';
 
 class EntryView extends React.Component {
   constructor(props) {
@@ -15,23 +16,28 @@ class EntryView extends React.Component {
     this._clickChangeBtn = this._clickChangeBtn.bind(this);
   }
   componentWillMount() {
+    this.props.dispatch(Actions.fetchEntryState(this.props.user._id))
+    .then(() => {
+      const entryState = this.props.entryState;
+      if (!this.props.user.battlePossible
+        && entryState.entry1.length === 3
+        && entryState.entry2.length === 3
+        && entryState.entry3.length === 3) {
+        return updateUserBattlePossible(this.props.user, true);
+      }
+      return Promise.resolve();
+    })
+    .then(() => {
+      return this.props.dispatch(Actions.fetchCollectionUser(this.props.user._id));
+    });
+  }
+  componentDidMount() {
     Util.removeInlineScripts();
     this.props.dispatch(Actions.setMenu('collection-entry'));
     this.props.dispatch(Actions.clearSelectedMons());
     this.props.dispatch(Actions.clearEntryAsIs());
-    this.props.dispatch(Actions.fetchEntryState(this.props.user._id))
-    .then(() => {
-      return this.props.dispatch(Actions.fetchCollectionUser(this.props.user._id));
-    })
-    .then(() => {
-      const scriptSrcs = ['/js/collection-view-inline.js'];
-      for (const src of scriptSrcs) {
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        document.body.appendChild(script);
-      }
-    });
+    const scriptSrcs = ['/js/collection-view-inline.js'];
+    Util.appendInlineScripts(scriptSrcs);
   }
   _clickChangeBtn() {
     browserHistory.push('/entry-ready');
@@ -67,7 +73,7 @@ class EntryView extends React.Component {
               monster={null}
               selectable
               entryMode
-              entryNo={monster.entry}
+              entryNo={entryNo}
             />
           </div>
         );

@@ -6,11 +6,11 @@ div.roulette-inner {
 }
 
 
-div.roulette { 
+div.roulette {
 }
 
 div.roulette_container {
-	background-image:url('../../assets/images/scratchbg.png');
+	background-image:url('/img/common/scratchbg.png');
 	background-color:rgb(253, 252, 253);
 	width:200px;
 	height:200px;
@@ -19,7 +19,7 @@ div.roulette_container {
 }
 @media (min-width: 767px) {
 	div.battle_roulette_container {
-		background-image:url('../../assets/images/scratchbg.png');
+		background-image:url('/img/common/scratchbg.png');
 		background-color:rgb(253, 252, 253);
 		width:80px;
 		height:80px;
@@ -29,7 +29,7 @@ div.roulette_container {
 }
 @media (man-width: 767px) {
 	div.battle_roulette_container {
-		background-image:url('../../assets/images/scratchbg.png');
+		background-image:url('/img/common/scratchbg.png');
 		background-color:rgb(253, 252, 253);
 		width:50px;
 		height:50px;

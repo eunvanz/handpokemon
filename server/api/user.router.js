@@ -215,7 +215,7 @@ router.get('/api/users/order-by-battle-point/:page', (req, res) => {
 });
 
 router.get('/api/users/league/:leagueNo', (req, res) => {
-  User.find({ league: req.params.leagueNo })
+  User.find({ league: req.params.leagueNo, battlePossible: true }, '_id')
   .exec((err, users) => {
     if (err) return res.status(500).send(err);
     res.json({ users });

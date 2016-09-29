@@ -613,12 +613,71 @@ export function getRival(user) {
 
 export function fetchRivalForLeague(user) {
   return (dispatch) => {
-    return axios.get(`${baseURL}/api/users/league/${user.league}`)
+    return axios.get(`${baseURL}/api/users/league/${user.league}`) // 같은 리그 유저의 ID만 가져옴
     .then(res => {
       const users = res.data.users;
-      const usersSize = users.length;
-      const rival = users[Math.floor(Math.random() * usersSize)];
+      const filteredUsers = users.filter(item => user._id !== item._id);
+      const usersSize = filteredUsers.length;
+      const rival = filteredUsers[Math.floor(Math.random() * usersSize)];
+      return axios.get(`${baseURL}/api/users/${rival._id}`);
+    })
+    .then(res => {
+      const rival = res.data.user;
       dispatch(getRival(rival));
     });
+  };
+}
+
+export function fetchRival(user) {
+  return (dispatch) => {
+    return axios.get(`${baseURL}/api/users/${user._id}`)
+    .then(response => dispatch(getRival(response.data.user)));
+  };
+}
+
+export function getUserEntryForBattle(entry) {
+  return {
+    type: ActionTypes.GET_USER_ENTRY_FOR_BATTLE,
+    entry,
+  };
+}
+
+export function getRivalEntryForBattle(entry) {
+  return {
+    type: ActionTypes.GET_RIVAL_ENTRY_FOR_BATTLE,
+    entry,
+  };
+}
+
+export function clearUserEntryForBattle() {
+  return {
+    type: ActionTypes.CLEAR_USER_ENTRY_FOR_BATTLE,
+  };
+}
+
+export function clearRivalEntryForBattle() {
+  return {
+    type: ActionTypes.CLEAR_RIVAL_ENTRY_FOR_BATTLE,
+  };
+}
+
+export function getFirstAttackFlag(flag) {
+  return {
+    type: ActionTypes.GET_FIRST_ATTACK_FLAG,
+    flag,
+  };
+}
+
+export function getBattleResult(result) {
+  return {
+    type: ActionTypes.GET_BATTLE_RESULT,
+    result,
+  };
+}
+
+export function getGameSpeed(number) {
+  return {
+    type: ActionTypes.GET_GAME_SPEED,
+    number,
   };
 }

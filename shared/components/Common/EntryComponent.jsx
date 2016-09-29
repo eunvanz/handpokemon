@@ -12,11 +12,7 @@ class EntryComponent extends React.Component {
   }
   render() {
     const renderEntries = () => {
-      const entrySeq = this.props.user.entrySeq;
-      const entries = this.props.user._collections.filter(collection => {
-        return collection.entry === entrySeq;
-      });
-      const returnComponent = entries.map(collection => {
+      const returnComponent = this.props.entry.map(collection => {
         const collectionForMonsterCard = convertCollectionToMonsterForMonsterCard(collection);
         return <MonsterCard key={keygen._()} monster={collectionForMonsterCard}/>;
       });
@@ -24,22 +20,16 @@ class EntryComponent extends React.Component {
     };
     const getCost = () => {
       let cost = 0;
-      const entries = this.props.user._collections.filter(collection => {
-        return collection.entry === this.props.user.entrySeq;
-      });
-      entries.forEach(collection => cost += collection._mon.cost);
+      this.props.entry.forEach(collection => cost += collection._mon.cost);
       return cost;
     };
     const getTotalAbility = () => {
-      let cost = 0;
-      const entries = this.props.user._collections.filter(collection => {
-        return collection.entry === this.props.user.entrySeq;
-      });
-      entries.forEach(collection => cost += getTotalAbilityFromCollection(collection));
-      return cost;
+      let totalAbility = 0;
+      this.props.entry.forEach(collection => totalAbility += getTotalAbilityFromCollection(collection));
+      return totalAbility;
     };
     return (
-      <div className={`widget-box ${this.props.myEntry ? 'widget-color-blue' : 'widget-color-red3'}`}>
+      <div className={`widget-box ${this.props.myEntry ? 'widget-color-blue' : 'widget-color-orange'}`}>
         <div className="widget-header"><h5>{this.props.myEntry ? '나의 엔트리' : '상대방 엔트리'}</h5></div>
         <div className="widget-body">
           <div className="widget-main">
@@ -86,6 +76,7 @@ class EntryComponent extends React.Component {
 EntryComponent.propTypes = {
   myEntry: PropTypes.bool,
   rivalEntry: PropTypes.bool,
+  entry: PropTypes.array.isRequired,
   user: PropTypes.object.isRequired,
 };
 

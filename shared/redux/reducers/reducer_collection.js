@@ -50,3 +50,25 @@ export const entryState = (state = { entry1: [], entry2: [], entry3: [] }, actio
       return state;
   }
 };
+
+export const userEntryForBattle = (state = null, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_USER_ENTRY_FOR_BATTLE :
+      return action.entry;
+    case ActionTypes.CLEAR_USER_ENTRY_FOR_BATTLE :
+      return null;
+    default :
+      return state;
+  }
+};
+
+export const rivalEntryForBattle = (state = null, action) => {
+  switch (action.type) {
+    case ActionTypes.GET_RIVAL_ENTRY_FOR_BATTLE :
+      return action.entry;
+    case ActionTypes.CLEAR_RIVAL_ENTRY_FOR_BATTLE :
+      return null;
+    default :
+      return state;
+  }
+};

@@ -1,6 +1,6 @@
 @font-face {
-	font-family: 'Nanum Barun Gothic';
-	src: url(/fonts/NANUMBARUNGOTHICLIGHT.TTF);
+	font-family: 'Nanum Gothic';
+	src: url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 }
 html {
   min-height: 100%;
@@ -10,7 +10,7 @@ body {
   background-color: #e4e6e9;
   min-height: 100%;
   padding-bottom: 0;
-  font-family: 'Nanum Barun Gothic';
+  font-family: 'Nanum Gothic';
   font-size: 13px;
   color: #393939;
   line-height: 1.5;
