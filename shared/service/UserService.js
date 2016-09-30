@@ -125,3 +125,13 @@ export function updateWinInRow(user, number) {
     } },
   });
 }
+
+export function updateUserEntryNext(user) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      entrySeq: user.entrySeq === 3 ? 1 : user.entrySeq + 1,
+    } },
+  });
+}

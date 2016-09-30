@@ -11,7 +11,7 @@ export const battleInfo = (state = { firstAttack: 0, result: null }, action) => 
   }
 };
 
-export const gameSpeed = (state = 1, actions) => {
+export const gameSpeed = (state = '1', actions) => {
   switch (actions.type) {
     case ActionTypes.GET_GAME_SPEED:
       return actions.number;

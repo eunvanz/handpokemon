@@ -94,7 +94,7 @@ const _saveThumbnail = (imagePath) => {
         if (err) reject(new Error(err));
         gm(imagePath)
         .gravity('Center')
-        .thumb(36, 36, `${imagePath}_thumb`, 100, (err2) => {
+        .thumb(76, 76, `${imagePath}_thumb`, 100, (err2) => {
           if (err2) reject(new Error(err2));
           // console.log('썸네일 생성완료');
           resolve();

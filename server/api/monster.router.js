@@ -7,7 +7,7 @@ const upload = multer({ dest: './static/img/monsters/' });
 
 const _updateEvolutePiece = (_beforeId, requiredPiece) => {
   return new Promise((resolve, reject) => {
-    if (_beforeId) {
+    if (_beforeId !== '0') {
       Monster.findOneAndUpdate({ _id: _beforeId }, { evolutePiece: requiredPiece }).exec((err) => {
         if (err) reject(new Error(err));
       }).then(() => {
@@ -187,6 +187,12 @@ router.get('/api/monsters/:param', (req, res) => {
   const grades = ['b', 'r', 's', 'ar', 'e', 'l'];
   if (grades.includes(param)) {
     query = { grade: param };
+    Monster.find(query).exec((err, mons) => {
+      if (err) return res.status(500).send(err);
+      res.json({ mons });
+    });
+  } else if (param === 'reward') {
+    query = { $or: [{ grade: 'b' }, { grade: 'r' }] };
     Monster.find(query).exec((err, mons) => {
       if (err) return res.status(500).send(err);
       res.json({ mons });

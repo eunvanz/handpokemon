@@ -46,7 +46,29 @@ class RegisterMonsterView extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps) this.setState(nextProps.mon);
+    if (nextProps.mon) {
+      const mon = nextProps.mon;
+      this.setState({
+        name: mon.name,
+        monNo: mon.monNo,
+        mainAttr: mon.mainAttr,
+        subAttr: mon.subAttr,
+        hp: mon.hp,
+        power: mon.power,
+        armor: mon.armor,
+        specialPower: mon.specialPower,
+        specialArmor: mon.specialArmor,
+        dex: mon.dex,
+        skillName: mon.skillName,
+        grade: mon.grade,
+        cost: mon.cost,
+        _before: mon._before === null ? 0 : mon._before,
+        desc: mon.desc,
+        requiredPiece: mon.requiredPiece === null ? '' : mon.requiredPiece,
+        designer: mon.designer[0],
+        point: mon.point,
+      });
+    }
   }
   componentWillUnmount() {
     if (this.props.mon) {
@@ -102,7 +124,7 @@ class RegisterMonsterView extends React.Component {
     formData.append('skillName', $('#skillName').val() ? $('#skillName').val() : '몸통박치기');
     formData.append('grade', $('#grade').val());
     formData.append('cost', $('#cost').val());
-    formData.append('_before', $('#_before').val() === 0 ? null : $('#_before').val());
+    formData.append('_before', $('#_before').val());
     formData.append('desc', $('#desc').val());
     formData.append('requiredPiece', $('#requiredPiece').val());
     formData.append('designer', $('#designer').val());

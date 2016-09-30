@@ -272,7 +272,12 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
     let url = null;
     if (mode === 'get') {
       // 채집의 경우 베이직 포켓몬 리스트를 가져옴
-      url = `${baseURL}/api/monsters/b`;
+      // reward 가 getReward보다 클 경우는 레어와 베이직
+      if (user.reward > user.getReward) {
+        url = `${baseURL}/api/monsters/reward`;
+      } else {
+        url = `${baseURL}/api/monsters/b`;
+      }
     } else if (mode === 'evolute') {
       // 진화의 경우 진화형 포켓몬 리스트를 가져옴
       url = `${baseURL}/api/monsters/${beforeId}/evolution`;
@@ -332,10 +337,14 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       }
       // 유저의 마지막 채집시간 기록 및 크레딧 차감
       if (mode === 'get') {
-        const interval = Date.now() - user.lastGetTime;
-        updatedUser = Object.assign(updatedUser, { getCredit: user.getCredit });
-        updatedUser.getCredit--;
-        if (interval > user.getInterval) updatedUser.lastGetTime = Date.now();
+        if (user.reward <= user.getReward) {
+          const interval = Date.now() - user.lastGetTime;
+          updatedUser = Object.assign(updatedUser, { getCredit: user.getCredit });
+          updatedUser.getCredit--;
+          if (interval > user.getInterval) updatedUser.lastGetTime = Date.now();
+        } else {
+          updatedUser = Object.assign(updatedUser, { getReward: user.getReward + 1 });
+        }
       }
       // 가지고 있는 포켓몬일 경우 레벨 업
       if (collectionId) {

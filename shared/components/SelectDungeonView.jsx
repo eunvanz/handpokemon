@@ -3,6 +3,7 @@ import { Link, browserHistory } from 'react-router';
 import $ from 'jquery';
 import { connect } from 'react-redux';
 import * as Actions from '../redux/actions/actions';
+import { appendInlineScripts, removeInlineScripts } from '../util/Util';
 
 class SelectDungeonView extends React.Component {
   constructor(props) {
@@ -14,6 +15,13 @@ class SelectDungeonView extends React.Component {
     this.props.dispatch(Actions.setMenu('get-mon'));
     this.props.dispatch(Actions.fetchUserSession());
   }
+  componentDidMount() {
+    const scripts = ['/js/align-middle.js'];
+    appendInlineScripts(scripts);
+  }
+  componentWillUnmount() {
+    removeInlineScripts();
+  }
   _handleClickGetBtn() {
     $('button').attr('disabled', 'disabled');
   }
@@ -21,7 +29,7 @@ class SelectDungeonView extends React.Component {
     const { user } = this.props;
     const renderView = () => {
       let returnComponent = null;
-      if (user.getCredit > 0) {
+      if (user.reward > user.getReward) {
         returnComponent = (
           <div className="page-content">
             <div className="page-header">
@@ -31,6 +39,30 @@ class SelectDungeonView extends React.Component {
             </div>
             <div className="row">
               <div className="col-xs-12 align-center center-middle">
+                <p>
+                  <big>아직 받지 못한 <span className="text-primary"><strong>{this.props.user.reward - this.props.user.getReward}</strong></span>개의 보상이 있어.
+                  <br/>남은 보상을 다 받아야 채집을 할 수 있단다.
+                  </big>
+                </p>
+                <Link to="/get-mon">
+                  <button onClick={this._handleClickGetBtn} className="btn btn-primary btn-xlg get-mon-btn">
+                    보상받기
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      } else if (user.getCredit > 0) {
+        returnComponent = (
+          <div className="page-content">
+            <div className="page-header">
+              <h1>
+                포켓몬 채집
+              </h1>
+            </div>
+            <div className="row">
+              <div className="col-xs-12 align-center">
                 <p><big>새로운 포켓몬 친구를 만날 준비가 됐니?<br/>아래의 던전중에 하나를 선택해보렴.</big></p>
                 <div className="row">
                   <div className="col-sm-4">

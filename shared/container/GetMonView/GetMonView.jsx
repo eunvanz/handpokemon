@@ -179,6 +179,13 @@ class GetMonView extends React.Component {
       }
       return returnComponent;
     };
+    const renderRewardBadge = () => {
+      if (this.props.user.reward > this.props.user.getReward) {
+        return (
+          <span className="badge badge-info" style={{ color: 'white' }}>{this.props.user.reward - this.props.user.getReward}</span>
+        );
+      }
+    };
     const renderContinueBtn = () => {
       let returnComponent = null;
       let btnTxt = '계속 채집하기';
@@ -192,12 +199,14 @@ class GetMonView extends React.Component {
         btnTxt = '계속 진화하기';
         link = '/evolute-mon-ready';
         onClickFunc = null;
+      } else if (this.props.user.reward > this.props.user.getReward) {
+        btnTxt = '계속 보상받기';
       }
       if (this.props.user.getCredit > 0) {
         returnComponent = (
           <p>
             <Link to={link}>
-              <button className="btn btn-primary" onClick={onClickFunc}>{btnTxt}</button>
+              <button className="btn btn-primary" onClick={onClickFunc}>{btnTxt} {renderRewardBadge()}</button>
             </Link>
           </p>
         );

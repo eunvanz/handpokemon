@@ -1,3 +1,4 @@
+/* eslint-disabled */
 jQuery(function($) {
   // var oldie = /msie\s*(8|7|6)/.test(navigator.userAgent.toLowerCase());
   $('.easy-pie-chart.percentage').each(function() {

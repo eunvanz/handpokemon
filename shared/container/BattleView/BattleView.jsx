@@ -181,7 +181,9 @@ class BattleView extends React.Component {
     return (
       <div className="page-content">
         {renderPlayerInfo(this.props.rival, this.props.rivalEntryForBattle, 'rival')}
+        <div className="space-30 hidden-xs"></div>
         {renderArena()}
+        <div className="space-30 hidden-xs"></div>
         {renderPlayerInfo(this.props.user, this.props.userEntryForBattle, 'user')}
         {renderSpeedController()}
         {renderResult()}

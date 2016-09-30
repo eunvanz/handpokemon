@@ -2,11 +2,12 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
 import ContentView from '../../components/Common/ContentView';
-import { updateUserToWin, updateUserWhenMvp, updateRivalToLose, updateRivalToWin, updateWinInRow } from '../../service/UserService';
+import { updateUserToWin, updateUserWhenMvp, updateRivalToLose, updateRivalToWin, updateWinInRow, updateUserEntryNext } from '../../service/UserService';
 import { getTotalAbilityFromEntry, convertCollectionToMonsterForMonsterCard } from '../../util/Util';
 import LeagueIcon from '../../components/Common/LeagueIcon';
 import UserPhotoComponent from '../../components/Common/UserPhotoComponent';
 import MonsterCard from '../../components/Common/MonsterCard';
+import { browserHistory } from 'react-router';
 
 class BattleResultView extends React.Component {
   constructor(props) {
@@ -25,6 +26,9 @@ class BattleResultView extends React.Component {
       beforeRival: {},
       fiveWinLeft: -1,
     };
+    this._handleOnClickContinue = this._handleOnClickContinue.bind(this);
+    this._handleOnClickRank = this._handleOnClickRank.bind(this);
+    this._handleOnClickReward = this._handleOnClickReward.bind(this);
   }
   componentWillMount() {
     const result = this.props.battleInfo.result[this.props.battleInfo.result.length - 1];
@@ -76,12 +80,22 @@ class BattleResultView extends React.Component {
           rivalPointGap: 2 + (result.mvp === 'rival' ? 1 : 0),
         });
       }
+      resultApplyProcess.push(updateUserEntryNext(this.props.user));
       return Promise.all(resultApplyProcess);
     });
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.clearUserEntryForBattle());
     this.props.dispatch(Actions.clearRivalEntryForBattle());
+  }
+  _handleOnClickReward() {
+    browserHistory.push('/get-mon');
+  }
+  _handleOnClickContinue() {
+    browserHistory.push('/league-battle-check-rival');
+  }
+  _handleOnClickRank() {
+    browserHistory.push('/ranking-battle');
   }
   render() {
     const renderRankChangeInfo = type => {
@@ -215,7 +229,7 @@ class BattleResultView extends React.Component {
       if (this.state.perfect || this.state.fiveWinLeft === 5 || this.state.gandang || this.state.oneMonShow || this.state.underDog) {
         return (
           <p>
-            <button className="btn btn-primary btn-lg" id="mission-reward-btn">
+            <button className="btn btn-primary btn-lg" id="mission-reward-btn" onClick={this._handleOnClickReward}>
               <i className="fa fa-gift"></i> 미션 보상 받기
             </button>
           </p>
@@ -226,11 +240,11 @@ class BattleResultView extends React.Component {
       if (!(this.state.perfect || this.state.fiveWinLeft === 5 || this.state.gandang || this.state.oneMonShow || this.state.underDog)) {
         if (this.props.user.battleCredit > 0) {
           return (
-            <p><button className="btn btn-primary btn-xlg">계속 시합 하기</button></p>
+            <p><button className="btn btn-primary btn-xlg" onClick={this._handleOnClickContinue}>계속 시합 하기</button></p>
           );
         }
         return (
-          <p><button className="btn btn-primary btn-lg">시합랭킹 보기</button></p>
+          <p><button className="btn btn-primary btn-lg" onClick={this._handleOnClickRank}>시합랭킹 보기</button></p>
         );
       }
     };

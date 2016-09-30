@@ -17,6 +17,7 @@ jQuery(function($) {
     - $('.user-control').height() * 2
     - $('.mon-object').height() * 2
     - $('#navbar-container').height()
+    - ($(window).width() < 767 ? 0 : 60)
   );
 
   // 치명타 효과 사이즈 조정
@@ -179,7 +180,7 @@ function turnProcess(attacker) {
           pctContainer.addClass('text-danger');
         }
         typeContainer.text(bonusType);
-        pctContainer.text(rate + '%');
+        pctContainer.text(Math.round(rate) + '%');
         infoContainer
         .animate(
           {
@@ -333,22 +334,30 @@ function turnProcess(attacker) {
         //올라오는 데미지
         var damageContainer = $('.' + data[i].defender + '-mon-' + data[i].defenseMon + '-damage');
         var fontSize = 0;
+        var top = '-40px';
         if (damage < 100) {
-          fontSize = 20;
+          fontSize = 18;
         } else if (damage < 150) {
           fontSize = 24;
+          top = '-46px';
         } else if (damage < 200) {
-          fontSize = 28;
+          fontSize = 30;
+          top = '-56px';
         }  else if (damage < 250) {
-          fontSize = 32;
-        }  else if (damage < 300) {
-          fontSize = 36;
-        } else if (damage < 350) {
           fontSize = 40;
+          top = '-66px';
+        }  else if (damage < 300) {
+          fontSize = 54;
+          top = '-70px';
+        } else if (damage < 350) {
+          fontSize = 72;
+          top = '-88px';
         }  else if (damage < 400) {
-          fontSize = 44;
+          fontSize = 92;
+          top = '-100px';
         } else {
-          fontSize = 48;
+          fontSize = 120;
+          top = '-110px';
         }
         if (data[i].avoid) {
           damageContainer
@@ -371,7 +380,7 @@ function turnProcess(attacker) {
           .animate(
             {
               opacity: 0,
-              top: '-40px',
+              top: top,
               fontSize: fontSize + 'px'
             },
             2000 * speed,

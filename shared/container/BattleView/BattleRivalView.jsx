@@ -5,7 +5,7 @@ import ContentView from '../../components/Common/ContentView';
 import EntryComponent from '../../components/Common/EntryComponent';
 import $ from 'jquery';
 import { browserHistory } from 'react-router';
-import { getEntryForBattleFromUser, getAttrMatchAdjustedVar } from '../../util/Util';
+import { getEntryForBattleFromUser, getAttrMatchAdjustedVar, appendInlineScripts } from '../../util/Util';
 import { updateUserToLose } from '../../service/UserService';
 
 class BattleRivalView extends React.Component {
@@ -50,6 +50,10 @@ class BattleRivalView extends React.Component {
       });
     });
   }
+  componentDidMount() {
+    const scripts = ['/js/inline/catch-exit.js'];
+    appendInlineScripts(scripts);
+  }
   _handleOnClickNext() {
     $('#next-btn').attr('disabled', 'disabled');
     browserHistory.push('decide-first-attack');
@@ -81,12 +85,14 @@ class BattleRivalView extends React.Component {
             <div className="row">
               <div className="col-xs-12 text-center">
                 <h3>
-                  <i className="fa fa-chevron-circle-down text-primary"></i> <small>평균 상성:</small> <span className="text-primary">
+                  <i className="fa fa-chevron-circle-down text-primary"></i> <small>평균상성: </small>
+                  <span className={`${this.state.rivalAttrBonus < 0 ? 'text-danger' : 'text-primary'}`}>
                   <strong>{this.state.rivalAttrBonus}</strong></span><small>%</small>
                 </h3>
                 <h2 className="text-danger"><strong>VS</strong></h2>
                 <h3>
-                  <i className="fa fa-chevron-circle-up text-primary"></i> <small>평균 상성:</small> <span className="text-primary">
+                  <i className="fa fa-chevron-circle-up text-primary"></i> <small>평균상성: </small>
+                  <span className={`${this.state.userAttrBonus < 0 ? 'text-danger' : 'text-primary'}`}>
                   <strong>{this.state.userAttrBonus}</strong></span><small>%</small>
                 </h3>
               </div>
