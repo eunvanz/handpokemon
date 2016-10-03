@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link, browserHistory } from 'react-router';
+import { Link  } from 'react-router';
 import * as Actions from '../../redux/actions/actions';
 import MonsterCard from '../../components/Common/MonsterCard';
 import { convertCollectionToMonsterForMonsterCard } from '../../util/Util';
@@ -94,7 +94,7 @@ class SelectableMonView extends React.Component {
       })
       .then(() => {
         this.props.dispatch(Actions.setBeforeAction('mix'));
-        browserHistory.push('/mix-mon');
+        this.context.router.push('/mix-mon');
       });
     }
   }
@@ -105,7 +105,7 @@ class SelectableMonView extends React.Component {
       this.props.dispatch(Actions.showMessageModal());
     } else {
       this.props.dispatch(Actions.setBeforeAction('evolute'));
-      browserHistory.push(`/evolution/${monsToEvolute[0]._id}`);
+      this.context.router.push(`/evolution/${monsToEvolute[0]._id}`);
     }
   }
   _processChangeEntry() {
@@ -128,7 +128,7 @@ class SelectableMonView extends React.Component {
           return UserService.updateLastStatusUpdate(this.props.user);
         })
         .then(() => {
-          browserHistory.push(`/entry/${this.props.user._id}`);
+          this.context.router.push(`/entry/${this.props.user._id}`);
         });
       }
     }

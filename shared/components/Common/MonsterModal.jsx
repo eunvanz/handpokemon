@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { Link } from 'react-router';
 import CostComponent from './CostComponent';
 import AttrComponent from './AttrComponent';
+import { statusNames, conditionNames } from '../../util/constants';
+import HelpComponent from './HelpComponent';
 
 class MonsterModal extends React.Component {
   constructor(props) {
@@ -28,6 +30,32 @@ class MonsterModal extends React.Component {
     // TODO: 이미지 타입 업데이트 하는 코드 들어가야 함
   }
   render() {
+    const renderGradeHelpComponent = () => {
+      return (
+        <HelpComponent
+          title="등급"
+          content="채집을 통해 BASIC 포켓몬을, BASIC 포켓몬을 진화시켜 SPECIAL 포켓몬을, BASIC 포켓몬을 교배하여 RARE 포켓몬을(일정확률),
+           RARE 포켓몬을 진화시켜 S.RARE 포켓몬을,
+           RARE 포켓몬을 교배하여 ELITE 포켓몬을(낮은확률), ELITE 포켓몬을 교배하여 LEGEND 포켓몬을(낮은확률) 얻을 수 있습니다."
+        />
+      );
+    };
+    const renderConditionHelpComponent = () => {
+      return (
+        <HelpComponent
+          title="컨디션"
+          content="컨디션이 좋을수록 실제 시합에서의 전투력이 상승합니다. 이 전투력은 수치로 드러나지는 않지만 시합시에만 체감할 수 있습니다. 컨디션은 하루를 주기로 변화합니다."
+        />
+      );
+    };
+    const renderStatusHelpComponent = () => {
+      return (
+        <HelpComponent
+          title="상태"
+          content="출전가능 혹은 출전 상태를 나타냅니다. 한 번 엔트리에 들어갔다가 나오게되면 다시 출전가능 상태가 되기까지 이틀간의 휴식이 필요하니 신중하게 출전시켜야 합니다."
+        />
+      );
+    };
     const renderSelectImgComponent = () => {
       const imgArr = this.props.monster.img;
       const returnComponent = [];
@@ -80,7 +108,7 @@ class MonsterModal extends React.Component {
       return gradeLabel;
     };
     const renderCostComponent = () => {
-      return <CostComponent cost={this.props.monster.cost}/>;
+      return <CostComponent withHelp cost={this.props.monster.cost}/>;
     };
     const renderImgComponent = () => {
       const returnComponent = [];
@@ -365,23 +393,23 @@ class MonsterModal extends React.Component {
         const condition = this.props.monster.condition;
         let rotateClass = null;
         let colorClass = 'text-danger';
-        let text = '매우좋음';
+        let text = conditionNames[condition];
         if (condition === 4) {
           rotateClass = 'rotate-45';
           colorClass = 'text-warning';
-          text = '좋음';
+          text = conditionNames[condition];
         } else if (condition === 3) {
           rotateClass = 'rotate-90';
           colorClass = 'text-success';
-          text = '보통';
+          text = conditionNames[condition];
         } else if (condition === 2) {
           rotateClass = 'rotate-135';
           colorClass = 'text-info';
-          text = '나쁨';
+          text = conditionNames[condition];
         } else if (condition === 1) {
           rotateClass = 'rotate-180';
           colorClass = 'text-muted';
-          text = '매우나쁨';
+          text = conditionNames[condition];
         }
         return (
           <div className="row">
@@ -394,7 +422,7 @@ class MonsterModal extends React.Component {
               <p className="monster-condition">
                 <i className={`ace-icon fa fa-arrow-circle-up fa-2 ${colorClass} ${rotateClass}`}
                   style={{ fontSize: '20px' }}
-                ></i> <span className="badge badge-grey">{text}</span>
+                ></i> <span className="badge badge-grey">{text}</span> {renderConditionHelpComponent()}
               </p>
             </div>
           </div>
@@ -407,15 +435,15 @@ class MonsterModal extends React.Component {
       if (status !== undefined) {
         let iconClass = 'fa-battery-full';
         let colorClass = 'text-primary';
-        let text = '출전가능';
+        let text = statusNames[status];
         if (status === 1) {
           iconClass = 'fa-battery-half';
           colorClass = 'text-warining';
-          text = '회복중';
+          text = statusNames[status];
         } else if (status === 0) {
           iconClass = 'fa-battery-empty';
           colorClass = 'text-danger';
-          text = '휴식필요';
+          text = statusNames[status];
         } else if (entry !== 0) {
           iconClass = 'fa-paw';
           colorClass = 'text-success';
@@ -433,7 +461,7 @@ class MonsterModal extends React.Component {
                 <i
                   className={`ace-icon fa ${iconClass} ${colorClass}`}
                   style={{ fontSize: '20px' }}
-                ></i> <span className="badge badge-grey">{text}</span>
+                ></i> <span className="badge badge-grey">{text}</span> {renderStatusHelpComponent()}
               </p>
             </div>
           </div>
@@ -471,7 +499,7 @@ class MonsterModal extends React.Component {
                   <div className="col-xs-9">
                     <p className="monster-grade">
                       {renderGradeComponent()}
-                      (<span className="badge badge-warning">+{this.props.monster.point}</span> 콜렉션 점수)
+                      (<span className="badge badge-warning">+{this.props.monster.point}</span> 콜렉션 점수) {renderGradeHelpComponent()}
                     </p>
                   </div>
                 </div>
@@ -484,6 +512,7 @@ class MonsterModal extends React.Component {
                   <div className="col-xs-9">
                     <div style={{ marginBottom: '10px' }}>
                       <AttrComponent
+                        withHelp
                         mainAttr={this.props.monster.mainAttr}
                         subAttr={this.props.monster.subAttr}
                       />

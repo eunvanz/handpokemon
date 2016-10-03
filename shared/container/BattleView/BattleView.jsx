@@ -6,23 +6,27 @@ import { monsterImgRoute } from '../../util/constants';
 import { appendInlineScripts, removeInlineScripts } from '../../util/Util';
 import $ from 'jquery';
 import * as Actions from '../../redux/actions/actions';
-import { browserHistory } from 'react-router';
+
 
 class BattleView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'BattleView';
+    this._handleOnClickNext = this._handleOnClickNext.bind(this);
   }
   componentDidMount() {
     const scriptSrcs = ['/js/roulette.js', '/js/jquery-ui.js', '/js/inline/battle-view.js'];
     appendInlineScripts(scriptSrcs);
+    this.context.router.listenBeforeUnload(() => {
+      return '이 페이지에서 벗어나면 패배처리됩니다. 나가시겠습니까?';
+    });
   }
   componentWillUnmount() {
     this.props.dispatch(Actions.getGameSpeed($('.game-speed').text()));
     removeInlineScripts();
   }
   _handleOnClickNext() {
-    browserHistory.push('battle-result');
+    this.context.router.replace('battle-result');
   }
   render() {
     const renderPlayerInfo = (player, entry, playerType) => {

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ErrorView from './Common/ErrorView';
-import { Link, browserHistory } from 'react-router';
+import { Link  } from 'react-router';
 
 class GetMonImpossibleView extends React.Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class GetMonImpossibleView extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.user.getCredit > 0) {
-      browserHistory.push('/get-mon-ready');
+      this.context.router.push('/get-mon-ready');
     }
   }
   render() {

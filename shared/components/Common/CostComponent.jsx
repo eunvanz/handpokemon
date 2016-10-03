@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import HelpComponent from './HelpComponent';
 
 class CostComponent extends React.Component {
   constructor(props) {
@@ -6,6 +7,18 @@ class CostComponent extends React.Component {
     this.displayName = 'CostComponent';
   }
   render() {
+    const renderCostHelpComponent = (key) => {
+      if (this.props.withHelp) {
+        return (
+          <HelpComponent
+            key={key}
+            title="코스트"
+            content="일반적으로 코스트가 높을수록 전투력도 높습니다. 하지만 각 리그별로 엔트리를 구성할 수 있는 최대 코스트가 제한돼있으므로 효율적으로 구성해야합니다."
+          />
+        );
+      }
+      return null;
+    };
     const renderComponent = () => {
       const itemDom = [];
       const cost = this.props.cost;
@@ -28,6 +41,7 @@ class CostComponent extends React.Component {
           itemDom.push(emptyStar);
         }
       }
+      itemDom.push(renderCostHelpComponent(key));
       return itemDom;
     };
     return (
@@ -40,6 +54,7 @@ class CostComponent extends React.Component {
 
 CostComponent.propTypes = {
   cost: PropTypes.number.isRequired,
+  withHelp: PropTypes.bool,
 };
 
 export default CostComponent;

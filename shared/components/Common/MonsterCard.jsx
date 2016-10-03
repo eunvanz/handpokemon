@@ -7,7 +7,9 @@ import CostComponent from '../../components/Common/CostComponent';
 import AttrComponent from '../../components/Common/AttrComponent';
 import StatusComponent from '../../components/Common/StatusComponent';
 import ConditionComponent from '../../components/Common/ConditionComponent';
-import { monsterImgRoute } from '../../util/constants';
+import { monsterImgRoute, conditionNames, statusNames } from '../../util/constants';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import keygen from 'keygenerator';
 
 class MonsterCard extends React.Component {
   constructor(props) {
@@ -38,7 +40,7 @@ class MonsterCard extends React.Component {
       return;
     } else if (this.props.entryMode) {
       if (this.props.selectedMons.length > 0
-        && this.props.selectedMons[0].entry !== (this.props.monster ? this.props.monster.entry : this.props.entryNo)) {
+        && this.props.selectedMons[0].entry !== (this.props.monster.entry || this.props.entryNo)) {
         this.props.dispatch(Actions.prepareMessageModal('먼저 선택한 포켓몬과 같은 엔트리의 포켓몬을 선택해주세요.'));
         this.props.dispatch(Actions.showMessageModal());
         return;
@@ -51,7 +53,7 @@ class MonsterCard extends React.Component {
     }
     // 선택시 에러 케이스 끝
     this.setState({ selected: true });
-    this.props.dispatch(Actions.addSelectedMon(this.props.monster ? this.props.monster : { cost: 0, entry: this.props.entryNo }));
+    this.props.dispatch(Actions.addSelectedMon(this.props.monster || { cost: 0, entry: this.props.entryNo }));
   }
   _uncheckItem() {
     this.setState({ selected: false });
@@ -60,7 +62,7 @@ class MonsterCard extends React.Component {
   // _changeEntry() {
   //   // 교체하고자 하는 포켓몬 저장
   //   this.props.dispatch(Actions.addEntryAsIs(this.props.entryNo, this.props.monster));
-  //   browserHistory.push('/entry-ready');
+  //   this.context.router.push('/entry-ready');
   // }
   render() {
     const renderLevelLabelComponent = () => {
@@ -119,10 +121,16 @@ class MonsterCard extends React.Component {
     const renderConditionComponent = () => {
       const condition = this.props.monster.condition;
       if (condition) {
+        const conditionName = conditionNames[condition];
+        const tooltip = (
+          <Tooltip id={keygen._()}>{conditionName}</Tooltip>
+        );
         return (
-          <ConditionComponent
-            condition={condition}
-          />
+          <OverlayTrigger placement="bottom" overlay={tooltip}>
+            <ConditionComponent
+              condition={condition}
+            />
+          </OverlayTrigger>
         );
       }
     };
@@ -130,11 +138,18 @@ class MonsterCard extends React.Component {
       const status = this.props.monster.status;
       const entry = this.props.monster.entry;
       if (status !== undefined && entry !== undefined) {
+        let statusName = statusNames[status];
+        if (entry !== 0) statusName = `엔트리 ${entry}`;
+        const tooltip = (
+          <Tooltip id={keygen._()}>{statusName}</Tooltip>
+        );
         return (
-          <StatusComponent
-            status={status}
-            entry={entry}
-          />
+          <OverlayTrigger placement="bottom" overlay={tooltip}>
+            <StatusComponent
+              status={status}
+              entry={entry}
+            />
+          </OverlayTrigger>
         );
       }
     };
@@ -144,11 +159,6 @@ class MonsterCard extends React.Component {
           return (
             <p><button onClick={this._uncheckItem} className="btn btn-sm btn-danger"><i className="ace-icon fa fa-times"></i> 선택해제</button></p>
           );
-          // TODO: REMOVE_SELECTED_MON 시 영향을 받지 않는 문제 해결해야 함
-        // } else if (this.props.entryMode) {
-        //   if (this.props.selectedMons[0] && this.props.entryNo !== this.props.selectedMons[0].entry) {
-        //     return <p><button disabled className="btn btn-sm btn-default"><i className="ace-icon fa fa-ban"></i> 선택불가</button></p>;
-        //   }
         }
         return (
           <p><button onClick={this._checkItem} className="btn btn-sm btn-warning"><i className="ace-icon fa fa-check"></i> 선택하기</button></p>

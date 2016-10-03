@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import CustomModal from '../Common/CustomModal';
-import { browserHistory } from 'react-router';
+
 import * as Actions from '../../redux/actions/actions';
 import { connect } from 'react-redux';
 
@@ -30,7 +30,7 @@ class LoginModal extends React.Component {
     this.props.dispatch(Actions.login(this.state.email, this.state.password, this.state.remember))
     .then(() => {
       this.props.close();
-      browserHistory.push('/');
+      this.context.router.push('/');
     });
     // $.ajax({
     //   url: '/api/login',
@@ -51,13 +51,13 @@ class LoginModal extends React.Component {
     //       //   success: () => {
     //       //     this.props.close();
     //       //     this.props.dispatch(Actions.fetchUserSession());
-    //       //     browserHistory.push('/');
+    //       //     this.context.router.push('/');
     //       //   },
     //       // });
     //     }
     //     this.props.close();
     //     this.props.dispatch(Actions.fetchUserSession());
-    //     browserHistory.push('/');
+    //     this.context.router.push('/');
     //   },
     //   error: (err) => {
     //     console.log(err);

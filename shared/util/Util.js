@@ -118,6 +118,10 @@ export const getTotalDexFromCollection = collection => {
   return collection.honorDex + collection.addedDex + collection._mon.dex;
 };
 
+export const getTotalAttackFromCollection = collection => {
+  return getTotalPowerFromCollection(collection) + getTotalSpecialPowerFromCollection(collection);
+};
+
 export const getRealHpFromCollection = collection => {
   return 360 + Math.floor(getTotalHpFromCollection(collection) * 4 * constants.conditionVar[collection.condition]);
 };
@@ -157,4 +161,13 @@ export const getSpecialDamage = (attackMon, defenseMon) => {
 
 export const getArmorPct = (armor, dex) => {
   return (0.001 + armor * 0.003 + dex * 0.0005);
+};
+
+export const getConditionAndConditionIdxFromMonster = monster => {
+  const { mainAttr } = monster;
+  const attrIdx = constants.attrIdx.indexOf(mainAttr);
+  const patternNo = attrIdx % 6;
+  const conditionPattern = constants.conditionPatterns[patternNo];
+  const conditionPatternIdx = Math.floor((Math.random() * conditionPattern.length) + 1);
+  return { condition: conditionPattern[conditionPatternIdx], conditionIdx: conditionPatternIdx };
 };

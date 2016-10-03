@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Link, browserHistory } from 'react-router';
+import { Link  } from 'react-router';
 import $ from 'jquery';
 import { connect } from 'react-redux';
 import * as Actions from '../redux/actions/actions';
@@ -222,7 +222,7 @@ class SelectDungeonView extends React.Component {
           </div>
         );
       } else {
-        browserHistory.push('/get-mon-impossible');
+        this.context.router.push('/get-mon-impossible');
       }
       return returnComponent;
     };

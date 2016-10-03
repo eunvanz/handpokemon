@@ -7,6 +7,7 @@ import multer from 'multer';
 import jwt from 'jwt-simple';
 import config from '../config';
 import passportService from '../passport'; // eslint-disable-line
+import * as constants from '../../shared/util/constants';
 
 // const requireAuth = passport.authenticate('jwt', { session: false });
 const requireSignin = passport.authenticate('local', { session: false });
@@ -47,7 +48,6 @@ const _getBattleRank = (battlePoint) => {
 };
 
 const _updateCredits = (user) => {
-  console.log('updating credits');
   const updateQuery = {};
   let modified = false;
   return new Promise((resolve) => {
@@ -56,8 +56,6 @@ const _updateCredits = (user) => {
       const getInterval = currentTime - user.lastGetTime;
       const addGetCredit = Math.floor(getInterval / user.getInterval);
       const restTime = getInterval - (user.getInterval * addGetCredit);
-      console.log('getInterval', getInterval);
-      console.log('addGetCredit', addGetCredit);
       const finalGetCredit = (user.getCredit + addGetCredit > user.maxGetCredit ? user.maxGetCredit : user.getCredit + addGetCredit);
       updateQuery.getCredit = finalGetCredit;
       updateQuery.lastGetTime = currentTime - restTime;
@@ -72,7 +70,6 @@ const _updateCredits = (user) => {
       updateQuery.lastBattleTime = currentTime - restTime;
       modified = true;
     }
-    console.log('updateQuery', updateQuery);
     if (modified) {
       User.findByIdAndUpdate(user._id, updateQuery).exec((updatedUser) => {
         resolve(updatedUser);
@@ -222,6 +219,68 @@ router.get('/api/users/league/:leagueNo', (req, res) => {
   });
 });
 
+const _updateUserCollectionStatus = user => {
+  // user의 collection에서 status가 0과 1인 콜렉션의 lastStatusUpdate를 오늘 날짜와 비교하여 갱신
+  // 하루 한번만 갱신하면 되기 때문에 user의 lastStatusUpdate 필드가 오늘 날짜가 아닐경우만 수행
+  const today = new Date();
+  const lastStatusUpdate = user.lastStatusUpdate;
+  const betweenDayOfStatusUpdate = Math.floor((today.getTime() - lastStatusUpdate.getTime()) / 1000 / 60 / 60 / 24);
+  if (betweenDayOfStatusUpdate > 0) {
+    return Collection.find({ _user: user._id }).or([{ status: 0 }, { status: 1 }]).exec()
+    .then(collections => {
+      const promiseArr = [];
+      for (const collection of collections) {
+        let status = collection.status + betweenDayOfStatusUpdate;
+        if (status > 2) status = 2;
+        promiseArr.push(Collection.findByIdAndUpdate(collection._id, { status }).exec());
+      }
+      const now = new Date();
+      const date = new Date();
+      date.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+      date.setHours(0, 0, 0, 0);
+      promiseArr.push(User.findByIdAndUpdate(user._id, { lastStatusUpdate: date }));
+      return Promise.all(promiseArr);
+    });
+  }
+  return Promise.resolve();
+};
+
+const _updateUserCollectionCondition = user => {
+  const today = new Date();
+  const lastConditionUpdate = user.lastConditionUpdate;
+  const betweenDayOfConditionUpdate = Math.floor((today.getTime() - lastConditionUpdate.getTime()) / 1000 / 60 / 60 / 24);
+  if (betweenDayOfConditionUpdate > 0) {
+    const collections = user._collections;
+    const promiseArr = [];
+    const updatedCollections = [];
+    let conditionIdx = 0;
+    let attrIdx = 0;
+    let conditionPatternIdx = 0;
+    let conditionPattern = [];
+    let updatedCollection = {};
+    for (const collection of collections) {
+      conditionIdx = collection.conditionIdx + betweenDayOfConditionUpdate;
+      attrIdx = constants.attrIdx.indexOf(collection._mon.mainAttr);
+      conditionPatternIdx = attrIdx % 6;
+      conditionPattern = constants.conditionPatterns[conditionPatternIdx];
+      if (conditionIdx > conditionPattern.length) conditionIdx = conditionIdx - conditionPattern.length - 1;
+      promiseArr.push(Collection.findByIdAndUpdate(collection._id, { conditionIdx, condition: conditionPattern[conditionIdx] }).exec());
+      updatedCollection = Object.assign({}, collection, { conditionIdx, condition: conditionPattern[conditionIdx] });
+      updatedCollections.push(updatedCollection);
+    }
+    const now = new Date();
+    const date = new Date();
+    date.setFullYear(now.getFullYear(), now.getMonth(), now.getDate());
+    date.setHours(0, 0, 0, 0);
+    promiseArr.push(User.findByIdAndUpdate(user._id, { lastConditionUpdate: date }));
+    Promise.all(promiseArr)
+    .then(() => {
+      return Promise.resolve(Object.assign({}, user, { _collections: updatedCollections, lastConditionUpdate: date }));
+    });
+  }
+  return Promise.resolve(user);
+};
+
 router.get('/api/users/:id', (req, res) => {
   const _id = req.params.id;
   User.findById(_id).exec((err, user) => {
@@ -235,27 +294,7 @@ router.get('/api/users/:id', (req, res) => {
     return User.findByIdAndUpdate(_id, { colRank: ranks[0] + 1, battleRank: ranks[1] + 1 }, { upsert: true }).exec();
   })
   .then(user => {
-    // user의 collection에서 status가 0과 1인 콜렉션의 lastStatusUpdate를 오늘 날짜와 비교하여 갱신
-    // 하루 한번만 갱신하면 되기 때문에 user의 lastStatusUpdate 필드가 오늘 날짜가 아닐경우만 수행
-    const today = new Date();
-    const lastStatueUpdate = user.lastStatusUpdate;
-    const betweenDay = Math.floor((today.getTime() - lastStatueUpdate.getTime()) / 1000 / 60 / 60 / 24);
-    if (betweenDay > 0) {
-      return Collection.find({ _user: _id }).or([{ status: 0 }, { status: 1 }]).exec()
-      .then(collections => {
-        const promiseArr = [];
-        for (const collection of collections) {
-          let status = collection.status + betweenDay;
-          if (status > 2) status = 2;
-          promiseArr.push(Collection.findByIdAndUpdate(collection._id, { status }).exec());
-        }
-        const now = new Date();
-        const date = new Date();
-        date.setFullYear(now.getYear(), now.getMonth(), now.getDate());
-        promiseArr.push(User.findByIdAndUpdate(user._id, { lastStatusUpdate: date }));
-        return Promise.all(promiseArr);
-      });
-    }
+    return _updateUserCollectionStatus(user);
   })
   .then(() => {
     return User.findById(_id).populate('_collections');
@@ -264,7 +303,10 @@ router.get('/api/users/:id', (req, res) => {
     if (populatedUser) {
       Collection.populate(populatedUser._collections, { path: '_mon' }, (err2, collections) => {
         populatedUser._collections = collections; // eslint-disable-line
-        res.json({ user: populatedUser });
+        _updateUserCollectionCondition(populatedUser)
+        .then(conditionUpdatedUser => {
+          res.json({ user: conditionUpdatedUser });
+        });
       });
     } else {
       res.json({ user: populatedUser });
@@ -274,7 +316,6 @@ router.get('/api/users/:id', (req, res) => {
 
 router.put('/api/users/:id', (req, res) => {
   const user = req.body.user || {}; // user object
-  console.log('user', user);
   const addedCollections = req.body.addedCollections; // should be an array
   let resultUser = null;
   const ranksPromise = [];
@@ -288,19 +329,15 @@ router.put('/api/users/:id', (req, res) => {
     return User.findByIdAndUpdate(req.params.id, user, { upsert: true });
   })
   .then(() => {
-    console.log('1');
     if (addedCollections) {
-      console.log('user._id: ' + req.params.id + '에 콜렉션 ' + addedCollections + ' 삽입');
       return User.findByIdAndUpdate(req.params.id, { $push: { _collections: { $each: addedCollections } } }, { upsert: true });
     }
   })
   .then(() => {
-    console.log('2');
     return User.findById(req.params.id).populate('_collections');
   })
   .then(updatedUser => {
     resultUser = updatedUser;
-    console.log('3');
     if (updatedUser) {
       return Collection.populate(updatedUser._collections, { path: '_mon' });
     }

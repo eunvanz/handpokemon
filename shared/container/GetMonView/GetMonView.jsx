@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import { Link, browserHistory } from 'react-router';
+import { Link  } from 'react-router';
 import MonsterInfoView from '../../components/Common/MonsterInfoView';
 import * as CollectionService from '../../service/CollectionService';
 import * as UserService from '../../service/UserService';
@@ -86,7 +86,7 @@ class GetMonView extends React.Component {
             this._appendScripts();
           });
         }
-        browserHistory.push('/get-mon-impossible');
+        this.context.router.replace('/get-mon-impossible');
       });
     } else if (action === 'get-mon-multi') {
       // TODO
@@ -180,7 +180,7 @@ class GetMonView extends React.Component {
       return returnComponent;
     };
     const renderRewardBadge = () => {
-      if (this.props.user.reward > this.props.user.getReward) {
+      if (this.props.beforeAction === 'get' && this.props.user.reward > this.props.user.getReward) {
         return (
           <span className="badge badge-info" style={{ color: 'white' }}>{this.props.user.reward - this.props.user.getReward}</span>
         );
@@ -202,7 +202,7 @@ class GetMonView extends React.Component {
       } else if (this.props.user.reward > this.props.user.getReward) {
         btnTxt = '계속 보상받기';
       }
-      if (this.props.user.getCredit > 0) {
+      if (this.props.beforeAction !== 'get' || (this.props.beforeAction === 'get' && this.props.user.getCredit > 0)) {
         returnComponent = (
           <p>
             <Link to={link}>

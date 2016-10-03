@@ -3,6 +3,7 @@
 var gameSpeed = $('#game-speed').val();
 var speed = 1 / gameSpeed;
 var speed2 = gameSpeed;
+var screenSize = $(window).width();
 
 jQuery(function($) {
   var target = $('.battle-arena');
@@ -17,7 +18,7 @@ jQuery(function($) {
     - $('.user-control').height() * 2
     - $('.mon-object').height() * 2
     - $('#navbar-container').height()
-    - ($(window).width() < 767 ? 0 : 60)
+    - (screenSize < 767 ? 0 : 60)
   );
 
   // 치명타 효과 사이즈 조정
@@ -334,30 +335,70 @@ function turnProcess(attacker) {
         //올라오는 데미지
         var damageContainer = $('.' + data[i].defender + '-mon-' + data[i].defenseMon + '-damage');
         var fontSize = 0;
+        var fontSizeForBigScreen = [18, 24, 30, 40, 54, 72, 92, 120];
+        var fontSizeForSmallScreen = [14, 18, 24, 30, 38, 46, 54, 62];
+        var topForBigScreen = ['-40px', '-46px', '-56px', '-66px', '-70px', '-88px', '-100px', '-110px'];
+        var topForSmallScreen = ['-40px', '-44px', '-50px', '-56px', '-64px', '-72px', '-80px', '-88px'];
         var top = '-40px';
         if (damage < 100) {
-          fontSize = 18;
+          if (screenSize < 767) { fontSize = fontSizeForSmallScreen[0]; }
+          else { fontSize = fontSizeForBigScreen[0]; }
         } else if (damage < 150) {
-          fontSize = 24;
-          top = '-46px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[1];
+            top = topForSmallScreen[1];
+          } else {
+            fontSize = fontSizeForBigScreen[1];
+            top = topForBigScreen[1];
+          }
         } else if (damage < 200) {
-          fontSize = 30;
-          top = '-56px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[2];
+            top = topForSmallScreen[2];
+          } else {
+            fontSize = fontSizeForBigScreen[2];
+            top = topForBigScreen[2];
+          }
         }  else if (damage < 250) {
-          fontSize = 40;
-          top = '-66px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[3];
+            top = topForSmallScreen[3];
+          } else {
+            fontSize = fontSizeForBigScreen[3];
+            top = topForBigScreen[3];
+          }
         }  else if (damage < 300) {
-          fontSize = 54;
-          top = '-70px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[4];
+            top = topForSmallScreen[4];
+          } else {
+            fontSize = fontSizeForBigScreen[4];
+            top = topForBigScreen[4];
+          }
         } else if (damage < 350) {
-          fontSize = 72;
-          top = '-88px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[5];
+            top = topForSmallScreen[5];
+          } else {
+            fontSize = fontSizeForBigScreen[5];
+            top = topForBigScreen[5];
+          }
         }  else if (damage < 400) {
-          fontSize = 92;
-          top = '-100px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[6];
+            top = topForSmallScreen[6];
+          } else {
+            fontSize = fontSizeForBigScreen[6];
+            top = topForBigScreen[6];
+          }
         } else {
-          fontSize = 120;
-          top = '-110px';
+          if (screenSize < 767) {
+            fontSize = fontSizeForSmallScreen[7];
+            top = topForSmallScreen[7];
+          } else {
+            fontSize = fontSizeForBigScreen[7];
+            top = topForBigScreen[7];
+          }
         }
         if (data[i].avoid) {
           damageContainer

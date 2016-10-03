@@ -114,8 +114,6 @@ const renderFullPage = (html, initialState) => {
 
         <link rel="stylesheet" href="/css/jquery-ui.custom.css" />
 
-        <!-- captcha -->
-        <link rel="stylesheet" type="text/css" href="/css/jquery.realperson.css">
         <link rel="shortcut icon" href="http://res.cloudinary.com/hashnode/image/upload/v1455629445/static_imgs/mern/mern-favicon-circle-fill.png" type="image/png" />
 
         <!-- pace -->

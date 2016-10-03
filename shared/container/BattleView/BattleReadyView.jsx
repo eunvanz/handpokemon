@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { setMenu } from '../../redux/actions/actions';
 import ContentView from '../../components/Common/ContentView';
 import { removeInlineScripts, appendInlineScripts } from '../../util/Util';
-import { browserHistory } from 'react-router';
 import $ from 'jquery';
 
 class BattleReadyView extends React.Component {
@@ -23,7 +22,7 @@ class BattleReadyView extends React.Component {
   }
   _handleOnClickReady() {
     $('#rdy-btn').attr('disabled', 'disabled');
-    browserHistory.push('league-battle-check-rival');
+    this.context.router.push('league-battle-check-rival');
   }
   render() {
     const renderContent = () => {

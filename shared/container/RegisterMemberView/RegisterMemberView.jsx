@@ -7,7 +7,7 @@ import MonsterCard from '../../components/Common/MonsterCard';
 import MessageModal from '../../components/Modals/MessageModal';
 import request from 'superagent';
 import $ from 'jquery';
-import { browserHistory } from 'react-router';
+
 
 class RegisterMemberView extends React.Component {
   constructor(props) {
@@ -93,7 +93,7 @@ class RegisterMemberView extends React.Component {
           this.props.dispatch(Actions.showLoginModal());
         };
         this.props.dispatch(Actions.prepareMessageModalConfirmAction(MessageModalConfirmAction));
-        browserHistory.push('/');
+        this.context.router.push('/');
       });
     });
   }

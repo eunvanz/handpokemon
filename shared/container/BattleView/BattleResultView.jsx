@@ -7,7 +7,7 @@ import { getTotalAbilityFromEntry, convertCollectionToMonsterForMonsterCard } fr
 import LeagueIcon from '../../components/Common/LeagueIcon';
 import UserPhotoComponent from '../../components/Common/UserPhotoComponent';
 import MonsterCard from '../../components/Common/MonsterCard';
-import { browserHistory } from 'react-router';
+
 
 class BattleResultView extends React.Component {
   constructor(props) {
@@ -89,13 +89,13 @@ class BattleResultView extends React.Component {
     this.props.dispatch(Actions.clearRivalEntryForBattle());
   }
   _handleOnClickReward() {
-    browserHistory.push('/get-mon');
+    this.context.router.push('/get-mon');
   }
   _handleOnClickContinue() {
-    browserHistory.push('/league-battle-check-rival');
+    this.context.router.push('/league-battle-check-rival');
   }
   _handleOnClickRank() {
-    browserHistory.push('/ranking-battle');
+    this.context.router.push('/ranking-battle');
   }
   render() {
     const renderRankChangeInfo = type => {

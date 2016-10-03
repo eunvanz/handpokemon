@@ -6,7 +6,7 @@ import MonsterCard from '../../components/Common/MonsterCard';
 import * as Util from '../../util/Util';
 import keygen from 'keygenerator';
 import * as constants from '../../util/constants';
-import { browserHistory } from 'react-router';
+
 import { updateUserBattlePossible } from '../../service/UserService';
 
 class EntryView extends React.Component {
@@ -39,8 +39,17 @@ class EntryView extends React.Component {
     const scriptSrcs = ['/js/collection-view-inline.js'];
     Util.appendInlineScripts(scriptSrcs);
   }
+  shouldComponentUpdate(nextProps) {
+    // MonsterCard 선택 시 MonsterCard의 Re-Mount 방지
+    return nextProps.selectedMons.length === this.props.selectedMons.length;
+  }
   _clickChangeBtn() {
-    browserHistory.push('/entry-ready');
+    if (this.props.selectedMons.length > 0) {
+      this.context.router.push('/entry-ready');
+    } else {
+      this.props.dispatch(Actions.prepareMessageModal('적어도 하나의 포켓몬을 선택해주세요.'));
+      this.props.dispatch(Actions.showMessageModal());
+    }
   }
   render() {
     const entryState = this.props.entryState;
@@ -163,6 +172,7 @@ class EntryView extends React.Component {
                     >
                       <button className="btn btn-primary hidden-xs"
                         onClick={this._clickChangeBtn}
+                        id="btn-change"
                       >
                         <i className="ace-icon fa fa-refresh"></i> 교체하기
                       </button>
@@ -207,6 +217,7 @@ const mapStateToProps = (store) => ({
   user: store.user,
   collectionUser: store.collectionUser,
   entryState: store.entryState,
+  selectedMons: store.selectedMons,
 });
 
 EntryView.propTypes = {
@@ -215,6 +226,7 @@ EntryView.propTypes = {
   collectionUser: PropTypes.object,
   params: PropTypes.object,
   entryState: PropTypes.object,
+  selectedMons: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(EntryView);

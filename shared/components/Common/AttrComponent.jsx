@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import HelpComponent from './HelpComponent';
 
 class AttrComponent extends React.Component {
   constructor(props) {
@@ -6,6 +7,18 @@ class AttrComponent extends React.Component {
     this.displayName = 'AttrComponent';
   }
   render() {
+    const renderAttrHelpComponent = () => {
+      if (this.props.withHelp) {
+        return (
+          <HelpComponent
+            key="4"
+            title="속성"
+            content="각 속성간에는 상성관계가 있습니다. 이러한 상성관계는 포켓몬이 상대 포켓몬에게 입히는 데미지에 영향을 줍니다. 게임가이드의 상성표를 확인해주세요."
+          />
+        );
+      }
+      return null;
+    };
     const renderComponent = () => {
       const itemDom = [];
       const grade = this.props.grade;
@@ -127,7 +140,8 @@ class AttrComponent extends React.Component {
       } else if (subAttr === '강철') {
         subAttrLabel = <span key="3" className="label label-sm label-iron arrowed-in" style={{ marginLeft: '1px' }}>{subAttr}</span>;
       }
-      itemDom.push(gradeLabel, mainAttrLabel, subAttrLabel);
+      const helpComponent = renderAttrHelpComponent();
+      itemDom.push(gradeLabel, mainAttrLabel, subAttrLabel, helpComponent);
       return itemDom;
     };
     return (
@@ -142,6 +156,7 @@ AttrComponent.propTypes = {
   mainAttr: PropTypes.string,
   subAttr: PropTypes.string,
   grade: PropTypes.string,
+  withHelp: PropTypes.bool,
 };
 
 export default AttrComponent;

@@ -13,7 +13,7 @@ class StatusComponent extends React.Component {
       let colorClass = 'text-primary';
       if (status === 1) {
         iconClass = 'fa-battery-half';
-        colorClass = 'text-warining';
+        colorClass = 'text-warning';
       } else if (status === 0) {
         iconClass = 'fa-battery-empty';
         colorClass = 'text-danger';

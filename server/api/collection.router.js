@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Collection from '../models/collection.model';
 import User from '../models/user.model';
 import Monster from '../models/monster.model';
+import { getConditionAndConditionIdxFromMonster } from '../../shared/util/Util';
 
 const router = new Router();
 
@@ -20,13 +21,13 @@ const router = new Router();
 router.post('/api/collections/basic-pick/:userId', (req, res) => {
   const pickedMons = req.body.pickedMons;
   const collections = [];
-  let condition = 1;
   for (const mon of pickedMons) {
-    condition = Math.floor((Math.random() * 5) + 1);
+    const { condition, conditionIdx } = getConditionAndConditionIdxFromMonster(mon);
     const collection = new Collection({
       _mon: mon._id,
       _user: req.params.userId,
       condition,
+      conditionIdx,
     });
     console.log('추가된콜렉션: ' + collection);
     // this log prints right objects
@@ -270,19 +271,31 @@ router.delete('/api/collections/:collectionId', (req, res) => {
   });
 });
 
+const _getMonsterById = monId => {
+  return new Promise(resolve => {
+    Monster.findById(monId).exec((err, mon) => {
+      resolve(mon);
+    });
+  });
+};
+
 router.post('/api/collections', (req, res) => {
   const userId = req.body.userId;
   const monId = req.body.monId;
-  const condition = Math.floor((Math.random() * 5) + 1);
-  const collection = new Collection({
-    _mon: monId,
-    _user: userId,
-    condition,
-  });
-  collection.save((err, savedCollection) => {
-    if (err) return res.status(500).send(err);
-    Collection.findById(savedCollection._id).populate('_mon').exec((err2, col) => {
-      res.json({ collection: col });
+  _getMonsterById(monId)
+  .then(monster => {
+    const { condition, conditionIdx } = getConditionAndConditionIdxFromMonster(monster);
+    const collection = new Collection({
+      _mon: monId,
+      _user: userId,
+      condition,
+      conditionIdx,
+    });
+    collection.save((err, savedCollection) => {
+      if (err) return res.status(500).send(err);
+      Collection.findById(savedCollection._id).populate('_mon').exec((err2, col) => {
+        res.json({ collection: col });
+      });
     });
   });
 });

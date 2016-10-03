@@ -28,6 +28,7 @@ const collectionSchema = new Schema({
   status: { type: Number, default: 2, required: true }, // 0: 방전, 1: 회복중, 2: 정상
   entry: { type: Number, default: 0, required: true }, // 0: 엔트리없음
   lastStatusUpdate: { type: Date, default: Date.now, required: true },
+  conditionIdx: { type: Number, required: true },
 });
 
 collectionSchema.plugin(mongoosePaginate);

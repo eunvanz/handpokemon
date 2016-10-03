@@ -4,7 +4,7 @@ import MessageModal from '../../components/Modals/MessageModal';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import { browserHistory } from 'react-router';
+
 import { userImgRoute } from '../../util/constants';
 
 const style = {
@@ -39,11 +39,11 @@ class Header extends React.Component {
   _handleLogoutClick() {
     localStorage.removeItem('token');
     this.props.dispatch(Actions.logout())
-    .then(() => browserHistory.push('/'));
+    .then(() => this.context.router.push('/'));
     // $.ajax({
     //   url: '/api/logout',
     //   success: () => {
-    //     browserHistory.push('/');
+    //     this.context.router.push('/');
     //   },
     // });
   }

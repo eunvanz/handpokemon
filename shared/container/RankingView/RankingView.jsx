@@ -217,7 +217,7 @@ RankingView.propTypes = {
   user: PropTypes.object,
   users: PropTypes.object,
   monsterCountInfo: PropTypes.object.isRequired,
-  allMons: PropTypes.object,
+  allMons: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(RankingView);

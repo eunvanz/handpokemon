@@ -4,9 +4,9 @@ import * as Actions from '../../redux/actions/actions';
 import ContentView from '../../components/Common/ContentView';
 import EntryComponent from '../../components/Common/EntryComponent';
 import $ from 'jquery';
-import { browserHistory } from 'react-router';
-import { getEntryForBattleFromUser, getAttrMatchAdjustedVar, appendInlineScripts } from '../../util/Util';
+import { getEntryForBattleFromUser, getAttrMatchAdjustedVar, getTotalAttackFromCollection } from '../../util/Util';
 import { updateUserToLose } from '../../service/UserService';
+import HelpComponent from '../../components/Common/HelpComponent';
 
 class BattleRivalView extends React.Component {
   constructor(props) {
@@ -36,14 +36,16 @@ class BattleRivalView extends React.Component {
       this.props.dispatch(Actions.getFirstAttackFlag(firstAttackFlag));
       let userAttrBonus = 0;
       let rivalAttrBonus = 0;
-      for (const userCollection of userEntry) {
-        for (const rivalCollection of rivalEntry) {
-          userAttrBonus += getAttrMatchAdjustedVar(userCollection, rivalCollection).toFixed(2) * 100 - 100;
-          rivalAttrBonus += getAttrMatchAdjustedVar(rivalCollection, userCollection).toFixed(2) * 100 - 100;
+      const userAttackRatio = [getTotalAttackFromCollection(userEntry[0]), getTotalAttackFromCollection(userEntry[1]), getTotalAttackFromCollection(userEntry[2])];
+      const userTotalAttack = userAttackRatio.reduce((pre, cur) => pre + cur);
+      const rivalAttackRatio = [getTotalAttackFromCollection(rivalEntry[0]), getTotalAttackFromCollection(rivalEntry[1]), getTotalAttackFromCollection(rivalEntry[2])];
+      const rivalTotalAttack = rivalAttackRatio.reduce((pre, cur) => pre + cur);
+      for (let i = 0; i < userEntry.length; i++) {
+        for (let j = 0; j < rivalEntry.length; j++) {
+          userAttrBonus += (getAttrMatchAdjustedVar(userEntry[i], rivalEntry[j]) * 100 - 100) * (userAttackRatio[i] / userTotalAttack);
+          rivalAttrBonus += (getAttrMatchAdjustedVar(rivalEntry[j], userEntry[i]) * 100 - 100) * (rivalAttackRatio[j] / rivalTotalAttack);
         }
       }
-      userAttrBonus = userAttrBonus / 9;
-      rivalAttrBonus = rivalAttrBonus / 9;
       this.setState({
         userAttrBonus: userAttrBonus.toFixed(1),
         rivalAttrBonus: rivalAttrBonus.toFixed(1),
@@ -51,12 +53,13 @@ class BattleRivalView extends React.Component {
     });
   }
   componentDidMount() {
-    const scripts = ['/js/inline/catch-exit.js'];
-    appendInlineScripts(scripts);
+    this.context.router.listenBeforeUnload(() => {
+      return '이 페이지에서 벗어나면 패배처리됩니다. 나가시겠습니까?';
+    });
   }
   _handleOnClickNext() {
     $('#next-btn').attr('disabled', 'disabled');
-    browserHistory.push('decide-first-attack');
+    this.context.router.replace('decide-first-attack');
   }
   render() {
     const renderRivalEntry = () => {
@@ -77,6 +80,14 @@ class BattleRivalView extends React.Component {
         />
       );
     };
+    const renderBonusHelpComponent = () => {
+      return (
+        <HelpComponent
+          title="평균상성"
+          content="각각의 포켓몬에 대해 상성보너스 혹은 패널티를 공격력에 가중치를 두어 계산한 평균 상성보너스(혹은 패널티)로 시합에서 대략 이 정도의 상성보너스(혹은 패널티) 효과를 얻을 수 있습니다."
+        />
+      );
+    };
     const renderContent = () => {
       if (this.props.user && this.props.rival && this.props.rivalEntryForBattle && this.props.userEntryForBattle) {
         return (
@@ -87,13 +98,13 @@ class BattleRivalView extends React.Component {
                 <h3>
                   <i className="fa fa-chevron-circle-down text-primary"></i> <small>평균상성: </small>
                   <span className={`${this.state.rivalAttrBonus < 0 ? 'text-danger' : 'text-primary'}`}>
-                  <strong>{this.state.rivalAttrBonus}</strong></span><small>%</small>
+                  <strong>{this.state.rivalAttrBonus}</strong></span><small>%</small> {renderBonusHelpComponent()}
                 </h3>
-                <h2 className="text-danger"><strong>VS</strong></h2>
+                <h3><span className="label label-xlg label-danger arrowed-in-right arrowed-in"><strong>VS</strong></span></h3>
                 <h3>
                   <i className="fa fa-chevron-circle-up text-primary"></i> <small>평균상성: </small>
                   <span className={`${this.state.userAttrBonus < 0 ? 'text-danger' : 'text-primary'}`}>
-                  <strong>{this.state.userAttrBonus}</strong></span><small>%</small>
+                  <strong>{this.state.userAttrBonus}</strong></span><small>%</small> {renderBonusHelpComponent()}
                 </h3>
               </div>
             </div>

@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import { browserHistory } from 'react-router';
 import { appendInlineScripts, removeInlineScripts } from '../../util/Util';
 import { getBattleResultObject } from '../../util/battle';
 import ContentView from '../../components/Common/ContentView';
@@ -10,6 +9,7 @@ class FirstAttackView extends React.Component {
   constructor(props) {
     super(props);
     this.displayName = 'FirstAttackView';
+    this._handleOnClickStart = this._handleOnClickStart.bind(this);
   }
   componentDidMount() {
     const scriptSrcs = ['/js/roulette.js', '/js/inline/first-attack-view.js', '/js/align-middle.js'];
@@ -19,13 +19,16 @@ class FirstAttackView extends React.Component {
     const firstAttackFlag = this.props.battleInfo.firstAttack;
     const battleResult = getBattleResultObject(userEntry, rivalEntry, firstAttackFlag);
     this.props.dispatch(Actions.getBattleResult(battleResult));
+    this.context.router.listenBeforeUnload(() => {
+      return '이 페이지에서 벗어나면 패배처리됩니다. 나가시겠습니까?';
+    });
   }
   componentWillUnmount() {
     removeInlineScripts();
   }
   _handleOnClickStart() {
     // 시합화면으로 넘어가는 로직
-    browserHistory.push('battle');
+    this.context.router.replace('battle');
   }
   render() {
     const renderFirstAttackRoulette = () => {
@@ -96,6 +99,7 @@ FirstAttackView.propTypes = {
   userEntryForBattle: PropTypes.array.isRequired,
   rivalEntryForBattle: PropTypes.array.isRequired,
   battleInfo: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(FirstAttackView);
