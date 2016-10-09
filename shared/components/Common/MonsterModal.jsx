@@ -7,6 +7,7 @@ import CostComponent from './CostComponent';
 import AttrComponent from './AttrComponent';
 import { statusNames, conditionNames } from '../../util/constants';
 import HelpComponent from './HelpComponent';
+import { monsterImgRoute } from '../../util/constants';
 
 class MonsterModal extends React.Component {
   constructor(props) {
@@ -16,7 +17,6 @@ class MonsterModal extends React.Component {
       showModal: false,
     };
     this._flip = this._flip.bind(this);
-    this._handleImgChange = this._handleImgChange.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     this.setState({ showModal: nextProps.show });
@@ -24,10 +24,6 @@ class MonsterModal extends React.Component {
   _flip() {
     $('.modal .front').toggle();
     $('.modal .back').toggle();
-  }
-  _handleImgChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-    // TODO: 이미지 타입 업데이트 하는 코드 들어가야 함
   }
   render() {
     const renderGradeHelpComponent = () => {
@@ -57,14 +53,21 @@ class MonsterModal extends React.Component {
       );
     };
     const renderSelectImgComponent = () => {
-      const imgArr = this.props.monster.img;
-      const returnComponent = [];
-      let idx = 0;
-      if (imgArr.length > 1) {
-        const itemListComponent = imgArr.map((img) => <option key={idx} value={img}>타입 {idx++}</option>);
-        return (
-          returnComponent.push(<select key="selectImg" style={{ maxWidth: '200px' }} onChange={this._handleImgChange}>{itemListComponent()}</select>)
-        );
+      if (this.props.imgSelectable) {
+        const imgArr = this.props.monster.img;
+        const returnComponent = [];
+        let idx = 0;
+        if (imgArr.length > 1) {
+          const itemListComponent = () => {
+            return imgArr.map(() => <option key={idx} value={idx}>타입 {(idx++) + 1}</option>);
+          };
+          returnComponent.push(<select key="selectImg"
+            style={{ maxWidth: '200px' }}
+            onChange={this.props.onChangeImg}
+            value={this.props.imgIdx}
+          >{itemListComponent()}</select>);
+        }
+        return returnComponent;
       }
     };
     const renderLevelComponent = () => {
@@ -115,7 +118,7 @@ class MonsterModal extends React.Component {
       returnComponent.push(
           <p key="img">
             <img className="monster-image picks"
-              src={`/img/monsters/${this.props.monster.img }`}
+              src={`${monsterImgRoute}/${this.props.monster.img[this.props.imgIdx]}`}
               width="100%"
               style={{ maxWidth: '150px' }}
             />
@@ -536,7 +539,11 @@ class MonsterModal extends React.Component {
                 <div className="row">
                   <div className="col-xs-12">
                     <p className="monster-description">{this.props.monster.desc}
-                      (designed by <span className="badge badge-pink" id={`designer-mon-${this.props.monster.monNo}`}>{this.props.monster.designer}</span>)
+                      (designed by <span
+                        className="badge badge-pink"
+                        id={`designer-mon-${this.props.monster.monNo}`}
+                      >{this.props.monster.designer[this.props.monster.imgIdx]}
+                      </span>)
                     </p>
                   </div>
                 </div>
@@ -586,6 +593,9 @@ class MonsterModal extends React.Component {
 MonsterModal.propTypes = {
   monster: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired,
+  onChangeImg: PropTypes.func,
+  imgIdx: PropTypes.node,
+  imgSelectable: PropTypes.bool,
 };
 
 export default MonsterModal;

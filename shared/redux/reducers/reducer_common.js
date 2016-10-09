@@ -50,3 +50,12 @@ export const menu = (state = 'home', action) => {
       return state;
   }
 };
+
+export const honors = (state = [], action) => {
+  switch (action.type) {
+    case ActionTypes.SET_HONORS :
+      return action.honors;
+    default :
+      return state;
+  }
+};

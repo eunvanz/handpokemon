@@ -73,3 +73,5 @@ export const GET_FIRST_ATTACK_FLAG = 'GET_FIRST_ATTACK_FLAG';
 export const GET_BATTLE_RESULT = 'GET_BATTLE_RESULT';
 
 export const GET_GAME_SPEED = 'GET_GAME_SPEED';
+
+export const SET_HONORS = 'SET_HONORS';

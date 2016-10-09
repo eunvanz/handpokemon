@@ -323,7 +323,6 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
         const index = Math.floor(Math.random() * size);
         pickedMon = basicMons[index];
       }
-      console.log('pickedMon', pickedMon);
       // 유저가 가지고 있는 포켓몬인지 확인
       const userCollections = user._collections;
       let collectionId = null;
@@ -331,7 +330,6 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       for (const collection of userCollections) {
         if (pickedMon.monNo === collection._mon.monNo) {
           collectionId = collection._id;
-          console.log('이미 있는 포켓몬', collectionId);
           break;
         }
       }
@@ -383,12 +381,10 @@ export function fetchOneMonWhenGet(user, mode, beforeId) {
       .then(() => {
         // 이미 가지고 있는 포켓몬일 경우 스탯 상승
         if (collectionId) {
-          console.log('collectionId', collectionId);
           return fetch(`${baseURL}/api/collections/${collectionId}`)
           .then(res => res.json())
           .then(res => {
             const collection = res.collection;
-            console.log('collection', collection);
             collection.addedHp = collection.addedHp + addedHp;
             collection.addedPower = collection.addedPower + addedPower;
             collection.addedArmor = collection.addedArmor + addedArmor;
@@ -627,6 +623,17 @@ export function fetchRivalForLeague(user) {
       const users = res.data.users;
       const filteredUsers = users.filter(item => user._id !== item._id);
       const usersSize = filteredUsers.length;
+      // 같은 리그에 유저가 없을경우 불지옥 리그에서 유저 가져옴
+      if (usersSize === 0) {
+        return axios.get(`${baseURL}/api/users/league/0`)
+        .then(res2 => {
+          const users2 = res2.data.users;
+          const filteredUsers2 = users2.filter(item => user._id !== item._id);
+          const usersSize2 = filteredUsers.length;
+          const rival = filteredUsers2[Math.floor(Math.random() * usersSize2)];
+          return axios.get(`${baseURL}/api/users/${rival._id}`);
+        });
+      }
       const rival = filteredUsers[Math.floor(Math.random() * usersSize)];
       return axios.get(`${baseURL}/api/users/${rival._id}`);
     })
@@ -688,5 +695,21 @@ export function getGameSpeed(number) {
   return {
     type: ActionTypes.GET_GAME_SPEED,
     number,
+  };
+}
+
+export function setHonors(honors) {
+  return {
+    type: ActionTypes.SET_HONORS,
+    honors,
+  };
+}
+
+export function fetchHonors() {
+  return (dispatch) => {
+    return axios.get(`${baseURL}/api/honors`)
+    .then(res => {
+      dispatch(setHonors(res.data.honors));
+    });
   };
 }

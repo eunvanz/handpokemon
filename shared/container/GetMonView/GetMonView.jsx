@@ -1,11 +1,14 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import * as Actions from '../../redux/actions/actions';
-import { Link  } from 'react-router';
+import { Link } from 'react-router';
 import MonsterInfoView from '../../components/Common/MonsterInfoView';
 import * as CollectionService from '../../service/CollectionService';
 import * as UserService from '../../service/UserService';
 import $ from 'jquery';
+import { getAcomplishedHonors, getMissionNameFromHonor, getDisabledHonors } from '../../util/Util';
+import HonorComponent from '../../components/Common/HonorComponent';
+import keygen from 'keygenerator';
 
 const scratchStyle = {
   width: '200px',
@@ -71,7 +74,16 @@ class GetMonView extends React.Component {
     action = location.pathname.split('/')[1];
     collectionId = location.pathname.split('/')[2];
     if (action === 'mix-mon') {
-      this._appendScripts();
+      this.props.dispatch(Actions.fetchHonors())
+      .then(() => {
+        const acomplishedHonors = getAcomplishedHonors(this.props.user, this.props.honors);
+        if (acomplishedHonors.length > 0) {
+          return UserService.updateCompletedHonors(this.props.user, acomplishedHonors);
+        }
+      })
+      .then(() => {
+        this._appendScripts();
+      });
     } else if (action === 'get-mon') {
       return this.props.dispatch(Actions.fetchUserSession())
       .then(() => {
@@ -80,6 +92,15 @@ class GetMonView extends React.Component {
           return this.props.dispatch(Actions.fetchOneMonWhenGet(user, 'get', null))
           .then(() => {
             return this.props.dispatch(Actions.fetchUserSession());
+          })
+          .then(() => {
+            return this.props.dispatch(Actions.fetchHonors());
+          })
+          .then(() => {
+            const acomplishedHonors = getAcomplishedHonors(this.props.user, this.props.honors);
+            if (acomplishedHonors.length > 0) {
+              return UserService.updateCompletedHonors(this.props.user, acomplishedHonors);
+            }
           })
           .then(() => {
             this.props.dispatch(Actions.setBeforeAction('get'));
@@ -121,6 +142,15 @@ class GetMonView extends React.Component {
           })
           .then(() => {
             return this.props.dispatch(Actions.fetchUserSession());
+          })
+          .then(() => {
+            return this.props.dispatch(Actions.fetchHonors());
+          })
+          .then(() => {
+            const acomplishedHonors = getAcomplishedHonors(this.props.user, this.props.honors);
+            if (acomplishedHonors.length > 0) {
+              return UserService.updateCompletedHonors(this.props.user, acomplishedHonors);
+            }
           })
           .then(() => {
             this._appendScripts();
@@ -213,6 +243,63 @@ class GetMonView extends React.Component {
       }
       return returnComponent;
     };
+    const renderMissionInfo = () => {
+      const honors = getAcomplishedHonors(this.props.user, this.props.honors);
+      if (honors.length > 0) {
+        const renderTbody = honorsParam => {
+          return honorsParam.map(honor => {
+            return (
+              <tr key={keygen._()}>
+                <td className="center">{getMissionNameFromHonor(honor)}</td>
+                <td className="center">포키머니 <span className="badge badge-info">{honor.reward}</span></td>
+                <td className="center"><HonorComponent honor={honor}/></td>
+              </tr>
+            );
+          });
+        };
+        return (
+          <div>
+            <div className="space"></div>
+            <p>
+              <span className="label label-xlg label-danger arrowed-in arrowed-in-right">
+                <b>업적 달성</b>
+              </span>
+            </p>
+            <table id="simple-table" className="table table-striped table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th className="center">업적명</th>
+                  <th className="center">보상</th>
+                  <th className="center">획득칭호</th>
+                </tr>
+              </thead>
+              <tbody>
+                {renderTbody(honors)}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+    };
+    const renderDisabledHonorInfo = () => {
+      const honors = getDisabledHonors(this.props.user, this.props.honors);
+      if (honors.length > 0) {
+        return (
+          <div>
+            <div className="space"></div>
+            <p>
+              <span className="label label-xlg label-danger arrowed-in arrowed-in-right">
+                <b>칭호해제</b>
+              </span>
+            </p>
+            <p>소모된 포켓몬으로 인해 다음 칭호가 해제되었습니다.</p>
+            <p>
+              {honors.map(honor => <HonorComponent key={keygen._()} honor={honor}/>)}
+            </p>
+          </div>
+        );
+      }
+    };
     const renderGetResult = () => {
       let returnComponent = null;
       if (this.props.mon) {
@@ -232,7 +319,7 @@ class GetMonView extends React.Component {
                   </p>
                   <div className="scratch-container">
                     <div id="demo2" className="scratchpad" style={scratchStyle}></div>
-                    <input type="hidden" id="monImg" value={this.props.mon._mon.img}/>
+                    <input type="hidden" id="monImg" value={this.props.mon._mon.img[0]}/>
                   </div>
                   <div className="space"></div>
                   <div className="info-container">
@@ -250,6 +337,8 @@ class GetMonView extends React.Component {
                           <i className="fa fa-refresh"></i> 뒤집기
                         </button>
                       </p>
+                      {renderMissionInfo()}
+                      {renderDisabledHonorInfo()}
                       {renderContinueBtn()}
                     </div>
                   </div>
@@ -277,6 +366,7 @@ const mapStateToProps = (store) => ({
   monInfoFlip: store.monInfoFlip,
   addedAbility: store.addedAbility,
   beforeAction: store.beforeAction,
+  honors: store.honors,
 });
 
 GetMonView.propTypes = {
@@ -286,6 +376,7 @@ GetMonView.propTypes = {
   monInfoFlip: PropTypes.bool,
   addedAbility: PropTypes.object,
   beforeAction: PropTypes.string,
+  honors: PropTypes.array,
 };
 
 export default connect(mapStateToProps)(GetMonView);

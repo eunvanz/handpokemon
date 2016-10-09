@@ -76,10 +76,12 @@ app.use(passport.session());
 import UserRouter from './api/user.router';
 import MonsterRouter from './api/monster.router';
 import CollectionRouter from './api/collection.router';
+import HonorRouter from './api/honor.router';
 
 app.use(UserRouter);
 app.use(MonsterRouter);
 app.use(CollectionRouter);
+app.use(HonorRouter);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {

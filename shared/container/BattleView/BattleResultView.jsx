@@ -8,7 +8,6 @@ import LeagueIcon from '../../components/Common/LeagueIcon';
 import UserPhotoComponent from '../../components/Common/UserPhotoComponent';
 import MonsterCard from '../../components/Common/MonsterCard';
 
-
 class BattleResultView extends React.Component {
   constructor(props) {
     super(props);

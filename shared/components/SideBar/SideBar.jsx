@@ -55,22 +55,22 @@ class SideBar extends React.Component {
     };
     const renderHonor = () => {
       return (
-        <li>
+        <li className={menu.startsWith('honor') ? 'active open' : null}>
           <Link to="" className="dropdown-toggle">
             <i className="menu-icon fa fa-certificate"></i>
             <span className="menu-text"> 업적과 칭호 </span>
             <b className="arrow fa fa-angle-down"></b>
           </Link>
           <ul className="submenu">
-            <li>
-              <Link to="/">
+            <li className={menu === 'honor-mission-state' ? 'active' : null}>
+              <Link to="/honor-mission-state">
                 <i className="menu-icon fa fa-caret-right"></i>
                 <span className="menu-text"> 업적달성 현황 </span>
               </Link>
               <b className="arrow"></b>
             </li>
-            <li>
-              <Link to="/">
+            <li className={menu === 'honor-set-honor' ? 'active' : null}>
+              <Link to="/honor-set-honor">
                 <i className="menu-icon fa fa-caret-right"></i>
                 <span className="menu-text"> 칭호 설정 </span>
               </Link>

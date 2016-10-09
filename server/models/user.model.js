@@ -45,6 +45,7 @@ const userSchema = new Schema({
   lastStatusUpdate: { type: Date, default: Date.now, required: true },
   battlePossible: { type: Boolean, default: false, required: true },
   lastConditionUpdate: { type: Date, default: Date.now, required: true },
+  completedHonors: { type: Array, default: [], required: true },
 });
 
 // userSchema.plugin(passportLocalMongoose, {

@@ -1,9 +1,12 @@
 import * as constants from './constants';
+import { disableUserHonor } from '../service/UserService';
 
 export const convertCollectionToMonsterForMonsterCard = (col) => {
   const mon = {};
   const baseMon = col._mon;
-  mon.img = [baseMon.img[col.imgIdx]];
+  mon.img = baseMon.img;
+  mon.imgIdx = col.imgIdx;
+  mon.designer = baseMon.designer;
   mon.level = col.level;
   mon.initHp = baseMon.hp;
   mon.initPower = baseMon.power;
@@ -11,12 +14,12 @@ export const convertCollectionToMonsterForMonsterCard = (col) => {
   mon.initSpecialPower = baseMon.specialPower;
   mon.initSpecialArmor = baseMon.specialArmor;
   mon.initDex = baseMon.dex;
-  mon.hp = baseMon.hp + col.addedHp;
-  mon.power = baseMon.power + col.addedPower;
-  mon.armor = baseMon.armor + col.addedArmor;
-  mon.specialPower = baseMon.specialPower + col.addedSpecialPower;
-  mon.specialArmor = baseMon.specialArmor + col.addedSpecialArmor;
-  mon.dex = baseMon.dex + col.addedDex;
+  mon.hp = baseMon.hp + col.addedHp + col.honorHp;
+  mon.power = baseMon.power + col.addedPower + col.honorPower;
+  mon.armor = baseMon.armor + col.addedArmor + col.honorArmor;
+  mon.specialPower = baseMon.specialPower + col.addedSpecialPower + col.honorSpecialPower;
+  mon.specialArmor = baseMon.specialArmor + col.addedSpecialArmor + col.honorSpecialArmor;
+  mon.dex = baseMon.dex + col.addedDex + col.honorDex;
   mon.honorHp = col.honorHp;
   mon.honorHp = col.honorHp;
   mon.honorPower = col.honorPower;
@@ -34,7 +37,6 @@ export const convertCollectionToMonsterForMonsterCard = (col) => {
   mon.name = baseMon.name;
   mon.desc = baseMon.desc;
   mon.skillName = baseMon.skillName;
-  mon.designer = baseMon.designer[col.imgIdx];
   mon.point = baseMon.point;
   mon.condition = col.condition;
   mon.status = col.status;
@@ -170,4 +172,89 @@ export const getConditionAndConditionIdxFromMonster = monster => {
   const conditionPattern = constants.conditionPatterns[patternNo];
   const conditionPatternIdx = Math.floor((Math.random() * conditionPattern.length) + 1);
   return { condition: conditionPattern[conditionPatternIdx], conditionIdx: conditionPatternIdx };
+};
+
+export const getCollectionByAttr = (collections, attr) => {
+  return collections.filter(collection => {
+    return collection._mon.mainAttr === attr || collection._mon.subAttr === attr;
+  });
+};
+
+export const getAcomplishedHonors = (user, honors) => {
+  // 이미 유저가 달성한 미션 제외
+  const completedHonorNos = user.completedHonors;
+  const uncompletedHonors = honors.filter(honor => {
+    return completedHonorNos.indexOf(honor.no) === -1;
+  });
+  let conditionField = null;
+  return uncompletedHonors.filter(honor => {
+    if (honor.type === 1) conditionField = user.colPoint;
+    else if (honor.type === 2) conditionField = getCollectionByAttr(user._collections, honor.attr).length;
+    return honor.condition <= conditionField;
+  });
+};
+
+export const getMissionNameFromHonor = honor => {
+  if (honor.type === 1) return `콜렉션점수 ${honor.condition} 달성`;
+  return `${honor.attr}속성 ${honor.condition}마리 보유`;
+};
+
+export const getClassNameFromHonor = (honor, disabled) => {
+  let className = '';
+  if (honor.type === 1) {
+    className = `${constants.honorClassName.type1} `;
+    if (disabled) className += 'label-default';
+    else if (honor.name.indexOf('트레이너') > 0) className += constants.honorClassName['트레이너'];
+    else if (honor.name.indexOf('레인저') > 0) className += constants.honorClassName['레인저'];
+    else if (honor.name.indexOf('짐리더') > 0) className += constants.honorClassName['짐리더'];
+    else if (honor.name.indexOf('챔피언') > 0) className += constants.honorClassName['챔피언'];
+    else if (honor.name.indexOf('마스터') > 0) className += constants.honorClassName['마스터'];
+  } else if (honor.type === 2) {
+    className = `${constants.honorClassName.type2} ${disabled ? 'label-default' : constants.honorClassName[honor.attr]}`;
+  }
+  return className;
+};
+
+export const getDisabledHonors = (user, honors) => {
+  // 유저가 달성한 미션중에서
+  const completedHonorNos = user.completedHonors;
+  const completedHonors = honors.filter(honor => {
+    return completedHonorNos.indexOf(honor.no) > 0;
+  });
+  // 현재 유저의 자격미달인 칭호 추출
+  const disabledHonors = completedHonors.filter(honor => {
+    let result = false;
+    if (honor.type === 1) {
+      if (honor.condition > user.colPoint) result = true;
+    } else if (honor.type === 2) {
+      if (honor.condition > getCollectionByAttr(user._collections, honor.attr).length) result = true;
+    }
+    return result;
+  });
+  // 유저가 칭호를 적용중인 경우 칭호 해제
+  if (disabledHonors.filter(honor => { return honor.no === user._honor1.no || honor.no === user._honor2.no; }).length > 0) {
+    if (disabledHonors.filter(honor => { return honor.no === user._honor1.no; }).length > 0) disableUserHonor(user, 1);
+    if (disabledHonors.filter(honor => { return honor.no === user._honor2.no; }).length > 0) disableUserHonor(user, 2);
+  }
+  return disabledHonors;
+};
+
+export const getHonorsByHonorNos = (honorNos, honors) => {
+  return honors.filter(honor => { return honorNos.indexOf(honor.no) !== -1; });
+};
+
+export const getEnabledHonors = (user, honors) => {
+  const completedHonors = getHonorsByHonorNos(user.completedHonors, honors);
+  const disabledHonors = getDisabledHonors(user, honors);
+  return completedHonors.filter(honor1 => {
+    return disabledHonors.filter(honor2 => { return honor1.no === honor2.no; }).length === 0;
+  });
+};
+
+// honor 배열에 honor가 있는지 검사
+export const hasHonorInHonorArray = (honor, honors) => {
+  if (honors.length > 0) {
+    return honors.filter(item => { return item.no === honor.no; }).length > 0;
+  }
+  return false;
 };

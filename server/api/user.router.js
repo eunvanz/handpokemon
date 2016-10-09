@@ -294,10 +294,25 @@ router.get('/api/users/:id', (req, res) => {
     return User.findByIdAndUpdate(_id, { colRank: ranks[0] + 1, battleRank: ranks[1] + 1 }, { upsert: true }).exec();
   })
   .then(user => {
+    // 리그 업데이트
+    return User.where({ email: { $ne: 'admin@admin' } }).count({}).exec()
+    .then(allUsersCount => {
+      const userPercentage = user.battleRank / allUsersCount;
+      const leaguesCount = constants.leaguePercentage.length;
+      let leaguesCutLine = 0;
+      for (let i = 0; i < leaguesCount; i++) {
+        leaguesCutLine = constants.leaguePercentage[i];
+        if (userPercentage >= leaguesCutLine) {
+          return User.findByIdAndUpdate(_id, { league: i }, { upsert: true }).exec();
+        }
+      }
+    });
+  })
+  .then(user => {
     return _updateUserCollectionStatus(user);
   })
   .then(() => {
-    return User.findById(_id).populate('_collections');
+    return User.findById(_id).populate('_collections _honor1 _honor2');
   })
   .then((populatedUser) => {
     if (populatedUser) {
@@ -305,7 +320,25 @@ router.get('/api/users/:id', (req, res) => {
         populatedUser._collections = collections; // eslint-disable-line
         _updateUserCollectionCondition(populatedUser)
         .then(conditionUpdatedUser => {
-          res.json({ user: conditionUpdatedUser });
+          const honorHp = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[0] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[0] : 0); // eslint-disable-line
+          const honorPower = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[1] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[1] : 0);
+          const honorArmor = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[2] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[2] : 0);
+          const honorSpecialPower = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[3] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[3] : 0); // eslint-disable-line
+          const honorSpecialArmor = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[4] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[4] : 0); // eslint-disable-line
+          const honorDex = (conditionUpdatedUser._honor1 ? conditionUpdatedUser._honor1.burf[5] : 0) + (conditionUpdatedUser._honor2 ? conditionUpdatedUser._honor2.burf[5] : 0);
+          const updatedCollections = conditionUpdatedUser._collections.map(item => {
+            const collection = item;
+            collection.honorHp = honorHp;
+            collection.honorPower = honorPower;
+            collection.honorArmor = honorArmor;
+            collection.honorSpecialPower = honorSpecialPower;
+            collection.honorSpecialArmor = honorSpecialArmor;
+            collection.honorDex = honorDex;
+            return collection;
+          });
+          const collectionUpdatedUser = conditionUpdatedUser;
+          collectionUpdatedUser._collections = updatedCollections;
+          res.json({ user: collectionUpdatedUser });
         });
       });
     } else {

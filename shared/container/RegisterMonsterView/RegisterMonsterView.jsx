@@ -67,6 +67,7 @@ class RegisterMonsterView extends React.Component {
         requiredPiece: mon.requiredPiece === null ? '' : mon.requiredPiece,
         designer: mon.designer[0],
         point: mon.point,
+        addDesigner: '',
       });
     }
   }
@@ -130,6 +131,8 @@ class RegisterMonsterView extends React.Component {
     formData.append('designer', $('#designer').val());
     formData.append('point', $('#point').val());
     formData.append('img', document.getElementById('img').files[0]);
+    formData.append('addImgFlag', $('#add-image').prop('checked'));
+    formData.append('addDesigner', $('#addDesigner').val());
     requestType
     .send(formData)
     .end(() => {
@@ -255,8 +258,22 @@ class RegisterMonsterView extends React.Component {
                     htmlFor="img"
                   > 이미지 </label>
 
-                  <div className="col-sm-9">
+                  <div className="col-sm-3">
                     <input type="file" id="img" name="img" />
+                  </div>
+
+                  <div className="col-sm-2">
+                    <label>
+                      <input name="add-image" id="add-image" type="checkbox" className="ace" value="add-image"/>
+                      <span className="lbl">이미지추가</span>
+                    </label>
+                  </div>
+
+                  <div className="col-sm-4">
+                    <input type="text" id="addDesigner"
+                      name="addDesigner" value={this.state ? this.state.addDesigner : ''}
+                      onChange={this._handleInputChange} placeholder="추가할디자이너"
+                    />
                   </div>
                 </div>
 

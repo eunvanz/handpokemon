@@ -124,3 +124,11 @@ export function deleteById(collectionId) {
 export function selectById(collectionId) {
   return axios.get(`${baseURL}/api/collections/${collectionId}`);
 }
+
+export function updateCollectionImgIdx(collectionId, imgIdx) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/collections/${collectionId}`,
+    data: { collection: { imgIdx } },
+  });
+}

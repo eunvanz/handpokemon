@@ -1,3 +1,5 @@
+/* eslint-disabled */
+
 jQuery(function($) {
 
 	var mode = 1;//1:전체, 2:보유, 3:미보유
@@ -11,11 +13,11 @@ jQuery(function($) {
 			$('#filter-have').removeClass('badge-info').addClass('badge-default');
 			$('#filter-noHave').removeClass('badge-info').addClass('badge-default');
 			$(this).addClass('badge-info').removeClass('badge-default');
-			
+
 			$('.collection-item').each(function() {
 				//현재 조건이 무엇인지 체크
 				if (condition != 'noCondition') {
-					if ($(this).attr('data-' + condition) == value) {
+					if ($(this).attr('data-' + condition) == value || $(this).attr('data-main-' + condition) == value || $(this).attr('data-sub-' + condition) == value) {
 						$(this).show();
 					} else {
 						$(this).hide();
@@ -40,7 +42,7 @@ jQuery(function($) {
 			$('.collection-item[data-have="보유"]').each(function() {
 				//현재 조건이 무엇인지 체크
 				if (condition != 'noCondition') {
-					if ($(this).attr('data-' + condition) == value) {
+					if ($(this).attr('data-' + condition) == value || $(this).attr('data-main-' + condition) == value || $(this).attr('data-sub-' + condition) == value) {
 						$(this).show()
 					} else {
 						$(this).hide();
@@ -61,7 +63,7 @@ jQuery(function($) {
 			$('.collection-item[data-have="미보유"]').each(function() {
 				//현재 조건이 무엇인지 체크
 				if (condition != 'noCondition') {
-					if ($(this).attr('data-' + condition) == value) {
+					if ($(this).attr('data-' + condition) == value || $(this).attr('data-main-' + condition) == value || $(this).attr('data-sub-' + condition) == value) {
 						$(this).show();
 					} else {
 						$(this).hide();

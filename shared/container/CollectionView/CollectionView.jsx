@@ -4,6 +4,8 @@ import * as Actions from '../../redux/actions/actions';
 import MonsterCard from '../../components/Common/MonsterCard';
 import { Link } from 'react-router';
 import { removeInlineScripts, appendInlineScripts } from '../../util/Util';
+import HonorComponent from '../../components/Common/HonorComponent';
+import { leagueIcons, leagues } from '../../util/constants';
 
 class CollectionView extends React.Component {
   constructor(props) {
@@ -79,7 +81,7 @@ class CollectionView extends React.Component {
       }
     };
     const renderHonorTag = () => {
-      return (<span><h5>없음</h5></span>);
+      return (<HonorComponent honor={this.props.collectionUser._honor1} secondHonor={this.props.collectionUser._honor2}/>);
     };
     const renderWinRate = () => {
       let returnComponent = null;
@@ -184,7 +186,9 @@ class CollectionView extends React.Component {
           if (this.state.collectionsMonNo.has(mon2.monNo)) {
             for (const col of collections) {
               if (col._mon.monNo === mon2.monNo) {
-                mon.img = [mon2.img[col.imgIdx]];
+                mon.img = mon2.img;
+                mon.imgIdx = col.imgIdx;
+                mon.designer = mon2.designer;
                 mon.level = col.level;
                 mon.initHp = mon2.hp;
                 mon.initPower = mon2.power;
@@ -192,12 +196,12 @@ class CollectionView extends React.Component {
                 mon.initSpecialPower = mon2.specialPower;
                 mon.initSpecialArmor = mon2.specialArmor;
                 mon.initDex = mon2.dex;
-                mon.hp = mon2.hp + col.addedHp;
-                mon.power = mon2.power + col.addedPower;
-                mon.armor = mon2.armor + col.addedArmor;
-                mon.specialPower = mon2.specialPower + col.addedSpecialPower;
-                mon.specialArmor = mon2.specialArmor + col.addedSpecialArmor;
-                mon.dex = mon2.dex + col.addedDex;
+                mon.hp = mon2.hp + col.addedHp + col.honorHp;
+                mon.power = mon2.power + col.addedPower + col.honorPower;
+                mon.armor = mon2.armor + col.addedArmor + col.honorArmor;
+                mon.specialPower = mon2.specialPower + col.addedSpecialPower + col.honorSpecialPower;
+                mon.specialArmor = mon2.specialArmor + col.addedSpecialArmor + col.honorSpecialArmor;
+                mon.dex = mon2.dex + col.addedDex + col.honorDex;
                 mon.honorHp = col.honorHp;
                 mon.honorPower = col.honorPower;
                 mon.honorArmor = col.honorArmor;
@@ -209,16 +213,17 @@ class CollectionView extends React.Component {
                 mon.condition = col.condition;
                 mon.status = col.status;
                 mon.entry = col.entry;
-                const filterData = { 'data-have': '보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
-                'data-grade': mon.grade, 'data-designer': mon.designer };
+                const filterData = { 'data-have': '보유', 'data-main-attr': mon.mainAttr, 'data-sub-attr': mon.subAttr, 'data-cost': mon.cost,
+                'data-grade': mon.grade, 'data-designer': mon.designer[mon.imgIdx] };
                 returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
               }
             }
           } else {
             mon.img = ['nomonster.png'];
+            mon.imgIdx = 0;
             mon.name = '????';
-            const filterData = { 'data-have': '미보유', 'data-attr': mon.mainAttr, 'data-cost': mon.cost,
-            'data-grade': mon.grade, 'data-designer': mon.designer };
+            const filterData = { 'data-have': '미보유', 'data-main-attr': mon.mainAttr, 'data-sub-attr': mon.subAttr, 'data-cost': mon.cost,
+            'data-grade': mon.grade, 'data-designer': mon.designer[mon.imgIdx] };
             returnComponent.push(<MonsterCard key={mon.monNo} monster={mon} filterData={filterData}/>);
           }
         }
@@ -282,7 +287,7 @@ class CollectionView extends React.Component {
                         <h5>시합 점수</h5>
                       </div>
                       <div className="profile-info-value">
-                        <span><h5>{collectionUser.battlePoint}점</h5></span>
+                        <span><h5>{collectionUser.battlePoint}점 <i className={leagueIcons[collectionUser.league]}/> ({leagues[collectionUser.league].name} 리그)</h5></span>
                       </div>
                     </div>
                     <div className="profile-info-row">

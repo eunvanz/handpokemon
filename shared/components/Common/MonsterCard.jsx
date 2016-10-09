@@ -7,9 +7,10 @@ import CostComponent from '../../components/Common/CostComponent';
 import AttrComponent from '../../components/Common/AttrComponent';
 import StatusComponent from '../../components/Common/StatusComponent';
 import ConditionComponent from '../../components/Common/ConditionComponent';
-import { monsterImgRoute, conditionNames, statusNames } from '../../util/constants';
+import { monsterImgRoute, commonImgRoute, conditionNames, statusNames } from '../../util/constants';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import keygen from 'keygenerator';
+import { updateCollectionImgIdx } from '../../service/CollectionService';
 
 class MonsterCard extends React.Component {
   constructor(props) {
@@ -18,11 +19,13 @@ class MonsterCard extends React.Component {
     this.state = {
       showMonsterModal: false,
       selected: false,
+      imgIdx: this.props.monster ? this.props.monster.imgIdx : 0,
     };
     this._showMonsterModal = this._showMonsterModal.bind(this);
     this._hideMonsterModal = this._hideMonsterModal.bind(this);
     this._checkItem = this._checkItem.bind(this);
     this._uncheckItem = this._uncheckItem.bind(this);
+    this._handleOnChangeImg = this._handleOnChangeImg.bind(this);
     // this._changeEntry = this._changeEntry.bind(this);
   }
   _showMonsterModal(e) {
@@ -58,6 +61,15 @@ class MonsterCard extends React.Component {
   _uncheckItem() {
     this.setState({ selected: false });
     this.props.dispatch(Actions.removeSelectedMon(this.props.monster));
+  }
+  _handleOnChangeImg(e) {
+    const selectedImgIdx = e.target.value;
+    updateCollectionImgIdx(this.props.monster._id, selectedImgIdx)
+    .then(() => {
+      this.setState({
+        imgIdx: selectedImgIdx,
+      });
+    });
   }
   // _changeEntry() {
   //   // 교체하고자 하는 포켓몬 저장
@@ -112,7 +124,7 @@ class MonsterCard extends React.Component {
               style={{ position: 'relative', cursor: 'pointer', top: $('.picks').height() * -1 - 12 }}
               onClick={this._showMonsterModal}
             >
-              <img className="check" src="/img/common/check.png" width="100%"/>
+              <img className="check" src={`${commonImgRoute}/check.png`} width="100%"/>
             </div>
           </div>
         );
@@ -170,7 +182,7 @@ class MonsterCard extends React.Component {
       let onClickFunc = null;
       let className = null;
       if (this.props.monster) {
-        imgSrc = `${monsterImgRoute}/${this.props.monster.img}`;
+        imgSrc = `${monsterImgRoute}/${this.props.monster.img[this.state.imgIdx]}`;
         onClickFunc = this._showMonsterModal;
         className = 'picks';
       } else {
@@ -194,6 +206,9 @@ class MonsterCard extends React.Component {
           monster={this.props.monster}
           show={this.state.showMonsterModal}
           close={this._hideMonsterModal}
+          onChangeImg={this._handleOnChangeImg}
+          imgIdx={this.state.imgIdx}
+          imgSelectable={this.props.user && this.props.collectionUser && this.props.user._id === this.props.collectionUser._id}
         />
       );
     };
@@ -233,10 +248,14 @@ MonsterCard.propTypes = {
   entryNo: PropTypes.number,
   maxSelectableCost: PropTypes.number,
   fullSize: PropTypes.bool,
+  user: PropTypes.object,
+  collectionUser: PropTypes.object,
 };
 
 const mapStateToProps = (store) => ({
   selectedMons: store.selectedMons,
+  user: store.user,
+  collectionUser: store.collectionUser,
 });
 
 export default connect(mapStateToProps)(MonsterCard);

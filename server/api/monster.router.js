@@ -85,9 +85,18 @@ router.put('/api/monsters', upload.single('img'), (req, res) => {
         return res.json(updatedMon);
       });
     };
-    if (!monster.img) {
-      Monster.findOne({ _id: monster._id }, 'img').exec((err, originMon) => {
-        monster.img = originMon.img;
+    if (!monster.img || req.body.addImgFlag === 'true') {
+      Monster.findOne({ _id: monster._id }, 'img designer').exec((err, originMon) => {
+        if (req.body.addImgFlag === 'true') {
+          originMon.img.push(monster.img[0]);
+          originMon.designer.push(req.body.addDesigner);
+          if (monster.img) {
+            monster.img = originMon.img;
+            monster.designer = originMon.designer;
+          }
+        } else {
+          monster.img = originMon.img;
+        }
         execUpdate(monster);
       });
     } else {

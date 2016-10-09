@@ -135,3 +135,38 @@ export function updateUserEntryNext(user) {
     } },
   });
 }
+
+export function disableUserHonor(user, honorSeq) {
+  const updateUserObject = {};
+  if (honorSeq === 1) updateUserObject._honor1 = null;
+  else if (honorSeq === 2) updateUserObject._honor2 = null;
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: updateUserObject },
+  });
+}
+
+export function updateCompletedHonors(user, honors) {
+  const completedHonors = honors.map(honor => honor.no);
+  const reward = honors.map(honor => honor.reward).reduce((prev, curr) => prev + curr);
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      completedHonors,
+      pokemoney: user.pokemoney + reward,
+    } },
+  });
+}
+
+export function updateUserHonor(user, honor1, honor2) {
+  return axios({
+    method: 'put',
+    url: `${baseURL}/api/users/${user._id}`,
+    data: { user: {
+      _honor1: honor1 ? honor1._id : null,
+      _honor2: honor2 ? honor2._id : null,
+    } },
+  });
+}

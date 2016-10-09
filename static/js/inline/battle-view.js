@@ -1,5 +1,3 @@
-/* eslint-disabled */
-
 var gameSpeed = $('#game-speed').val();
 var speed = 1 / gameSpeed;
 var speed2 = gameSpeed;
