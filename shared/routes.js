@@ -20,6 +20,7 @@ import FirstAttackView from './container/BattleView/FirstAttackView';
 import BattleResultView from './container/BattleView/BattleResultView';
 import MissionStateView from './container/HonorView/MissionStateView';
 import SetHonorView from './container/HonorView/SetHonorView';
+import WorkshopView from './container/WorkshopView/WorkshopView';
 import remountable from './components/Common/Remountable';
 
 const routes = (
@@ -51,6 +52,7 @@ const routes = (
     <Route path="/battle-result" component={requireAuth(BattleResultView)}/>
     <Route path="/honor-mission-state" component={requireAuth(MissionStateView)}/>
     <Route path="/honor-set-honor" component={requireAuth(SetHonorView)}/>
+    <Route path="/workshop" component={WorkshopView}/>
   </Route>
 );
 

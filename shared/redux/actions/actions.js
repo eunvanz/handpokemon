@@ -713,3 +713,19 @@ export function fetchHonors() {
     });
   };
 }
+
+export function setWorkshops(workshops) {
+  return {
+    type: ActionTypes.SET_WORKSHOPS,
+    workshops,
+  };
+}
+
+export function fetchWorkshopItems() {
+  return dispatch => {
+    return axios.get(`${baseURL}/api/workshops`)
+    .then(res => {
+      dispatch(setWorkshops(res.data.workshops));
+    });
+  };
+}

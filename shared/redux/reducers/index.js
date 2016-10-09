@@ -5,6 +5,7 @@ import { appMounted, monInfoFlip, beforeAction, menu, honors } from './reducer_c
 import { user, collectionUser, users, rival } from './reducer_user';
 import { collectionCountInfo, addedAbility, entryAsIs, entryToBe, entryState, userEntryForBattle, rivalEntryForBattle } from './reducer_collection';
 import { battleInfo, gameSpeed } from './reducer_battle';
+import { workshops } from './reducer_workshop';
 
 export default combineReducers({
   baseMons,
@@ -34,4 +35,5 @@ export default combineReducers({
   battleInfo,
   gameSpeed,
   honors,
+  workshops,
 });

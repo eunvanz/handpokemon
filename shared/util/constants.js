@@ -54,6 +54,10 @@ export const leaguePercentage = [0.8, 0.6, 0.4, 0.2, 0.0];
 export const userImgRoute = '/img/user';
 export const monsterImgRoute = '/img/monsters';
 export const commonImgRoute = '/img/common';
+export const workshopImgRoute = '/img/workshop';
+export const userImgUploadRoute = './static/img/user/';
+export const workshopImgUploadRoute = './static/img/workshop/';
+export const monsterImgUploadRoute = './static/img/monsters/';
 
 export const conditionVar = [0, 0.8, 0.9, 1, 1.1, 1.2];
 

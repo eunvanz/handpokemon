@@ -186,6 +186,13 @@ class SideBar extends React.Component {
             </Link>
           </li>
           {renderBattle()}
+          <li className={menu === 'workshop' ? 'active' : null}>
+            <Link to="/workshop">
+              <i className="menu-icon fa fa-paint-brush"></i>
+              <span className="menu-text"> 포켓몬 공작소 </span>
+            </Link>
+            <b className="arrow"></b>
+          </li>
           <li>
             <Link to="/mon-list">
               <i className="menu-icon fa fa-github-alt"></i>

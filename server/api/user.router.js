@@ -14,7 +14,7 @@ const requireSignin = passport.authenticate('local', { session: false });
 
 const router = new Router();
 
-const upload = multer({ dest: './static/img/user/' });
+const upload = multer({ dest: `${constants.userImgUploadRoute}` });
 
 const tokenForUser = (user) => {
   const timestamp = new Date().getTime();

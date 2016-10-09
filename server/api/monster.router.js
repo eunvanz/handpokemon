@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import Monster from '../models/monster.model';
-const multer = require('multer');
+import multer from 'multer';
+import { monsterImgUploadRoute } from '../../shared/util/constants';
 
 const router = new Router();
-const upload = multer({ dest: './static/img/monsters/' });
+const upload = multer({ dest: `${monsterImgUploadRoute}` });
 
 const _updateEvolutePiece = (_beforeId, requiredPiece) => {
   return new Promise((resolve, reject) => {

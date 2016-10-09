@@ -163,7 +163,7 @@ class MonsterModal extends React.Component {
           );
       } else if (stat - initStat > 0) {
         statPct = _.toString(initStat / 200 * 100);
-        addStatPct = _.toString((stat - initStat) / 200 * 100);
+        addStatPct = _.toString((stat - initStat - honorStat) / 200 * 100);
         returnComponent.push(
           <div
             key="4"
@@ -217,10 +217,10 @@ class MonsterModal extends React.Component {
       if (honorStat > 0) {
         returnComponent.push(<span key="1" className="badge badge-success">+{honorStat}</span>);
       }
-      if (stat - initStat > 0) {
-        returnComponent.push(<span key="2" className="badge badge-primary">+{stat - initStat}</span>);
-      } else if (stat - initStat < 0) {
-        returnComponent.push(<span key="3" className="badge badge-danger">{stat - initStat}</span>);
+      if (stat - initStat - honorStat > 0) {
+        returnComponent.push(<span key="2" className="badge badge-primary">+{stat - initStat - honorStat}</span>);
+      } else if (stat - initStat - honorStat < 0) {
+        returnComponent.push(<span key="3" className="badge badge-danger">{stat - initStat - honorStat}</span>);
       }
       return returnComponent;
     };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
 class ViewName extends React.Component {
   constructor(props) {
@@ -11,5 +11,9 @@ class ViewName extends React.Component {
     );
   }
 }
+
+ViewName.propTypes = {
+  propName: PropTypes.object,
+};
 
 export default ViewName;

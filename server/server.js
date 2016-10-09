@@ -77,11 +77,13 @@ import UserRouter from './api/user.router';
 import MonsterRouter from './api/monster.router';
 import CollectionRouter from './api/collection.router';
 import HonorRouter from './api/honor.router';
+import WorkshopRouter from './api/workshop.router';
 
 app.use(UserRouter);
 app.use(MonsterRouter);
 app.use(CollectionRouter);
 app.use(HonorRouter);
+app.use(WorkshopRouter);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {

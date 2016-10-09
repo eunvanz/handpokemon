@@ -75,3 +75,5 @@ export const GET_BATTLE_RESULT = 'GET_BATTLE_RESULT';
 export const GET_GAME_SPEED = 'GET_GAME_SPEED';
 
 export const SET_HONORS = 'SET_HONORS';
+
+export const SET_WORKSHOPS = 'SET_WORKSHOPS';
